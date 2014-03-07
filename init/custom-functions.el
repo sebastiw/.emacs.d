@@ -30,14 +30,4 @@
  (set-frame-parameter nil 'fullscreen
                       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
 
-(defun view-doc-in-emacs (File &optional Directory)
-  (interactive)
-;  (other-window)
-;  (letf (current-page (doc-view-current-page))
-  (print (format "Lol: file is %s in %s" File Directory))
-    (find-alternate-file-other-window (format "%s%s" Directory File)))
-;    (other-window)
-;    (doc-view-goto-page current-page)))
-
-
 (provide 'custom-functions)
