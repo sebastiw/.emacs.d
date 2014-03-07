@@ -6,6 +6,18 @@
 
 (require 'custom-benchmarking "benchmarking.el" nil)
 
+(defvar elpa-required-packages '(
+				 json-mode
+				 js2-mode
+				 ac-js2
+				 coffee-mode
+				 js-comint
+				 rainbow-delimiters
+				 smex
+				 yasnippet
+                                 )
+  "Packages which need to be installed")
+
 ;; Need to list required packages inside this file
 (require 'init-packages)
 
