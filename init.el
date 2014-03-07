@@ -4,6 +4,8 @@
 
 (add-to-list 'load-path (expand-file-name "init" user-emacs-directory))
 
+(require 'custom-benchmarking "benchmarking.el" nil)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -15,25 +17,29 @@
 				 coffee-mode
 				 js-comint
 				 rainbow-delimiters
-
                                  )
   "Packages which need to be installed")
 
+(defvar emacs-dir (concat (getenv "HOME") "/.emacs.d")
+  "The emacs directory.")
 (defvar elpa-dir "elpa"
-  "Which directory elpa packages should be installed in")
+  "Which directory elpa packages should be installed in.")
 
 (require 'package)
 (setq package-archives '(("gnu"       . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa"     . "http://melpa.milkbox.net/packages/")))
 
-(unless (file-exists-p elpa-dir)
+(unless (file-exists-p  (concat emacs-dir "/" elpa-dir))
+  (message "The directory %s does not exist, creating it." elpa-dir)
   (package-refresh-contents))
 
 (package-initialize)
 
+(message "Checking if required packages is installed...")
 (dolist (pkg elpa-required-packages)
   (unless (package-installed-p pkg)
+    (message "Packet %s was not installed, installing..." pkg)
     (package-install pkg)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -49,10 +55,9 @@
 
 
 (require 'init-erlang)
-(require 'init-javascript)
 (require 'init-org)
 (require 'init-latex)
-
+(require 'init-javascript)
 (require 'init-c)
 (require 'init-autocomplete)
 
@@ -122,7 +127,7 @@
 (setq
    backup-by-copying t      ; don't clobber symlinks
    backup-directory-alist
-    '(("." . "~/.emacs-saves")) ; don't litter my fs tree
+    '(("." . "~/.emacs.d/.saves")) ; don't litter my fs tree
    delete-old-versions t
    kept-new-versions 6
    kept-old-versions 2
@@ -151,21 +156,7 @@
 (fullscreen)
 
 (setq standard-indent 2
-      fill-column 80)
-
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(doc-view-continuous t)
- '(fill-column 80)
- '(indent-tabs-mode nil)
- '(inhibit-startup-screen t))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+      indent-tabs-mode nil
+      doc-view-continuous t
+      fill-column 80
+      inhibit-startup-screen t)

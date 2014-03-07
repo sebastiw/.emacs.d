@@ -1,13 +1,13 @@
-(require 'latex)
-(require 'auctex-latexmk)
-(require 'ispell)
-(require 'auto-complete)
-
 
 (add-hook 'LaTeX-mode-hook 'setup-latex)
 (add-hook 'latex-mode-hook 'setup-latex)
 
 (defun setup-latex ()
+  (require 'latex)
+  (require 'auctex-latexmk)
+  (require 'ispell)
+  (require 'auto-complete)
+
   (visual-line-mode t)
   (flyspell-mode t)
   (auto-fill-mode t)
