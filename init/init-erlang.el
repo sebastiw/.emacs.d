@@ -11,18 +11,22 @@
     (require 'erlang-start))
 
 
-  ;; EDTS mode
-  (autoload 'erlang-mode "erlang.el" "" t)
-  (add-to-list 'load-path "~/.emacs.d/edts")
-  (require 'edts-start)
+  (when (package-installed-p 'edts)
+    ;; git clone https://github.com/tjarvstrand/edts
+    ;; EDTS mode
+    (autoload 'erlang-mode "erlang.el" "" t)
+    (add-to-list 'load-path "~/.emacs.d/edts")
+    (require 'edts-start))
 
-  ;; EQC Emacs Mode -- Configuration Start
-  (add-to-list 'load-path "/usr/lib/erlang/lib/eqc-1.30.0/emacs/")
-  (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
-  (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
-  (setq eqc-max-menu-length 30)
-  (setq eqc-root-dir "/usr/lib/erlang/lib/eqc-1.30.0")
-  ;; EQC Emacs Mode -- Configuration End
+  (when (package-installed-p 'eqc)
+    ;; EQC Emacs Mode -- Configuration Start
+    (add-to-list 'load-path "/usr/lib/erlang/lib/eqc-1.30.0/emacs/")
+    (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
+    (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
+    (setq eqc-max-menu-length 30)
+    (setq eqc-root-dir "/usr/lib/erlang/lib/eqc-1.30.0")
+    ;; EQC Emacs Mode -- Configuration End
+    )
 
   ;; Settings
   (setq erlang-indent-level 2
