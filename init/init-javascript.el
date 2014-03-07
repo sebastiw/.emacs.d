@@ -87,7 +87,7 @@
 ;; ---------------------------------------------------------------------------
 
 (when (featurep 'js2-mode)
-  (require-package 'skewer-mode)
+  (require 'skewer-mode)
   (after-load 'skewer-mode
     (add-hook 'skewer-mode-hook
               (lambda () (inferior-js-keys-mode -1)))))
