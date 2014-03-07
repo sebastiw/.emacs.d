@@ -15,7 +15,8 @@
 				 rainbow-delimiters
 				 smex
 				 yasnippet
-				 elisp-slime-nav
+				 elisp-slime-navn
+				 auto-complete
                                  )
   "Packages which need to be installed")
 
