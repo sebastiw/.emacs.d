@@ -8,6 +8,7 @@
 
 (defvar elpa-required-packages '(
 				 auto-complete
+				 elisp-slime-nav
 				 ido-hacks
 				 smex
 				 yasnippet

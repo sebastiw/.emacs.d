@@ -2,14 +2,7 @@
 ;; Packages
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar elpa-required-packages '(
-				 json-mode
-				 js2-mode
-				 ac-js2
-				 coffee-mode
-				 js-comint
-				 rainbow-delimiters
-                                 )
+(defvar elpa-required-packages '()
   "Packages which need to be installed")
 
 (defvar emacs-dir (concat (getenv "HOME") "/.emacs.d")
