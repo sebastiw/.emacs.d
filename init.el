@@ -10,6 +10,7 @@
 				 auto-complete
 				 elisp-slime-nav
 				 ido-hacks
+				 rainbow-delimiters
 				 smex
 				 yasnippet
                                  )

@@ -1,6 +1,5 @@
 
 (defun setup-elisp ()
-  (package-install 'rainbow-delimiters)
   (require 'elisp-slime-nav)
   (require 'rainbow-delimiters)
 
