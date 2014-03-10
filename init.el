@@ -8,24 +8,13 @@
 
 (defvar elpa-required-packages '(
 				 auto-complete
-				 ac-ispell
-				 ac-math
-				 ac-js2
-				 auctex
-				 auctex-latexmk
-				 coffee-mode
-				 elisp-slime-nav
 				 ido-hacks
-				 js-comint
-				 js2-mode
-				 json-mode
-				 rainbow-delimiters
 				 smex
 				 yasnippet
                                  )
-  "Packages which need to be installed")
+  "General packages which need to be installed")
 
-;; Need to list required packages inside this file
+;; Need to be first among the first
 (require 'init-packages)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -47,21 +36,21 @@
 
 ;; Modes----------------------------
 (require 'smex)
-(require 'elisp-slime-nav)
 (require 'yasnippet)
 
 ;; Custom---------------------------
-(require 'init-erlang)
-(require 'init-org)
-(require 'init-latex)
-(require 'init-javascript)
-(require 'init-c)
 (require 'init-autocomplete)
+(require 'init-c)
+(require 'init-erlang)
+(require 'init-elisp)
 (require 'init-gnus)
+(require 'init-javascript)
+(require 'init-latex)
+(require 'init-org)
 
+(require 'custom-backups)
 (require 'custom-functions)
 (require 'custom-keybindings)
-(require 'custom-backups)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -85,6 +74,7 @@
 ;; Emacs customization
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(smex-initialize)
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (fullscreen)
@@ -96,7 +86,6 @@
       fill-column 80
       inhibit-startup-screen t)
 
-(add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode t)))
 (add-hook 'java-mode-hook (lambda ()
 			    (setq c-basic-offset 2
 				  tab-width 2

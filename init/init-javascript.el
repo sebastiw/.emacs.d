@@ -4,6 +4,13 @@
   `(eval-after-load ,feature
      '(progn ,@body)))
 
+(install-package 'coffee-mode)
+(install-package 'js-comint)
+(install-package 'js2-mode)
+(install-package 'json-mode)
+(install-package 'ac-js2)
+(install-package 'rainbow-delimiters)
+
 (after-load 'js2-mode
   (define-key js2-mode-map (kbd "TAB") 'indent-for-tab-command))
 
