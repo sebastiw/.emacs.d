@@ -3,17 +3,18 @@
 (add-hook 'latex-mode-hook 'setup-latex)
 
 (defun setup-latex ()
-  (package-install 'auctex)
-  (package-install 'auctex-latexmk)
-  (package-install 'ispell)
+  (install-package 'writegood-mode)
+  (install-package 'auctex)
+  (install-package 'auctex-latexmk)
+  (install-package 'ispell)
 
   (require 'latex)
   (require 'auctex-latexmk)
   (require 'ispell)
   (require 'auto-complete)
 
-  (package-install 'ac-ispell)
-  (package-install 'ac-math)
+  (install-package 'ac-ispell)
+  (install-package 'ac-math)
 
   (visual-line-mode t)
   (flyspell-mode t)
