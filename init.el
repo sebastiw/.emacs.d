@@ -7,16 +7,21 @@
 (require 'custom-benchmarking "benchmarking.el" nil)
 
 (defvar elpa-required-packages '(
-				 json-mode
-				 js2-mode
+				 auto-complete
+				 ac-ispell
+				 ac-math
 				 ac-js2
+				 auctex
+				 auctex-latexmk
 				 coffee-mode
+				 elisp-slime-nav
+				 ido-hacks
 				 js-comint
+				 js2-mode
+				 json-mode
 				 rainbow-delimiters
 				 smex
 				 yasnippet
-				 elisp-slime-nav
-				 auto-complete
                                  )
   "Packages which need to be installed")
 

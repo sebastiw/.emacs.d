@@ -35,4 +35,12 @@
     (package-install pkg)))
 
 
+(defun install-package (pkg)
+  "If package PKG is not installed, install it."
+  (unless (package-installed-p pkg)
+    (progn
+      (unless (assoc pkg package-archive-contents)
+	(package-refresh-contents))
+      (package-install pkg))))
+
 (provide 'init-packages)

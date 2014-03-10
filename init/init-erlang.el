@@ -1,7 +1,7 @@
 (add-hook 'erlang-mode-hook 'setup-erlang)
 
 (defun setup-erlang ()
-  (require 'erlang)
+  (install-package 'erlang)
 
   (when (package-installed-p 'erlang)
     (setq erlang-root-dir "/usr/lib/erlang")
@@ -10,23 +10,38 @@
 
     (require 'erlang-start))
 
+  ;; EDTS-mode
+  ;; Very powerful development toolkit for Erlang, a must have.
+  ;; Check: https://github.com/tjarvstrand/edts
 
-  (when (package-installed-p 'edts)
-    ;; git clone https://github.com/tjarvstrand/edts
-    ;; EDTS mode
+  (defvar edts-directory (concat emacs-dir "/" "edts")
+    "Where EDTS is installed. If the filename-string can't be found, run ``make edts'' from emacs-dir.")
+
+  (unless (file-exists-p edts-directory)
+      (compile (concat "make -C " emacs-dir " edts")))
+
+  (when (file-exists-p edts-directory)
     (autoload 'erlang-mode "erlang.el" "" t)
     (add-to-list 'load-path "~/.emacs.d/edts")
     (require 'edts-start))
 
-  (when (package-installed-p 'eqc)
-    ;; EQC Emacs Mode -- Configuration Start
-    (add-to-list 'load-path "/usr/lib/erlang/lib/eqc-1.30.0/emacs/")
+  ;; Quviq QuickCheck
+  ;; Automated testing using properties.
+  ;; Check http://www.quviq.com
+  ;; Commercial, this is why we don't auto-install it.
+  ;; Just load it if its there.
+
+  (defvar eqc-root-dir "/usr/lib/erlang/lib/eqc-1.30.0"
+    "Where EQC is installed.")
+  (defvar eqc-load-path "/usr/lib/erlang/lib/eqc-1.30.0/emacs/"
+    "EQC's load path.")
+
+  (when (file-exists-p eqc-root-dir)
+    (add-to-list 'load-path eqc-load-path)
     (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
     (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
-    (setq eqc-max-menu-length 30)
-    (setq eqc-root-dir "/usr/lib/erlang/lib/eqc-1.30.0")
-    ;; EQC Emacs Mode -- Configuration End
-    )
+    (setq eqc-max-menu-length 30))
+
 
   ;; Settings
   (setq erlang-indent-level 2
