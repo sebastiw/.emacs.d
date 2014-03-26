@@ -30,4 +30,9 @@
  (set-frame-parameter nil 'fullscreen
                       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
 
+(defun untabify-buffer ()
+  "Untabify current buffer."
+  (interactive)
+  (save-excursion (untabify (point-min) (point-max))))
+
 (provide 'custom-functions)

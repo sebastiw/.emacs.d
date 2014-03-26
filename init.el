@@ -7,10 +7,12 @@
 (require 'custom-benchmarking "benchmarking.el" nil)
 
 (defvar elpa-required-packages '(
-				 auto-complete
-				 ido-hacks
-				 smex
-				 yasnippet
+                                 auto-complete
+                                 ido-hacks
+                                 ido-vertical-mode
+                                 ido-ubiquitous
+                                 smex
+                                 yasnippet
                                  )
   "General packages which need to be installed")
 
@@ -26,7 +28,9 @@
       (append '(("\\.[eh]rl$" . erlang-mode)
                 ("\\.yaws$"   . erlang-mode)
                 ("\\.php[5]?$". web-mode)
-                ("\\.htm[l]?$". web-mode))
+                ("\\.htm[l]?$". web-mode)
+                ("\\.java\\'" . setup-java)
+                )
               auto-mode-alist))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -37,6 +41,8 @@
 ;; Modes----------------------------
 (require 'smex)
 (require 'yasnippet)
+(require 'ido-vertical-mode)
+(require 'ido-ubiquitous)
 
 ;; Custom---------------------------
 (require 'init-autocomplete)
@@ -44,6 +50,8 @@
 (require 'init-erlang)
 (require 'init-elisp)
 (require 'init-gnus)
+(require 'init-haskell)
+(require 'init-java)
 (require 'init-javascript)
 (require 'init-latex)
 (require 'init-org)
@@ -58,6 +66,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ido-mode t)
+(ido-vertical-mode)
+(ido-ubiquitous)
 (winner-mode t)
 (show-paren-mode t)
 (column-number-mode t)
@@ -80,13 +90,30 @@
 (fullscreen)
 
 (setq ido-use-virtual-buffers t
+      ido-everywhere t
       standard-indent 2
-      indent-tabs-mode nil
       doc-view-continuous t
       fill-column 80
       inhibit-startup-screen t)
 
+(setq-default indent-tabs-mode nil)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Hooks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(make-face 'tabs-face)
+(set-face-foreground 'tabs-face "LightGrey")
+
+(add-hook 'font-lock-mode-hook
+          '(lambda ()
+             (font-lock-add-keywords
+              nil
+              '(("\t" 0 '(:background "MistyRose") prepend))
+              )))
+
+
 (add-hook 'java-mode-hook (lambda ()
-			    (setq c-basic-offset 2
-				  tab-width 2
-				  indent-tabs-mode t)))
+                            (setq c-basic-offset 2
+                                  tab-width 2)))
