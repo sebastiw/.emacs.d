@@ -12,18 +12,22 @@
 
   ;; EDTS-mode
   ;; Very powerful development toolkit for Erlang, a must have.
+  ;; But does not work for Windows at the moment.
   ;; Check: https://github.com/tjarvstrand/edts
 
-  (defvar edts-directory (concat emacs-dir "/" "edts")
-    "Where EDTS is installed. If the filename-string can't be found, run ``make edts'' from emacs-dir.")
+  (cond  ((string-equal system-type "windows-nt")
+          (message "EDTS currently not supported in Windows."))
+         (true
+          (defvar edts-directory (concat emacs-dir "/" "edts")
+            "Where EDTS is installed. If the filename-string can't be found, run ``make edts'' from emacs-dir.")
 
-  (unless (file-exists-p edts-directory)
-      (compile (concat "make -C " emacs-dir " edts")))
+          (unless (file-exists-p edts-directory)
+            (compile (concat "make -C " emacs-dir " edts")))
 
-  (when (file-exists-p edts-directory)
-    (autoload 'erlang-mode "erlang.el" "" t)
-    (add-to-list 'load-path "~/.emacs.d/edts")
-    (require 'edts-start))
+          (when (file-exists-p edts-directory)
+            (autoload 'erlang-mode "erlang.el" "" t)
+            (add-to-list 'load-path "~/.emacs.d/edts")
+            (require 'edts-start))))
 
   ;; Quviq QuickCheck
   ;; Automated testing using properties.
@@ -44,7 +48,8 @@
 
 
   ;; Settings
-  (setq erlang-indent-level 2
-        edts-man-root "~/.emacs.d/edts/doc/R16B03"))
+)
+(setq erlang-indent-level 2
+      edts-man-root "~/.emacs.d/edts/doc/R16B03")
 
 (provide 'init-erlang)
