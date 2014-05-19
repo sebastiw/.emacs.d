@@ -1,17 +1,6 @@
 (defun open-dot-emacs ()
   (interactive)
-  (let ((initfiles '(".emacs" "_emacs" ".emacs.d/init.el"))
-        (filefound)
-        (file))
-
-    (while (and (not filefound) initfiles)
-      (setq file (concat "~/" (car initfiles))
-            initfiles (cdr initfiles))
-
-      (when (file-exists-p file)
-        (setq filefound t)
-        (find-file file)))))
-
+  (find-file user-init-file))
 
 (defun select-previous-window ()
   (interactive)
