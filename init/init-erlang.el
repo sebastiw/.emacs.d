@@ -15,9 +15,9 @@
   ;; But does not work for Windows at the moment.
   ;; Check: https://github.com/tjarvstrand/edts
 
-  (cond  ((string-equal system-type "windows-nt")
+  (cond  ((string-equal system-type "windows-nt") ;; if windows
           (message "EDTS currently not supported in Windows."))
-         (true
+         ((not nil) ;; otherwise
           (defvar edts-directory (concat emacs-dir "/" "edts")
             "Where EDTS is installed. If the filename-string can't be found, run ``make edts'' from emacs-dir.")
 

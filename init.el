@@ -13,6 +13,8 @@
                                  ido-ubiquitous
                                  smex
                                  yasnippet
+                                 popwin
+                                 uniquify
                                  )
   "General packages which need to be installed")
 
@@ -43,6 +45,7 @@
 (require 'yasnippet)
 (require 'ido-vertical-mode)
 (require 'ido-ubiquitous)
+(require 'uniquify)
 
 ;; Custom---------------------------
 (require 'init-autocomplete)
@@ -73,11 +76,15 @@
 (column-number-mode t)
 
 (yas-global-mode 1)
+(toggle-uniquify-buffer-names)
 
 ; no toolbars/scrollbars
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (menu-bar-mode t)
+
+(require 'popwin)
+(popwin-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
