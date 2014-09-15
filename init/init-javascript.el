@@ -34,7 +34,8 @@
 
 ;; js2-mode
 (after-load 'js2-mode
-  (add-hook 'js2-mode-hook '(lambda () (setq mode-name "JS2"))))
+  (add-hook 'js2-mode-hook '(lambda () (setq mode-name "JS2")))
+  (add-hook 'js2-mode-hook 'global-unset-mouse))
 
 (setq indent-tabs-mode nil
       js2-use-font-lock-faces t

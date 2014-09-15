@@ -14,7 +14,6 @@
                                  smex
                                  yasnippet
                                  popwin
-                                 uniquify
                                  )
   "General packages which need to be installed")
 
@@ -101,7 +100,8 @@
       standard-indent 2
       doc-view-continuous t
       fill-column 80
-      inhibit-startup-screen t)
+      inhibit-startup-screen t
+      find-file-wildcards t)
 
 (setq-default indent-tabs-mode nil)
 
