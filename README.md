@@ -5,7 +5,7 @@ To install:
 
 1. Backup existing .emacs/_emacs/init.el and .emacs.d 
 2. Run:
-  $ cd && git clone http://github.com/sebastiw/.emacs.d.git
+  $ cd && git clone https://github.com/sebastiw/.emacs.d.git
 3. Start emacs
 
 
