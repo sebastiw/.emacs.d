@@ -1,0 +1,17 @@
+# name: latex-template
+# key: latex-template
+# --
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\title{${1:Report on}}
+\author{${1:Sebastian Weddmark Olsson}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+
+
+\end{document}
