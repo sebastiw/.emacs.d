@@ -14,7 +14,6 @@
                                  smex
                                  yasnippet
                                  popwin
-                                 uniquify
                                  )
   "General packages which need to be installed")
 
