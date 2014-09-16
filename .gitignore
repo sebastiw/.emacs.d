@@ -1,3 +1,5 @@
 session.*
 elpa
 .saves
+ac-comphist.dat
+eshell/
