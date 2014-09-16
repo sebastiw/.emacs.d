@@ -3,3 +3,5 @@ elpa
 .saves
 ac-comphist.dat
 eshell/
+edts/
+auto-save-list/

@@ -1,11 +1,14 @@
 (setq debug-on-error t)
 
+; Not everything really needs version 24, but I haven't figured out which parts that needs it.
 (let ((minver 24))
   (unless (>= emacs-major-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
 
+; Load paths
 (add-to-list 'load-path (expand-file-name "init" user-emacs-directory))
 
+; Benchmark how fast/slow different files load
 (require 'custom-benchmarking "benchmarking.el" nil)
 
 (defvar elpa-required-packages '(
@@ -16,6 +19,7 @@
                                  smex
                                  yasnippet
                                  popwin
+                                 fill-column-indicator
                                  )
   "General packages which need to be installed")
 
@@ -91,14 +95,23 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 ;; Misc modes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; Much nicer find-file
 (ido-mode t)
+; Will show all alternative files vertically
 (ido-vertical-mode)
-(ido-ubiquitous)
+; IDO-mode everywhere possible
+(ido-ubiquitous-mode)
+
+; Remember last window settings
 (winner-mode t)
+; Visualization for matching parenthesis
 (show-paren-mode t)
+; Column number in mode line
 (column-number-mode t)
 
+; Yasnippet minor mode in all buffers
 (yas-global-mode 1)
+; Gives buffers/files with similiar names unique names instead
 (toggle-uniquify-buffer-names)
 
 ; no toolbars/scrollbars
@@ -106,6 +119,7 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 (tool-bar-mode -1)
 (menu-bar-mode t)
 
+; Help buffers are only displayed temporarily and when needed.
 (popwin-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -113,9 +127,13 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 ;; Emacs customization
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; IDO for M-x
 (smex-initialize)
+
+; Instead of answering "YES" or "NO"
 (fset 'yes-or-no-p 'y-or-n-p)
 
+; For fullscreen on start
 (when seba-fullscreen-mode
   (fullscreen))
 
@@ -127,6 +145,7 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
       inhibit-startup-screen t
       find-file-wildcards t)
 
+; Don't insert hard tabs
 (setq-default indent-tabs-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -134,6 +153,7 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 ;; Hooks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; Because I hate hard tabs, font-lock them.
 (when seba-fontify-tabs
   (make-face 'tabs-face)
   (set-face-foreground 'tabs-face "LightGrey")
