@@ -1,3 +1,5 @@
+(setq debug-on-error t)
+
 (let ((minver 24))
   (unless (>= emacs-major-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
@@ -36,6 +38,27 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Settings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar seba-fontify-tabs t
+  "When set to t, hard tabs will be highlighted.")
+
+(defvar seba-fullscreen-mode t
+  "When set to t, emacs will start in fullscreen.")
+
+(defvar seba-erlang-enable-quickcheck nil
+  "When set to t, QuickCheck will be enabled for Erlang.
+
+Remember to also set `eqc-root-dir' and `eqc-load-path'")
+
+;; Can we do something here to auto find the Erlang root dir?
+;; Maybe something with $PATH, or possibly os command `whereis'
+(defvar seba-erlang-root-dir "/opt/erlang/17.1/lib/erlang/"
+  "The Erlang root directory")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Requires
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -45,6 +68,7 @@
 (require 'ido-vertical-mode)
 (require 'ido-ubiquitous)
 (require 'uniquify)
+(require 'popwin)
 
 ;; Custom---------------------------
 (require 'init-autocomplete)
@@ -82,7 +106,6 @@
 (tool-bar-mode -1)
 (menu-bar-mode t)
 
-(require 'popwin)
 (popwin-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -93,7 +116,8 @@
 (smex-initialize)
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(fullscreen)
+(when seba-fullscreen-mode
+  (fullscreen))
 
 (setq ido-use-virtual-buffers t
       ido-everywhere t
@@ -110,17 +134,13 @@
 ;; Hooks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(make-face 'tabs-face)
-(set-face-foreground 'tabs-face "LightGrey")
+(when seba-fontify-tabs
+  (make-face 'tabs-face)
+  (set-face-foreground 'tabs-face "LightGrey")
 
-(add-hook 'font-lock-mode-hook
-          '(lambda ()
-             (font-lock-add-keywords
-              nil
-              '(("\t" 0 '(:background "MistyRose") prepend))
-              )))
-
-
-(add-hook 'java-mode-hook (lambda ()
-                            (setq c-basic-offset 2
-                                  tab-width 2)))
+  (add-hook 'font-lock-mode-hook
+            '(lambda ()
+               (font-lock-add-keywords
+                nil
+                '(("\t" 0 '(:background "MistyRose") prepend))
+                ))))

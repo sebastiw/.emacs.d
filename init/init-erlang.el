@@ -4,11 +4,21 @@
   (install-package 'erlang)
 
   (when (package-installed-p 'erlang)
-    (setq erlang-root-dir "/opt/erlang/17.1/")
-    (setq exec-path (cons "/opt/erlang/17.1/bin" exec-path))
-    (add-to-list 'load-path "/opt/erlang/17.1/lib/erlang/lib/tools-2.6.15/emacs/")
+    ;; We should probably bind erlang-root-dir to
+    ;; variable `default-directory' here.
+    ;; Then we don't need to set give the DEFAULTDIRECTORY argument
+    ;; to each `expand-file-name'.
 
-    (require 'erlang-start))
+    (setq erlang-root-dir seba-erlang-root-dir
+          exec-path (cons (expand-file-name "bin/" erlang-root-dir)
+                          exec-path))
+
+    ;; Add Erlangs Emacs directory to the load-path
+    (add-to-list 'load-path (file-expand-wildcards
+                             (concat erlang-root-dir
+                                     "/lib/tools-*/emacs")))
+
+    (require 'erlang-start)
 
   ;; EDTS-mode
   ;; Very powerful development toolkit for Erlang, a must have.
@@ -22,7 +32,7 @@
           (install-package 'auto-highlight-symbol)
           (install-package 'edts)
 
-          (require 'edts-start))))
+          (require 'edts-start)))
 
   ;; Quviq QuickCheck
   ;; Automated testing using properties.
@@ -30,21 +40,23 @@
   ;; Commercial, this is why we don't auto-install it.
   ;; Just load it if its there.
 
-  ;; (defvar eqc-root-dir "/usr/lib/erlang/lib/eqc-1.30.0"
-  ;;   "Where EQC is installed.")
-  ;; (defvar eqc-load-path "/usr/lib/erlang/lib/eqc-1.30.0/emacs/"
-  ;;   "EQC's load path.")
+  (when seba-erlang-enable-quickcheck
 
-  ;; (when (file-exists-p eqc-root-dir)
-  ;;   (add-to-list 'load-path eqc-load-path)
-  ;;   (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
-  ;;   (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
-  ;;   (setq eqc-max-menu-length 30))
+    (defvar eqc-root-dir (expand-file-name "lib/eqc-1.30.0"
+                                           erlang-root-dir)
+      "Where EQC is installed.")
+    (defvar eqc-load-path (expand-file-name "lib/eqc-1.30.0/emacs/"
+                                            erlang-root-dir)
+      "EQC's load path.")
 
+    (when (file-exists-p eqc-root-dir)
+      (add-to-list 'load-path eqc-load-path)
+      (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
+      (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
+      (setq eqc-max-menu-length 30)))
 
   ;; Settings
-
-(setq erlang-indent-level 2
-      edts-man-root "/opt/erlang/17.1/lib/erlang/man")
+  (setq erlang-indent-level 2
+        edts-man-root (expand-file-name "man" erlang-root-dir))))
 
 (provide 'init-erlang)
