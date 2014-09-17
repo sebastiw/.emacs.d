@@ -20,6 +20,7 @@
                                  yasnippet
                                  popwin
                                  fill-column-indicator
+                                 highlight-chars
                                  )
   "General packages which need to be installed")
 
@@ -122,6 +123,9 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 ; Help buffers are only displayed temporarily and when needed.
 (popwin-mode 1)
 
+;; Turn on highlighting current line
+(global-hl-line-mode 1)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Emacs customization
@@ -143,7 +147,8 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
       doc-view-continuous t
       fill-column 80
       inhibit-startup-screen t
-      find-file-wildcards t)
+      find-file-wildcards t
+      )
 
 ; Don't insert hard tabs
 (setq-default indent-tabs-mode nil)
@@ -154,6 +159,8 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Because I hate hard tabs, font-lock them.
+; TODO: replace with highlight-chars
+; (global-set-key (kbd "<f9>") 'hc-toggle-highlight-tabs)
 (when seba-fontify-tabs
   (make-face 'tabs-face)
   (set-face-foreground 'tabs-face "LightGrey")
