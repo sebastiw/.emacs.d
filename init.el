@@ -46,9 +46,6 @@
 ;; Settings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar seba-fontify-tabs t
-  "When set to t, hard tabs will be highlighted.")
-
 (defvar seba-fullscreen-mode t
   "When set to t, emacs will start in fullscreen.")
 
@@ -74,6 +71,8 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 (require 'ido-ubiquitous)
 (require 'uniquify)
 (require 'popwin)
+(require 'fill-column-indicator)
+(require 'highlight-chars)
 
 ;; Custom---------------------------
 (require 'init-autocomplete)
@@ -105,13 +104,16 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 
 ; Remember last window settings
 (winner-mode t)
+
 ; Visualization for matching parenthesis
 (show-paren-mode t)
+
 ; Column number in mode line
 (column-number-mode t)
 
 ; Yasnippet minor mode in all buffers
 (yas-global-mode 1)
+
 ; Gives buffers/files with similiar names unique names instead
 (toggle-uniquify-buffer-names)
 
@@ -123,8 +125,14 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 ; Help buffers are only displayed temporarily and when needed.
 (popwin-mode 1)
 
-;; Turn on highlighting current line
+; Turn on highlighting current line
 (global-hl-line-mode 1)
+
+; A line on indicate when 80 chars (or whatever) has been reached
+(fci-mode)
+
+; Highlight hard tabs
+(hc-toggle-highlight-tabs)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -157,17 +165,3 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hooks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Because I hate hard tabs, font-lock them.
-; TODO: replace with highlight-chars
-; (global-set-key (kbd "<f9>") 'hc-toggle-highlight-tabs)
-(when seba-fontify-tabs
-  (make-face 'tabs-face)
-  (set-face-foreground 'tabs-face "LightGrey")
-
-  (add-hook 'font-lock-mode-hook
-            '(lambda ()
-               (font-lock-add-keywords
-                nil
-                '(("\t" 0 '(:background "MistyRose") prepend))
-                ))))
