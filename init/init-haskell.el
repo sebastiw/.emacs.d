@@ -1,7 +1,7 @@
-(install-package 'haskell-mode)
-(require 'haskell-mode-autoloads)
-
 (defun setup-haskell ()
+  (install-package 'haskell-mode)
+  (require 'haskell-mode-autoloads)
+
   (install-package 'hi2)
 
   (turn-on-haskell-indentation)

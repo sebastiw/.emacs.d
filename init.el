@@ -1,9 +1,11 @@
 (setq debug-on-error t)
 
-; Not everything really needs version 24, but I haven't figured out which parts that needs it.
+; Not everything really needs version 24, but I haven't figured out
+; which parts that needs it.
 (let ((minver 24))
   (unless (>= emacs-major-version minver)
-    (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
+    (error "Your Emacs is too old -- this config requires v%s or higher"
+           minver)))
 
 ; Load paths
 (add-to-list 'load-path (expand-file-name "init" user-emacs-directory))
@@ -129,7 +131,9 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 (global-hl-line-mode 1)
 
 ; A line on indicate when 80 chars (or whatever) has been reached
-(fci-mode)
+; fci-mode is not a global mode, so to be able to turn it on default:
+(define-globalized-minor-mode global-fci-mode fci-mode turn-on-fci-mode)
+(global-fci-mode 1)
 
 ; Highlight hard tabs
 (hc-toggle-highlight-tabs)
@@ -149,17 +153,19 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 (when seba-fullscreen-mode
   (fullscreen))
 
+; global variables
 (setq ido-use-virtual-buffers t
       ido-everywhere t
       standard-indent 2
       doc-view-continuous t
-      fill-column 80
       inhibit-startup-screen t
       find-file-wildcards t
       )
 
-; Don't insert hard tabs
-(setq-default indent-tabs-mode nil)
+; buffer-local variables
+(setq-default indent-tabs-mode nil
+              fill-column 80
+              )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

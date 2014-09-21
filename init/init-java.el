@@ -12,4 +12,5 @@
 
   (define-key 'malabar-mode-map (kbd "C-c C-k") 'malabar-compile-file))
 
+(add-hook 'java-mode-hook 'setup-java)
 (provide 'init-java)
