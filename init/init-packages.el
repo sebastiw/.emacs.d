@@ -5,8 +5,6 @@
 (defvar elpa-required-packages '()
   "Packages which need to be installed")
 
-(defvar emacs-dir (concat (getenv "HOME") "/.emacs.d")
-  "The emacs directory.")
 (defvar elpa-dir "elpa"
   "Which directory elpa packages should be installed in.")
 
@@ -16,7 +14,7 @@
                          ("melpa"     . "http://melpa.milkbox.net/packages/")
                          ("org"       . "http://orgmode.org/elpa/")))
 
-(unless (file-exists-p  (concat emacs-dir "/" elpa-dir))
+(unless (file-exists-p  (concat user-emacs-directory elpa-dir))
   (message "The directory %s does not exist, creating it." elpa-dir)
   (package-refresh-contents))
 
@@ -36,5 +34,31 @@
       (unless (assoc pkg package-archive-contents)
         (package-refresh-contents))
       (package-install pkg))))
+
+;; Thank you Prelude
+(defmacro prelude-auto-install (extension package mode)
+  "When file with EXTENSION is opened triggers auto-install of PACKAGE.
+PACKAGE is installed only if not already present. The file is opened in MODE."
+  `(add-to-list 'auto-mode-alist
+                `(,extension . (lambda ()
+                                 (unless (package-installed-p ',package)
+                                   (package-install ',package))
+                                 (,mode)))))
+
+;; No autoload so add manually
+(when (package-installed-p 'markdown-mode)
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+(when (package-installed-p 'pkgbuild-mode)
+  (add-to-list 'auto-mode-alist '("PKGBUILD\\'" . pkgbuild-mode)))
+
+;; build auto-install mappings
+(mapc
+ (lambda (entry)
+   (let ((extension (car entry))
+         (package (cadr entry))
+         (mode (cadr (cdr entry))))
+     (unless (package-installed-p package)
+       (prelude-auto-install extension package mode))))
+ prelude-auto-install-alist)
 
 (provide 'init-packages)

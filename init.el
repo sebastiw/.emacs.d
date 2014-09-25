@@ -10,7 +10,8 @@
 ; Load paths
 (add-to-list 'load-path (expand-file-name "init" user-emacs-directory))
 
-; Benchmark how fast/slow different files load
+;; Benchmark how fast/slow different files load
+;; C-h v sanityinc/require-times
 (require 'custom-benchmarking "benchmarking.el" nil)
 
 (defvar elpa-required-packages '(
@@ -26,30 +27,46 @@
                                  )
   "General packages which need to be installed")
 
-;; Need to be first among the first
-(require 'init-packages)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Alist
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; I'm trying to remove setq auto-mode-alist in favor
+;; for prelude-auto-install-alist.
 (setq auto-mode-alist
-      (append '(("\\.[eh]rl$" . erlang-mode)
-                ("\\.yaws$"   . erlang-mode)
-                ("\\.php[5]?$". web-mode)
-                ("\\.htm[l]?$". web-mode)
-                ("\\.java\\'" . setup-java)
-                )
+      (append '(("\\.java\\'" . setup-java))
               auto-mode-alist))
+
+(defvar prelude-auto-install-alist
+  '(("\\.[eh]rl\\'"   erlang erlang-mode)
+    ("\\.[eh]rl?$"    erlang erlang-mode)
+    ("\\.yaws?$"      erlang erlang-mode)
+    ("\\.escript?$"   erlang erlang-mode)
+    ("\\.hs\\'"       haskell-mode haskell-mode)
+    ("\\.(la)?tex\\'" auctex LaTeX-mode)
+    ("\\.md\\'"       markdown-mode markdown-mode)
+    ("PKGBUILD\\'"    pkgbuild-mode pkgbuild-mode)
+    ("\\.php\\'"      php-mode php-mode)
+    ("\\.php[5]?$"    php-mode php-mode)
+    ("\\.htm[l]?$"    web-mode web-mode)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Auto-install Packages
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Need to be first among the first
+(require 'init-packages)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Settings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar seba-fullscreen-mode t
-  "When set to t, emacs will start in fullscreen.")
+;; I havn't figured out what to do here yet.
+;; just testing some. Probably more viser to move these
+;; into the mode-specific file instead.
 
 (defvar seba-erlang-enable-quickcheck nil
   "When set to t, QuickCheck will be enabled for Erlang.
@@ -150,8 +167,7 @@ Remember to also set `eqc-root-dir' and `eqc-load-path'")
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ; For fullscreen on start
-(when seba-fullscreen-mode
-  (fullscreen))
+(fullscreen)
 
 ; global variables
 (setq ido-use-virtual-buffers t

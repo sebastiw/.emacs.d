@@ -1,27 +1,31 @@
 
-(add-hook 'LaTeX-mode-hook 'setup-latex)
-(add-hook 'latex-mode-hook 'setup-latex)
+(provide 'init-latex)
 
-(defun setup-latex ()
+(eval-after-load 'LaTeX-mode
   (install-package 'writegood-mode)
   (install-package 'auctex)
   (install-package 'auctex-latexmk)
   (install-package 'ispell)
+  (install-package 'smartparens-latex)
+  (install-package 'ac-ispell)
+  (install-package 'ac-math)
 
   (require 'latex)
   (require 'auctex-latexmk)
   (require 'ispell)
   (require 'auto-complete)
-
-  (install-package 'ac-ispell)
-  (install-package 'ac-math)
+  (require 'smartparens-latex)
 
   (visual-line-mode t)
   (flyspell-mode t)
   (auto-fill-mode t)
   (auto-complete-mode)
   (ac-flyspell-workaround)
+  (abbrev-mode +1)
+  (smartparens-mode +1)
   (writegood-mode)
+  (auctex-latexmk-setup)
+  (LaTeX-math-mode)
 
   (make-local-variable 'ispell-parser)
   (setq ispell-parser 'tex)
@@ -32,15 +36,15 @@
 
   (lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|TODO\\|BUG\\)" 1 font-lock-warning-face t))))
 
-  (auctex-latexmk-setup)
-
-  (LaTeX-math-mode)
+  (setq-default TeX-master nil)
 
   (setq ac-auto-show-menu 0.01
         ac-auto-start 1
         ac-delay 0.01
         LaTeX-command "latex"
 
+        TeX-parse-self t
+        TeX-auto-save t
         TeX-PDF-mode t
         TeX-source-correlate-method 'synctex
         TeX-source-correlate-mode t
@@ -53,5 +57,3 @@
         ;;           (lambda () (interactive) (view-doc-in-emacs "%o" (ido-get-work-directory)))))
         ;; ("Okular" ("okular --unique %o#src:%n%b"))
         TeX-view-program-selection '((output-pdf "Default"))))
-
-(provide 'init-latex)
