@@ -13,38 +13,39 @@
 (provide 'init-javascript)
 
 (eval-after-load 'js-mode
-  (install-package 'coffee-mode)
-  (install-package 'js-comint)
-  (install-package 'js2-mode)
-  (install-package 'json-mode)
-  (install-package 'ac-js2)
-  (install-package 'rainbow-delimiters)
+  '(progn
+     (install-package 'coffee-mode)
+     (install-package 'js-comint)
+     (install-package 'js2-mode)
+     (install-package 'json-mode)
+     (install-package 'ac-js2)
+     (install-package 'rainbow-delimiters)
 
-  (require 'skewer-mode)
+     (require 'skewer-mode)
 
-  ;; js2-mode-20140114
-  ;; This mode does not yet work with "multi-mode" modes such as `mmm-mode'
-  ;; and `mumamo', although it could be made to do so with some effort.
-  ;; This means that `js2-mode' is currently only useful for editing JavaScript
-  ;; files, and not for editing JavaScript within <script> tags or templates.
+     ;; js2-mode-20140114
+     ;; This mode does not yet work with "multi-mode" modes such as `mmm-mode'
+     ;; and `mumamo', although it could be made to do so with some effort.
+     ;; This means that `js2-mode' is currently only useful for editing JavaScript
+     ;; files, and not for editing JavaScript within <script> tags or templates.
 
-  ;; To unset the mouse
-  ; (global-unset-mouse)
+     ;; To unset the mouse
+     ;; (global-unset-mouse)
 
-  ;; Colorful parenthesis
-  (rainbow-delimiters-mode)
+     ;; Colorful parenthesis
+     (rainbow-delimiters-mode)
 
-  ;; Imenu support?
-  (js2-imenu-extras-setup)
+     ;; Imenu support?
+     (js2-imenu-extras-setup)
 
-  (define-key js2-mode-map (kbd "TAB") 'indent-for-tab-command)
+     (define-key js2-mode-map (kbd "TAB") 'indent-for-tab-command)
 
-  (setq mode-name "JS2"
-        indent-tabs-mode nil
-        js-indent-level 2
-        js2-basic-offset 2
-        js2-use-font-lock-faces t
-        js2-mode-must-byte-compile nil
-        js2-indent-on-enter-key t
-        js2-auto-indent-p t
-        js2-bounce-indent-p nil))
+     (setq mode-name "JS2"
+	   indent-tabs-mode nil
+	   js-indent-level 2
+	   js2-basic-offset 2
+	   js2-use-font-lock-faces t
+	   js2-mode-must-byte-compile nil
+	   js2-indent-on-enter-key t
+	   js2-auto-indent-p t
+	   js2-bounce-indent-p nil)))
