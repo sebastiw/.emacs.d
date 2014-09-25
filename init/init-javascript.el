@@ -10,7 +10,9 @@
 (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
 ; (add-to-list 'interpreter-mode-alist '("node" . js-mode))
 
-(defun setup-javascript ()
+(provide 'init-javascript)
+
+(eval-after-load 'js-mode
   (install-package 'coffee-mode)
   (install-package 'js-comint)
   (install-package 'js2-mode)
@@ -45,9 +47,4 @@
         js2-mode-must-byte-compile nil
         js2-indent-on-enter-key t
         js2-auto-indent-p t
-        js2-bounce-indent-p nil)
-
-  )
-
-
-(provide 'init-javascript)
+        js2-bounce-indent-p nil))

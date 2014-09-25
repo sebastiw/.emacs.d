@@ -1,6 +1,7 @@
 
+(provide 'init-org)
 
-(defun setup-org ()
+(eval-after-load 'org-mode
   (setq
         ;; Don't indent after a new node.
         org-adapt-indentation nil
@@ -45,7 +46,3 @@
   (local-set-key (kbd "C-<tab>") 'other-window)
 
   (lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t)))))
-
-(add-hook 'org-mode-hook 'setup-org)
-
-(provide 'init-org)

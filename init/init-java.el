@@ -1,5 +1,7 @@
 
-(defun setup-java ()
+(provide 'init-java)
+
+(eval-after-load 'java-mode
   (install-package 'malabar-mode)
 
   (require 'cedet)
@@ -7,10 +9,8 @@
 
   (setq c-basic-offset 2
         tab-width 2)
+
   (semantic-load-enable-minimum-features) ;; or enable more if you wish
   (add-hook 'after-save-hook 'malabar-compile-file-silently nil t)
 
   (define-key 'malabar-mode-map (kbd "C-c C-k") 'malabar-compile-file))
-
-(add-hook 'java-mode-hook 'setup-java)
-(provide 'init-java)
