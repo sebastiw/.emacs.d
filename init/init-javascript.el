@@ -1,6 +1,4 @@
 
-(add-hook 'js-mode-hook 'setup-javascript)
-
 ;; js2 could either be installed as a major mode
 ; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 ;; or as a minor mode under js
@@ -41,11 +39,11 @@
      (define-key js2-mode-map (kbd "TAB") 'indent-for-tab-command)
 
      (setq mode-name "JS2"
-	   indent-tabs-mode nil
-	   js-indent-level 2
-	   js2-basic-offset 2
-	   js2-use-font-lock-faces t
-	   js2-mode-must-byte-compile nil
-	   js2-indent-on-enter-key t
-	   js2-auto-indent-p t
-	   js2-bounce-indent-p nil)))
+           indent-tabs-mode nil
+           js-indent-level 2
+           js2-basic-offset 2
+           js2-use-font-lock-faces t
+           js2-mode-must-byte-compile nil
+           js2-indent-on-enter-key t
+           js2-auto-indent-p t
+           js2-bounce-indent-p nil)))
