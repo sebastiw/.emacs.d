@@ -7,7 +7,7 @@
       ;; Don't indent after a new node.
       org-adapt-indentation nil
       ;; Where to keep org agenda files
-      org-agenda-files (list "~/.org")
+      org-agenda-files (list "~/ORG/")
       ;; Stupid yanks, Monday is the first day of the week
       calendar-week-start-day 1
       ;; Do not dim blocked items
@@ -40,8 +40,8 @@
      (local-set-key (kbd "C-c l") 'org-store-link)
      (local-set-key (kbd "C-c c") 'org-capture)
      (local-set-key (kbd "C-c a") 'org-agenda)
-     (local-set-key (kbd "C-c C-c") 'org-todo)
-     (local-set-key (kbd "C-c C-k") 'org-ctrl-c-ctrl-c)
+;     (local-set-key (kbd "C-c C-c") 'org-todo)
+;     (local-set-key (kbd "C-c C-k") 'org-ctrl-c-ctrl-c)
 
      ;; I really like to change windows with C-<tab>
      (local-set-key (kbd "C-<tab>") 'other-window)
