@@ -68,16 +68,6 @@
 ;; just testing some. Probably more viser to move these
 ;; into the mode-specific file instead.
 
-(defvar seba-erlang-enable-quickcheck nil
-  "When set to t, QuickCheck will be enabled for Erlang.
-
-Remember to also set `eqc-root-dir' and `eqc-load-path'")
-
-;; Can we do something here to auto find the Erlang root dir?
-;; Maybe something with $PATH, or possibly os command `whereis'
-(defvar seba-erlang-root-dir "/opt/erlang/17.1/lib/erlang/"
-  "The Erlang root directory")
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Requires
