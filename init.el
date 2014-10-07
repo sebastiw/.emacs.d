@@ -1,4 +1,4 @@
-(setq debug-on-error t)
+; (setq debug-on-error t)
 
 ; Not everything really needs version 24, but I haven't figured out
 ; which parts that needs it.
@@ -9,6 +9,7 @@
 
 ; Load paths
 (add-to-list 'load-path (expand-file-name "init" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "other" user-emacs-directory))
 
 ;; Benchmark how fast/slow different files load
 ;; C-h v sanityinc/require-times
@@ -24,6 +25,7 @@
                                  popwin
                                  fill-column-indicator
                                  highlight-chars
+                                 nyan-mode
                                  )
   "General packages which need to be installed")
 
@@ -82,6 +84,9 @@
 (require 'popwin)
 (require 'fill-column-indicator)
 (require 'highlight-chars)
+
+; Clearcase version control
+; (require 'clearcase)
 
 ;; Custom---------------------------
 (require 'init-autocomplete)
@@ -144,6 +149,9 @@
 
 ; Highlight hard tabs
 (hc-toggle-highlight-tabs)
+
+; Nyan Cat buffer percentage
+(nyan-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
