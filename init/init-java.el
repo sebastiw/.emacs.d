@@ -1,9 +1,10 @@
 (provide 'init-java)
 
-
-(require 'android-mode)
-(android-mode)
-(custom-set-variables '(android-mode-sdk-dir "~/Android/android-sdk-linux"))
+(eval-after-load 'java-mode
+  '(progn
+     (require 'android-mode)
+     (android-mode)
+     (custom-set-variables '(android-mode-sdk-dir "~/Android/android-sdk-linux"))))
 
 
 ; (require 'cedet)
