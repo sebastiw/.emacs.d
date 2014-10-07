@@ -24,6 +24,7 @@
                                  popwin
                                  fill-column-indicator
                                  highlight-chars
+                                 rainbow-delimiters
                                  )
   "General packages which need to be installed")
 
@@ -31,12 +32,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Alist
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; I'm trying to remove setq auto-mode-alist in favor
-;; for prelude-auto-install-alist.
-(setq auto-mode-alist
-      (append '(("\\.java\\'" . setup-java))
-              auto-mode-alist))
 
 (defvar prelude-auto-install-alist
   '(("\\.[eh]rl\\'"   erlang erlang-mode)
@@ -61,15 +56,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Settings
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; I havn't figured out what to do here yet.
-;; just testing some. Probably more viser to move these
-;; into the mode-specific file instead.
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Requires
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -82,6 +68,7 @@
 (require 'popwin)
 (require 'fill-column-indicator)
 (require 'highlight-chars)
+(require 'rainbow-delimiters)
 
 ;; Custom---------------------------
 (require 'init-autocomplete)
@@ -177,3 +164,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hooks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Rainbow delimiters in all programming modes
+; Emacs 24+ needed
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
