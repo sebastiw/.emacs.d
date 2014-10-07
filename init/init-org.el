@@ -37,13 +37,13 @@
 ;;;        org-habit-show-habits-only-for-today nil
       )
 
-     (local-set-key (kbd "C-c l") 'org-store-link)
-     (local-set-key (kbd "C-c c") 'org-capture)
-     (local-set-key (kbd "C-c a") 'org-agenda)
-;     (local-set-key (kbd "C-c C-c") 'org-todo)
-;     (local-set-key (kbd "C-c C-k") 'org-ctrl-c-ctrl-c)
+     (define-key org-mode-map (kbd "C-c l") 'org-store-link)
+     (define-key org-mode-map (kbd "C-c c") 'org-capture)
+     (define-key org-mode-map (kbd "C-c a") 'org-agenda)
+;     (define-key org-mode-map (kbd "C-c C-c") 'org-todo)
+;     (define-key org-mode-map (kbd "C-c C-k") 'org-ctrl-c-ctrl-c)
 
      ;; I really like to change windows with C-<tab>
-     (local-set-key (kbd "C-<tab>") 'other-window)
+     (define-key org-mode-map (kbd "C-<tab>") 'other-window)
 
      (lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t))))))

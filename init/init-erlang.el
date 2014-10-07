@@ -5,12 +5,11 @@
 
 (eval-after-load 'erlang
   '(progn
-     (defvar erlang-root-dir nil)
-
      (if (or (equal erlang-root-dir "")
              (equal (executable-find "erl") "")
              (equal (shell-command-to-string "which erl") ""))
-         (error "Could not find erlang, set the variable `erlang-root-dir'"))
+         (error "Could not find erlang, set the variable `erlang-root-dir'")
+       )
 
      (setq exec-path (cons (expand-file-name "bin/" erlang-root-dir)
                            exec-path)
@@ -36,6 +35,10 @@
 
              (require 'edts-start)))
 
+     ;; Daniel Mauritzson's (emmnddl) MME-TOOLS
+     (add-to-list 'load-path (concat user-emacs-directory "other/mme-tools"))
+     (require 'mme-tools)
+
      ;; Quviq QuickCheck
      ;; Automated testing using properties.
      ;; Check http://www.quviq.com
@@ -53,4 +56,5 @@
        (add-to-list 'load-path eqc-load-path)
        (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
        (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
-       (setq eqc-max-menu-length 30))))
+       (setq eqc-max-menu-length 30))
+     ))
