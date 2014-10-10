@@ -36,6 +36,9 @@
      ;; Very powerful development toolkit for Erlang, a must have.
      ;; But does not work for Windows at the moment.
      ;; Check: https://github.com/tjarvstrand/edts
+     ;;
+     ;; Also to set up first run /home/esebwed/scripts/edts_create_config.sh
+     ;; when in a 'clearcase view'
      (cond  ((string-equal system-type "windows-nt") ;; if windows
              (message "EDTS currently not supported in Windows."))
 
