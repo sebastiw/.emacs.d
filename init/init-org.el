@@ -1,7 +1,7 @@
 
 (provide 'init-org)
 
-(eval-after-load 'org-mode
+(eval-after-load "org"
   '(progn
      (setq
       ;; Don't indent after a new node.

@@ -5,16 +5,27 @@
 
 (eval-after-load 'erlang
   '(progn
-     (if (or (equal erlang-root-dir "")
-             (equal (executable-find "erl") "")
-             (equal (shell-command-to-string "which erl") ""))
-         (error "Could not find erlang, set the variable `erlang-root-dir'")
-       )
+     ;; Find the erlang-root-dir automatically, either it is already set, or
+     ;; elisp knows where it is, or `which' knows where.
+     (let ((erootdir erlang-root-dir)
+           (exe-find (directory-file-name (file-name-directory (executable-find "erl"))))
+           (shell-cmd-find (directory-file-name (file-name-directory (shell-command-to-string "which erl")))))
 
-     (setq exec-path (cons (expand-file-name "bin/" erlang-root-dir)
-                           exec-path)
-           edts-man-root (expand-file-name "man" erlang-root-dir)
-           erlang-indent-level 2)
+     (if (and (equal erootdir nil)
+              (equal exe-find "")
+              (equal shell-cmd-find ""))
+         (error "Could not find erlang, set the variable `erlang-root-dir'"))
+
+     (if (equal erootdir nil)
+         (if (equal exe-find "")
+             (setq erlang-root-dir shell-cmd-find)
+           (setq erlang-root-dir exe-find)))
+
+     ;; Also set the manual directory and indent level
+     (setq ;; exec-path (cons (expand-file-name "bin/" erlang-root-dir)
+           ;;                 exec-path)
+           edts-man-root (expand-file-name ".." erlang-root-dir)
+           erlang-indent-level 4)
 
      ;; Add Erlangs Emacs directory to the load-path
      (add-to-list 'load-path (file-expand-wildcards
@@ -25,7 +36,9 @@
      ;; Very powerful development toolkit for Erlang, a must have.
      ;; But does not work for Windows at the moment.
      ;; Check: https://github.com/tjarvstrand/edts
-
+     ;;
+     ;; Also to set up first run /home/esebwed/scripts/edts_create_config.sh
+     ;; when in a 'clearcase view'
      (cond  ((string-equal system-type "windows-nt") ;; if windows
              (message "EDTS currently not supported in Windows."))
 
@@ -44,7 +57,6 @@
      ;; Check http://www.quviq.com
      ;; Commercial, this is why we don't auto-install it.
      ;; Just load it if its there.
-
      (defvar eqc-root-dir (expand-file-name "lib/eqc-1.30.0"
                                             erlang-root-dir)
        "Where EQC is installed.")
@@ -57,4 +69,4 @@
        (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
        (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
        (setq eqc-max-menu-length 30))
-     ))
+     )))
