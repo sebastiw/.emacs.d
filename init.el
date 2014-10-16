@@ -27,6 +27,7 @@
                                  highlight-chars
                                  nyan-mode
                                  rainbow-delimiters
+                                 use-package
                                  )
   "General packages which need to be installed")
 
@@ -71,6 +72,7 @@
 (require 'fill-column-indicator)
 (require 'highlight-chars)
 (require 'rainbow-delimiters)
+(require 'use-package)
 
 ; Clearcase version control
 ; (require 'clearcase)
@@ -80,6 +82,7 @@
 (require 'init-c)
 (require 'init-erlang)
 (require 'init-elisp)
+(require 'init-eshell)
 (require 'init-gnus)
 (require 'init-haskell)
 (require 'init-java)
