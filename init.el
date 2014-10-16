@@ -171,6 +171,9 @@
               fill-column 80
               )
 
+; The default font/fontsize can differ much between computers, better to set it.
+(set-face-attribute 'default t :height 100 :font "Ubuntu mono")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hooks
