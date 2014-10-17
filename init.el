@@ -138,7 +138,8 @@
 (global-fci-mode 1)
 
 ; Highlight hard tabs
-(hc-toggle-highlight-tabs)
+; Destroys colors in eshell. Why?
+;; (hc-toggle-highlight-tabs)
 
 ; Nyan Cat buffer percentage
 (nyan-mode)
