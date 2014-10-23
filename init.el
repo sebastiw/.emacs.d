@@ -75,7 +75,13 @@
 (require 'use-package)
 
 ; Clearcase version control
-; (require 'clearcase)
+; because it was written a looooong time back (round 2004), directory-sep-char
+; needs to be set.
+; Also, this mode takes forever to load (about 4 seconds) so do a defun instead.
+(defun clearcase-mode-on ()
+  (interactive) 
+  (setq directory-sep-char ?/)
+  (require 'clearcase))
 
 ;; Custom---------------------------
 (require 'init-autocomplete)
@@ -179,6 +185,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hooks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;(add-hook 'fundamental-mode 'global-unset-mouse)
 
 ; Rainbow delimiters in all programming modes
 ; Emacs 24+ needed

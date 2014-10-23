@@ -26,9 +26,4 @@
 (global-set-key (kbd "M-c") 'capitalize-word-at-point)
 (global-set-key (kbd "M-u") 'upcase-word-at-point)
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-(add-hook 'fundamental-mode 'global-unset-mouse)
-
-
 (provide 'custom-keybindings)
