@@ -145,7 +145,8 @@
 
 ; Highlight hard tabs
 ; Destroys colors in eshell. Why?
-;; (hc-toggle-highlight-tabs)
+(when (eq eshell-mode nil)
+  (hc-toggle-highlight-tabs))
 
 ; Nyan Cat buffer percentage
 (nyan-mode)
@@ -179,7 +180,8 @@
               )
 
 ; The default font/fontsize can differ much between computers, better to set it.
-(set-face-attribute 'default t :height 100 :font "Monospace")
+(when (member "DejaVu Sans Mono" (font-family-list))
+  (set-face-attribute 'default t :height 100 :font "DejaVu Sans Mono"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
