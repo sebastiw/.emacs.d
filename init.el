@@ -37,17 +37,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar prelude-auto-install-alist
-  '(("\\.[eh]rl\\'"   erlang erlang-mode)
-    ("\\.[eh]rl?$"    erlang erlang-mode)
-    ("\\.yaws?$"      erlang erlang-mode)
-    ("\\.escript?$"   erlang erlang-mode)
-    ("\\.hs\\'"       haskell-mode haskell-mode)
-    ("\\.(la)?tex\\'" auctex LaTeX-mode)
-    ("\\.md\\'"       markdown-mode markdown-mode)
+  '(("\\.md\\'"       markdown-mode markdown-mode)
     ("PKGBUILD\\'"    pkgbuild-mode pkgbuild-mode)
-    ("\\.php\\'"      php-mode php-mode)
-    ("\\.php[5]?$"    php-mode php-mode)
-    ("\\.htm[l]?$"    web-mode web-mode)))
+    ("\\.php5?\\'"    php-mode php-mode)
+    ("\\.html?$"      web-mode web-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
