@@ -1,7 +1,6 @@
 (provide 'init-latex)
 
 (use-package LaTeX
-  :ensure t
   :bind (("C-c i" . insert-latex)
          ("C-c C-c" . TeX-comment-or-uncomment-region)
          ("C-c C-k" . TeX-command-master))

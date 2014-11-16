@@ -1,7 +1,7 @@
 
 (provide 'init-haskell)
 
-(use-package haskell
+(use-package haskell-mode
   :ensure t
   :bind ("C-c C-k" . haskell-compile)
   :mode "\\.hs\\'"

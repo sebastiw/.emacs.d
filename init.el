@@ -79,13 +79,6 @@
       (ido-hacks-mode))
     ))
 
-;; Buffers have unique names
-(use-package uniquify
-  :ensure t
-  :config
-  ;; Gives buffers/files with similiar names unique names instead
-  (toggle-uniquify-buffer-names))
-
 ;; Help buffers are only displayed temporarily and when needed.
 (use-package popwin
   :ensure t
@@ -105,6 +98,7 @@
 
 ;; Show tabs, whitespaces etc
 (use-package highlight-chars
+  :pre-load (load-file "elpa/highlight-chars-20140513.444/highlight-chars.el")
   :ensure t
   :config
   (progn
@@ -131,6 +125,7 @@
 
 ;; Nyan Cat buffer percentage
 (use-package nyan-mode
+  :pre-load (load-file "elpa/nyan-mode-20140801.1329/nyan-mode.el")
   :ensure t
   :config
   (nyan-mode))
@@ -206,6 +201,11 @@
 
 ; Turn on highlighting current line
 (global-hl-line-mode 1)
+
+;; Buffers have unique names
+(require 'uniquify)
+;; Gives buffers/files with similiar names unique names instead
+(toggle-uniquify-buffer-names)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
