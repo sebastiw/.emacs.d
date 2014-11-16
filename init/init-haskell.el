@@ -2,11 +2,15 @@
 (provide 'init-haskell)
 
 (use-package haskell
-  :ensure hi2
+  :ensure t
   :bind ("C-c C-k" . haskell-compile)
   :mode "\\.hs\\'"
   :config
   (progn
+    (use-package hi2
+      :ensure t
+      :config
+      (hi2-mode))
     (require 'haskell-mode-autoloads)
 
     (turn-on-haskell-indentation)

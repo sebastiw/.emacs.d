@@ -1,15 +1,16 @@
-
-(add-hook 'emacs-lisp-mode-hook 'setup-elisp)
-
 (provide 'init-elisp)
 
-(defun setup-elisp ()
-  (install-package 'elisp-slime-nav)
-  (install-package 'rainbow-delimiters)
-  (install-package 'paredit)
-
-  (require 'elisp-slime-nav)
-  (require 'paredit)
-
-  (turn-on-elisp-slime-nav-mode)
-  (enable-paredit-mode))
+(use-package elisp-slime-nav
+  :ensure t
+  :config
+  (progn
+    (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
+    (add-hook 'lisp-interaction-mode-hook 'elisp-slime-nav-mode)))
+(use-package paredit
+  :ensure t
+  :config
+  (add-hook 'emacs-lisp-mode-hook 'paredit-mode))
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))

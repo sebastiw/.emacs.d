@@ -1,4 +1,4 @@
-; (setq debug-on-error t)
+(setq debug-on-error t)
 
 ; Not everything really needs version 24, but I haven't figured out
 ; which parts that needs it.
@@ -15,37 +15,13 @@
 ;; C-h v sanityinc/require-times
 (require 'custom-benchmarking "benchmarking.el" nil)
 
-(defvar elpa-required-packages '(
-                                 auto-complete
-                                 ido-hacks
-                                 ido-vertical-mode
-                                 ido-ubiquitous
-                                 smex
-                                 yasnippet
-                                 popwin
-                                 fill-column-indicator
-                                 highlight-chars
-                                 nyan-mode
-                                 rainbow-delimiters
-                                 use-package
-                                 )
-  "General packages which need to be installed")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Alist
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defvar prelude-auto-install-alist
-  '(("\\.md\\'"       markdown-mode markdown-mode)
-    ("PKGBUILD\\'"    pkgbuild-mode pkgbuild-mode)
-    ("\\.php5?\\'"    php-mode php-mode)
-    ("\\.html?$"      web-mode web-mode)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Auto-install Packages
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar elpa-required-packages '(use-package)
+  "General packages which need to be installed")
 
 ;; Need to be first among the first
 (require 'init-packages)
@@ -54,25 +30,127 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Requires
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Modes----------------------------
-(require 'smex)
-(require 'yasnippet)
-(require 'ido-vertical-mode)
-(require 'ido-ubiquitous)
-(require 'uniquify)
-(require 'popwin)
-(require 'fill-column-indicator)
-(require 'highlight-chars)
-(require 'rainbow-delimiters)
 (require 'use-package)
 
-; Clearcase version control
-; because it was written a looooong time back (round 2004), directory-sep-char
-; needs to be set.
-; Also, this mode takes forever to load (about 4 seconds) so do a defun instead.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Global Modes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Better M-x
+(use-package smex
+  :ensure t
+  :config
+  (progn
+    ;; IDO for M-x
+    (smex-initialize)
+    ))
+
+;; I-do mode, easier minibuffer/file lookups
+(use-package ido
+  :ensure t
+  :config
+  (progn
+    (ido-mode)
+    (setq ido-everywhere t)
+
+    ;; Will show all alternative files vertically
+    (use-package ido-vertical-mode
+      :ensure t
+      :requires ido
+      :config
+      (progn
+        (ido-vertical-mode)
+        (setq ido-use-vertical-buffers t)))
+
+    ;; IDO-mode everywhere possible
+    (use-package ido-ubiquitous
+      :ensure t
+      :requires ido
+      :config
+      (ido-ubiquitous-mode))
+
+    ;; Advices for ido-mode
+    (use-package ido-hacks
+      :ensure t
+      :disabled t
+      :requires ido
+      :config
+      (ido-hacks-mode))
+    ))
+
+;; Buffers have unique names
+(use-package uniquify
+  :ensure t
+  :config
+  ;; Gives buffers/files with similiar names unique names instead
+  (toggle-uniquify-buffer-names))
+
+;; Help buffers are only displayed temporarily and when needed.
+(use-package popwin
+  :ensure t
+  :config
+  (popwin-mode))
+
+;; 80 chars line
+(use-package fill-column-indicator
+  :ensure t
+  :config
+  (progn
+    ;; A line on indicate when 80 chars (or whatever) has been reached
+    ;; fci-mode is not a global mode, so to be able to turn it on default:
+    (define-globalized-minor-mode global-fci-mode fci-mode turn-on-fci-mode)
+    (global-fci-mode 1)
+    ))
+
+;; Show tabs, whitespaces etc
+(use-package highlight-chars
+  :ensure t
+  :config
+  (progn
+    (hc-toggle-highlight-tabs t)
+    (hc-toggle-highlight-trailing-whitespace t)
+    ;; Highlight hard tabs
+    ;; Destroys colors in eshell. Why?
+    (add-hook 'eshell-mode-hook (lambda ()
+                                  (if hc-highlight-tabs-p
+                                      (hc-toggle-highlight-tabs))
+                                  (if hc-highlight-trailing-whitespace-p
+                                      (hc-toggle-highlight-trailing-whitespace))))
+    ))
+
+;; Parantheses have different colors
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (progn
+    ;; Rainbow delimiters in all programming modes
+    ;; Emacs 24+ needed for prog-mode
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+    ))
+
+;; Nyan Cat buffer percentage
+(use-package nyan-mode
+  :ensure t
+  :config
+  (nyan-mode))
+
+;; Global auto-complete
+(use-package auto-complete
+  :ensure t
+  :config
+  (progn
+    (auto-complete-mode)
+    (setq ac-delay 0
+          ac-use-fuzzy t
+          ac-auto-start 2)))
+
+;; Clearcase version control
+;; because it was written a looooong time back (round 2004), directory-sep-char
+;; needs to be set.
+;; Also, this mode takes forever to load (about 4 seconds) so load on demand instead.
 (defun clearcase-mode-on ()
-  (interactive) 
+  (interactive)
   (setq directory-sep-char ?/)
   (require 'clearcase))
 
@@ -93,86 +171,66 @@
 (require 'custom-functions)
 (require 'custom-keybindings)
 
+
+(use-package markdown-mode
+  :mode "\\.md\\'"
+  :config (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+(use-package php-mode
+  :ensure t
+  :mode "\\.php5?\\'")
+(use-package web-mode
+  :ensure t
+  :mode "\\.html?\\'")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Misc modes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Much nicer find-file
-(ido-mode t)
-; Will show all alternative files vertically
-(ido-vertical-mode)
-; IDO-mode everywhere possible
-(ido-ubiquitous-mode)
-
-; Remember last window settings
+;; Remember last window settings
 (winner-mode t)
 
-; Visualization for matching parenthesis
+;; Visualization for matching parenthesis
 (show-paren-mode t)
 
 ; Column number in mode line
 (column-number-mode t)
 
 ; Yasnippet minor mode in all buffers
-(yas-global-mode 1)
-
-; Gives buffers/files with similiar names unique names instead
-(toggle-uniquify-buffer-names)
+;; (yas-global-mode 1)
 
 ; no toolbars/scrollbars
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (menu-bar-mode t)
 
-; Help buffers are only displayed temporarily and when needed.
-(popwin-mode 1)
-
 ; Turn on highlighting current line
 (global-hl-line-mode 1)
-
-; A line on indicate when 80 chars (or whatever) has been reached
-; fci-mode is not a global mode, so to be able to turn it on default:
-(define-globalized-minor-mode global-fci-mode fci-mode turn-on-fci-mode)
-(global-fci-mode 1)
-
-; Highlight hard tabs
-; Destroys colors in eshell. Why?
-(when (eq eshell-mode nil)
-  (hc-toggle-highlight-tabs))
-
-; Nyan Cat buffer percentage
-(nyan-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Emacs customization
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; IDO for M-x
-(smex-initialize)
-
-; Instead of answering "YES" or "NO"
+;; Instead of answering "YES" or "NO"
 (fset 'yes-or-no-p 'y-or-n-p)
 
-; For fullscreen on start
+;; For fullscreen on start
 (fullscreen)
 
-; global variables
-(setq ido-use-virtual-buffers t
-      ido-everywhere t
-      standard-indent 2
+;; global variables
+(setq standard-indent 2
       doc-view-continuous t
       inhibit-startup-screen t
       find-file-wildcards t
       )
 
-; buffer-local variables
+;; buffer-local variables
 (setq-default indent-tabs-mode nil
               fill-column 80
               )
 
-; The default font/fontsize can differ much between computers, better to set it.
+;; The default font/fontsize can differ much between computers, better to set it.
 (when (member "DejaVu Sans Mono" (font-family-list))
   (set-face-attribute 'default t :height 100 :font "DejaVu Sans Mono"))
 
@@ -184,7 +242,3 @@
 ;(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;(add-hook 'fundamental-mode 'global-unset-mouse)
-
-; Rainbow delimiters in all programming modes
-; Emacs 24+ needed
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)

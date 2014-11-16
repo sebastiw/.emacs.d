@@ -3,10 +3,14 @@
   (setenv "PAGER" "cat"))
 
 (use-package eshell
-  :init
-  (install-package 'eshell-prompt-extras)
   :config
   (progn
+    (if hc-highlight-tabs-p
+        (hc-toggle-highlight-tabs))
+    (if hc-highlight-trailing-whitespace-p
+        (hc-toggle-highlight-trailing-whitespace))
+    (unload-feature 'highlight-chars)
+
     (defalias 'emacs 'find-file)
     (defalias 'ec 'find-file)
     (setenv "TERM" "xterm-256color")
@@ -91,6 +95,7 @@
 
     ;; See: https://github.com/kaihaosw/eshell-prompt-extras
     (use-package eshell-prompt-extras
+      :ensure t
       :init
       (progn
         (setq eshell-highlight-prompt nil

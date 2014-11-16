@@ -2,8 +2,8 @@
 
 (use-package erlang-start
   :mode (("\\.[eh]rl\\'" . erlang-mode)
-	 ("\\.yaws?\\'" . erlang-mode)
-	 ("\\.escript?\\'" . erlang-mode))
+         ("\\.yaws?\\'" . erlang-mode)
+         ("\\.escript?\\'" . erlang-mode))
   :config
   (progn
     ;; Find the erlang-root-dir automatically, either it is already set, or
@@ -62,9 +62,10 @@
 
       (use-package eqc-erlang-mode
         :if (file-exists-p eqc-root-dir)
-        :init (progn
-                (add-to-list 'load-path eqc-load-path)
-                (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
-                (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
-                (setq eqc-max-menu-length 30)
-                )))))
+        :config
+        (progn
+          (add-to-list 'load-path eqc-load-path)
+          (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
+          (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
+          (setq eqc-max-menu-length 30)
+          )))))
