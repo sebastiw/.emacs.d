@@ -1,12 +1,14 @@
 (provide 'init-latex)
 
 (use-package LaTeX
-  :bind (("C-c i" . insert-latex)
-         ("C-c C-c" . TeX-comment-or-uncomment-region)
-         ("C-c C-k" . TeX-command-master))
+  :defer t
   :mode "\\.(la)?tex\\'"
   :config
   (progn
+    (bind-key "C-c i" 'insert-latex LaTeX-mode-map)
+    (bind-key "C-c C-c" 'TeX-comment-or-uncomment-region LaTeX-mode-map)
+    (bind-key "C-c C-k" 'TeX-command-master LaTeX-mode-map)
+
     (use-package auctex
       :ensure t
       :config
@@ -35,7 +37,7 @@
       :requires auto-complete ispell
       )
 
-    (use-package writegood
+    (use-package writegood-mode
       :ensure t
       :config
       (writegood-mode))

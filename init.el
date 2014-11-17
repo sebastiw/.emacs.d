@@ -107,9 +107,9 @@
     ;; Highlight hard tabs
     ;; Destroys colors in eshell. Why?
     (add-hook 'eshell-mode-hook (lambda ()
-                                  (if hc-highlight-tabs-p
+                                  (if (and (boundp 'hc-highlight-tabs-p) hc-highlight-tabs-p)
                                       (hc-toggle-highlight-tabs))
-                                  (if hc-highlight-trailing-whitespace-p
+                                  (if (and (boundp 'hc-highlight-tabs-p) hc-highlight-trailing-whitespace-p)
                                       (hc-toggle-highlight-trailing-whitespace))))
     ))
 
