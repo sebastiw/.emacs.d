@@ -98,7 +98,7 @@
 
 ;; Show tabs, whitespaces etc
 (use-package highlight-chars
-  :pre-load (load-file "elpa/highlight-chars-20140513.444/highlight-chars.el")
+  :pre-load (load-file "~/.emacs.d/elpa/highlight-chars-20140513.444/highlight-chars.el")
   :ensure t
   :config
   (progn
@@ -125,7 +125,7 @@
 
 ;; Nyan Cat buffer percentage
 (use-package nyan-mode
-  :pre-load (load-file "elpa/nyan-mode-20140801.1329/nyan-mode.el")
+  :pre-load (load-file "~/.emacs.d/elpa/nyan-mode-20140801.1329/nyan-mode.el")
   :ensure t
   :config
   (nyan-mode))
@@ -161,6 +161,7 @@
 (require 'init-javascript)
 (require 'init-latex)
 (require 'init-org)
+(require 'init-python)
 
 (require 'custom-backups)
 (require 'custom-functions)
