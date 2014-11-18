@@ -1,8 +1,10 @@
 
 (use-package elpy
-;  :pre-load (load-file "~/.emacs.d/elpa/python-20120402/python.el")
+  :pre-load (load-file "~/.emacs.d/elpa/python-20120402/python.el")
   :ensure t
-  :mode ("\\.py\\'" . elpy-mode)
+  :mode ("\\.py\\'" . python-mode)
+  :requires company find-file-in-project highlight-indentation
+  idomenu pyvenv yasnippet
   :config
   (progn
     (define-key python-mode-map (kbd "C-c C-z") 'run-python)
@@ -19,9 +21,10 @@
         (setq jedi:tooltip-method nil)
         (set-face-attribute 'jedi:highlight-function-argument nil
                             :foreground "green")
-        (define-key python-mode-map (kbd "C-c C-l") 'jedi:get-in-function-call)))
-    (add-hook 'python-mode-hook (lambda () (jedi-mode t)))
-    ;(add-hook 'python-mode-hook 'elpy-mode)
+        (define-key python-mode-map (kbd "C-c C-l") 'jedi:get-in-function-call)
+	(add-hook 'python-mode-hook (lambda () (jedi-mode t)))))
+
+    (add-hook 'python-mode-hook 'elpy-mode)
     ))
 
 

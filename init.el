@@ -1,13 +1,13 @@
 (setq debug-on-error t)
 
-; Not everything really needs version 24, but I haven't figured out
-; which parts that needs it.
+;; Not everything really needs version 24, but I haven't figured out
+;; which parts that needs it.
 (let ((minver 24))
   (unless (>= emacs-major-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher"
            minver)))
 
-; Load paths
+;; Load paths
 (add-to-list 'load-path (expand-file-name "init" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "other" user-emacs-directory))
 
