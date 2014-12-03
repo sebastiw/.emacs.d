@@ -1,4 +1,4 @@
-(setq debug-on-error t)
+;;(setq debug-on-error t)
 
 ;; Not everything really needs version 24, but I haven't figured out
 ;; which parts that needs it.

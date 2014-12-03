@@ -43,6 +43,7 @@
       (writegood-mode))
 
     (use-package smartparens-latex
+      :disabled t ;; Does not seem to be available
       :ensure t
       :config
       (smartparens-mode +1))
