@@ -232,8 +232,9 @@
               )
 
 ;; The default font/fontsize can differ much between computers, better to set it.
-(when (member "DejaVu Sans Mono" (font-family-list))
-  (set-face-attribute 'default t :height 100 :font "DejaVu Sans Mono"))
+(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10"))
+;; (when (member "monospace" (font-family-list))
+;;   (set-face-attribute 'default t :height 100 :font "Monospace"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

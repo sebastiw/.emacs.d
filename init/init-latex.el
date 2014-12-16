@@ -2,6 +2,7 @@
 
 (use-package LaTeX
   :defer t
+  :disabled t
   :mode "\\.(la)?tex\\'"
   :config
   (progn
