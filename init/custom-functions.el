@@ -63,5 +63,16 @@
                [C-down-mouse-1] [C-down-mouse-3]))
    (global-unset-key k)))
 
+(defun create-non-existent-directory ()
+  "If The parent directory does not exist, this function will ask to create it."
+  (let ((parent-directory (file-name-directory buffer-file-name))
+        (q "Directory `%s' does not exist! Create it?"))
+    (when (and (not (file-exists-p parent-directory))
+               (y-or-n-p
+                (format q parent-directory)))
+      (make-directory parent-directory t))))
+
+
+
 
 (provide 'custom-functions)

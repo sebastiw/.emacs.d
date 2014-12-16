@@ -244,3 +244,6 @@
 ;(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;(add-hook 'fundamental-mode 'global-unset-mouse)
+
+;; Create parent directory when creating new files
+(add-to-list 'find-file-not-found-functions #'create-non-existent-directory)
