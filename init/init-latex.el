@@ -102,14 +102,16 @@
 
 ;;; http://www.hyegar.com/blog/2014/12/16/orgmode-latex-and-animations/
 ;;; Define skeletons when creating new .tex-files
-(define-skeleton 'my-tex-default
+(define-skeleton my-tex-default
   "Latex default skeleton"
-  "\documentclass[11pt,a4paper]{report}\n"
-  "\usepackage[OT1]{fontenc}\n"
-  "\usepackage[utf8x]{inputenc}\n"
-  "\usepackage[english]{babel}\n\n\n"
-  "\begin{document}\n\n\n"
-  "\end{document}")
+  (concat
+   "\\documentclass[11pt,a4paper]{report}\n"
+   "\\usepackage[OT1]{fontenc}\n"
+   "\\usepackage[utf8x]{inputenc}\n"
+   "\\usepackage[english]{babel}\n\n"
+   "\\begin{document}\n\n\n"
+   "\\end{document}"))
+
 (define-auto-insert "\\.tex\\'" 'my-tex-default)
 
 
