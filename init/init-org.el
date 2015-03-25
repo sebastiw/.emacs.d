@@ -4,8 +4,8 @@
 (eval-after-load "org"
   '(progn
      (setq
-      ;; Don't indent after a new node.
-      org-adapt-indentation nil
+      ;; Indent after a new node?
+      org-adapt-indentation t
       ;; Where to keep org agenda files
       org-agenda-files (list "~/ORG/")
       ;; Stupid yanks, Monday is the first day of the week
@@ -37,6 +37,23 @@
 ;;;        org-habit-show-habits-only-for-today nil
       )
 
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((emacs-lisp . t)
+        (java . t)
+        (dot . t)
+        (ditaa . t)
+        (R . t)
+        (python . t)
+        (ruby . t)
+        (gnuplot . t)
+        (clojure . t)
+        (sh . t)
+        (ledger . t)
+        (org . t)
+        (plantuml . t)
+        (latex . t)))
+
      (define-key org-mode-map (kbd "C-c l") 'org-store-link)
      (define-key org-mode-map (kbd "C-c c") 'org-capture)
      (define-key org-mode-map (kbd "C-c a") 'org-agenda)
@@ -46,4 +63,45 @@
      ;; I really like to change windows with C-<tab>
      (define-key org-mode-map (kbd "C-<tab>") 'other-window)
 
-     (lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t))))))
+     (lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t))))
+
+     (define-key org-mode-map (kbd "C-#") 'org-begin-template)
+     (defun org-begin-template ()
+       "Make a template at point."
+       (interactive)
+       (if (org-at-table-p)
+           (call-interactively 'org-table-rotate-recalc-marks)
+         (let* ((choices '(("s" . "SRC")
+                           ("e" . "EXAMPLE")
+                           ("q" . "QUOTE")
+                           ("v" . "VERSE")
+                           ("c" . "CENTER")
+                           ("l" . "LaTeX")
+                           ("h" . "HTML")
+                           ("a" . "ASCII")))
+                (key
+                 (key-description
+                  (vector
+                   (read-key
+                    (concat (propertize "Template type: " 'face 'minibuffer-prompt)
+                            (mapconcat (lambda (choice)
+                                         (concat (propertize (car choice) 'face 'font-lock-type-face)
+                                                 ": "
+                                                 (cdr choice)))
+                                       choices
+                                       ", ")))))))
+           (let ((result (assoc key choices)))
+             (when result
+               (let ((choice (cdr result)))
+                 (cond
+                  ((region-active-p)
+                   (let ((start (region-beginning))
+                         (end (region-end)))
+                     (goto-char end)
+                     (insert "\n#+END_" choice)
+                     (goto-char start)
+                     (insert "#+BEGIN_" choice "\n")))
+                  (t
+                   (insert "#+BEGIN_" choice "\n")
+                   (save-excursion (insert "\n#+END_" choice))))))))))
+))

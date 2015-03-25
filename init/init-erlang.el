@@ -51,11 +51,6 @@
       :if (not (string-equal system-type "windows-nt"))
       :config (require 'edts-start))
 
-      ;; Daniel Mauritzson's (emmnddl) MME-TOOLS
-
-    (add-to-list 'load-path (concat user-emacs-directory "other/mme-tools"))
-    (require 'mme-tools)
-
       ;; Quviq QuickCheck
       ;; Automated testing using properties.
       ;; Check http://www.quviq.com

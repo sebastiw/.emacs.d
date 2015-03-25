@@ -96,7 +96,6 @@
     ;; See: https://github.com/kaihaosw/eshell-prompt-extras
     (use-package eshell-prompt-extras
       :ensure t
-      :pre-load (load-file "~/.emacs.d/elpa/eshell-prompt-extras-20141110.151/eshell-prompt-extras.el")
       :init
       (progn
         (setq eshell-highlight-prompt nil

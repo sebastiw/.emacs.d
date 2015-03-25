@@ -96,22 +96,22 @@
     (global-fci-mode 1)
     ))
 
-;; Show tabs, whitespaces etc
-(use-package highlight-chars
-  :pre-load (load-file "~/.emacs.d/elpa/highlight-chars-20140513.444/highlight-chars.el")
-  :ensure t
-  :config
-  (progn
-    (hc-toggle-highlight-tabs t)
-    (hc-toggle-highlight-trailing-whitespace t)
-    ;; Highlight hard tabs
-    ;; Destroys colors in eshell. Why?
-    (add-hook 'eshell-mode-hook (lambda ()
-                                  (if (and (boundp 'hc-highlight-tabs-p) hc-highlight-tabs-p)
-                                      (hc-toggle-highlight-tabs))
-                                  (if (and (boundp 'hc-highlight-tabs-p) hc-highlight-trailing-whitespace-p)
-                                      (hc-toggle-highlight-trailing-whitespace))))
-    ))
+;; ;; Show tabs, whitespaces etc
+;; (use-package highlight-chars
+;;   :pre-load (load-file "~/.emacs.d/elpa/highlight-chars-20150104.2218/highlight-chars.el")
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (hc-toggle-highlight-tabs t)
+;;     (hc-toggle-highlight-trailing-whitespace t)
+;;     ;; Highlight hard tabs
+;;     ;; Destroys colors in eshell. Why?
+;;     (add-hook 'eshell-mode-hook (lambda ()
+;;                                   (if (and (boundp 'hc-highlight-tabs-p) hc-highlight-tabs-p)
+;;                                       (hc-toggle-highlight-tabs))
+;;                                   (if (and (boundp 'hc-highlight-tabs-p) hc-highlight-trailing-whitespace-p)
+;;                                       (hc-toggle-highlight-trailing-whitespace))))
+;;     ))
 
 ;; Parantheses have different colors
 (use-package rainbow-delimiters
@@ -123,12 +123,12 @@
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
     ))
 
-;; Nyan Cat buffer percentage
-(use-package nyan-mode
-  :pre-load (load-file "~/.emacs.d/elpa/nyan-mode-20140801.1329/nyan-mode.el")
-  :ensure t
-  :config
-  (nyan-mode))
+;; ;; Nyan Cat buffer percentage
+;; (use-package nyan-mode
+;;   :pre-load (load-file "~/.emacs.d/elpa/nyan-mode-20150128.1218/nyan-mode.el")
+;;   :ensure t
+;;   :config
+;;   (nyan-mode))
 
 ;; Global auto-complete
 (use-package auto-complete

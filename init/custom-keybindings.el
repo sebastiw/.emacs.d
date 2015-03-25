@@ -26,4 +26,6 @@
 (global-set-key (kbd "M-c") 'capitalize-word-at-point)
 (global-set-key (kbd "M-u") 'upcase-word-at-point)
 
+(global-set-key (kbd "C-z") 'eof)
+
 (provide 'custom-keybindings)
