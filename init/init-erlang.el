@@ -4,7 +4,7 @@
   :mode (("\\.[eh]rl\\'" . erlang-mode)
          ("\\.yaws?\\'" . erlang-mode)
          ("\\.escript?\\'" . erlang-mode))
-  :pre-init
+  :init
   ;; Find the erlang-root-dir automatically, either it is already set, or
   ;; elisp knows where it is, or `which' knows where.
   (let ((erootdir (if (boundp 'erlang-root-dir) erlang-root-dir nil))

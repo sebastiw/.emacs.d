@@ -5,11 +5,11 @@
 (use-package eshell
   :config
   (progn
-    (if hc-highlight-tabs-p
+    (if (bound-and-true-p hc-highlight-tabs-p)
         (hc-toggle-highlight-tabs))
-    (if hc-highlight-trailing-whitespace-p
+    (if (bound-and-true-p hc-highlight-trailing-whitespace-p)
         (hc-toggle-highlight-trailing-whitespace))
-    (unload-feature 'highlight-chars)
+    (when (boundp 'highlight-chars) (unload-feature 'highlight-chars))
 
     (defalias 'emacs 'find-file)
     (defalias 'ec 'find-file)
