@@ -32,11 +32,11 @@
     (setq edts-man-root (expand-file-name ".." erlang-root-dir)
           erlang-indent-level 4)
 
-      ;; Add Erlangs Emacs directory to the load-path
+    ;; Add Erlangs Emacs directory to the load-path
 
     (add-to-list 'load-path (file-expand-wildcards
                              (concat erlang-root-dir
-                                     "lib/tools-*/emacs")))
+                                     "../lib/tools-*/emacs")))
 
       ;; EDTS-mode
       ;; Very powerful development toolkit for Erlang, a must have.
@@ -51,11 +51,15 @@
       :if (not (string-equal system-type "windows-nt"))
       :config (require 'edts-start))
 
-      ;; Quviq QuickCheck
-      ;; Automated testing using properties.
-      ;; Check http://www.quviq.com
-      ;; Commercial, this is why we don't auto-install it.
-      ;; Just load it if its there.
+    ;; Daniel Mauritzson's (emmnddl) MME-TOOLS
+    ;; (add-to-list 'load-path (concat user-emacs-directory "other/mme-tools"))
+    ;; (require 'mme-tools)
+
+    ;; Quviq QuickCheck
+    ;; Automated testing using properties.
+    ;; Check http://www.quviq.com
+    ;; Commercial, this is why we don't auto-install it.
+    ;; Just load it if its there.
 
     (defvar eqc-root-dir (expand-file-name "lib/eqc-1.30.0"
                                            erlang-root-dir)

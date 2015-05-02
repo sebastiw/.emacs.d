@@ -9,11 +9,12 @@
   "Which directory elpa packages should be installed in.")
 
 (require 'package)
-(setq package-archives '(("gnu"       . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa"     . "http://melpa.milkbox.net/packages/")
-                         ("org"       . "http://orgmode.org/elpa/")
-                         ("elpy"      . "http://jorgenschaefer.github.io/packages/")))
+(setq package-archives
+      '(("gnu"       . "http://elpa.gnu.org/packages/")
+        ("marmalade" . "http://marmalade-repo.org/packages/")
+        ("melpa"     . "http://melpa.milkbox.net/packages/")
+        ("org"       . "http://orgmode.org/elpa/")
+        ("elpy"      . "http://jorgenschaefer.github.io/packages/")))
 
 (unless (file-exists-p  (concat user-emacs-directory elpa-dir))
   (message "The directory %s does not exist, creating it." elpa-dir)
