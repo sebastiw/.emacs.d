@@ -1,6 +1,30 @@
+* Installation of this ORG file
+  *First time*
+  Do =M-x org-babel-load-file= and provide =~/.emacs.d/init.org=. This will
+  evaluate every piece of emacs-lisp code available here.
 
+  *Following times*
+  Simply reload changes with =C-c i=.
+* Requirements
+  The minimum version to use this init-file is *emacs 24*
+#+BEGIN_SRC emacs-elisp
+(let ((minver 24))
+  (unless (>= emacs-major-version minver)
+    (error "Your Emacs is too old -- this config requires v%s or higher"
+           minver)))
+#+END_SRC
+
+* Preinit stuff
+  Here we place thing we would like to load first, for example benchmarking.
+
+** Load paths
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path (expand-file-name "other" user-emacs-directory))
+#+END_SRC
 
+** Benchmarking how fast/slow different files load
+  After emacs have started, do =C-h v sanityinc/require-times=
+#+BEGIN_SRC emacs-lisp
 (defun sanityinc/time-subtract-millis (b a)
   (* 1000.0 (float-time (time-subtract b a))))
 
@@ -21,7 +45,12 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                            (sanityinc/time-subtract-millis (current-time)
                                                            require-start-time))
                      t)))))
+#+END_SRC
 
+* Packages
+  Repos install in the =~/.emacs.d/elpa/= directory.
+
+#+BEGIN_SRC emacs-lisp
 (defvar elpa-dir "elpa"
   "Which directory elpa packages should be installed in.")
 
@@ -38,7 +67,12 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   (package-refresh-contents))
 
 (package-initialize)
+#+END_SRC
 
+  We also define a function for automatic installation of packages, to be used
+  on demand.
+
+#+BEGIN_SRC emacs-lisp
 (defun ensure-pkg (&rest pkgs)
   "If package PKG is not installed, install it."
   (dolist (pkg pkgs)
@@ -47,7 +81,12 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
         (unless (assoc pkg package-archive-contents)
           (package-refresh-contents))
         (package-install pkg)))))
+#+END_SRC
 
+* Global modes
+** Smart M-x (smex)
+   To get a faster startup-time, we only load smex when it's needed.
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'smex)
 (global-set-key [(meta x)] (lambda ()
                              (interactive)
@@ -62,17 +101,27 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                                        (smex-initialize))
                                    (global-set-key [(shift meta x)] 'smex-major-mode-commands)
                                    (smex-major-mode-commands)))
+#+END_SRC
 
+** Interactively do things (ido)
+   ido-mode, easier minibuffer/file lookups.
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'ido 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
 
 (require 'ido)
 (ido-mode 1)
 (ido-everywhere 1)
 (setq ido-enable-flex-matching t)
+#+END_SRC
 
+   Org-mode and magit have own ido-completion
+#+BEGIN_SRC emacs-lisp
 (setq org-completion-use-ido t)
 (setq magit-completing-read-function 'magit-ido-completing-read)
+#+END_SRC
 
+   ido-vertical-mode will show all alternative files vertically.
+#+BEGIN_SRC emacs-lisp
 (require 'ido-vertical-mode)
 (setq ido-use-faces t)
 (set-face-attribute 'ido-vertical-first-match-face nil
@@ -84,96 +133,231 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (set-face-attribute 'ido-vertical-match-face nil
                     :foreground nil)
 (ido-vertical-mode 1)
+#+END_SRC
 
+   ido-ubiquitous, ido-mode everywhere possible
+#+BEGIN_SRC emacs-lisp
 (require 'ido-ubiquitous)
 (ido-ubiquitous-mode 1)
+#+END_SRC
 
+   Advices for ido-mode
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'ido-hacks)
 (require 'ido-hacks)
 (ido-hacks-mode)
+#+END_SRC
 
+** Popup windows
+   Help buffers are only displayed temporarily and when needed.
+
+   *popwin* is a popup window manager for Emacs which makes you free from the hell
+   of annoying buffers such like =*Help*=, =*Completions*=, =*compilation*=, and
+   etc.  Take an example. When you complete file names during find-file, the
+   (annoying) =*Completions*= buffer will appear in a newly splitted window. You
+   might understand the necessity of the window, but you may wonder why the
+   window still remains after completion... popwin resolves there
+   problems. Windows of such temporary buffers will be shown as a popup window,
+   and you can close them smoothly by typing =C-g= in anytime.
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'popwin)
 (require 'popwin)
 (popwin-mode 1)
+#+END_SRC
 
+** Fill column indicator
+   Many modern editors and IDEs can graphically indicate the location of the
+   fill column by drawing a thin line (in design parlance, a “rule”) down the
+   length of the editing window.
+
+   fci-mode is not a global mode, so to be able to turn it on default, we define
+   a global minor mode.
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'fill-column-indicator)
 (require 'fill-column-indicator)
 
 (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
 (global-fci-mode 1)
+#+END_SRC
 
+** Highlight chars
+   *highlight-chars* lets you easily highlight any sets of characters that you
+    choose, including whitespace characters.
+
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'highlight-chars)
 (require 'highlight-chars)
 ;(hc-toggle-highlight-tabs t)
 ;(hc-toggle-highlight-trailing-whitespace t)
 (add-hook 'font-lock-mode-hook 'hc-highlight-tabs)
 (add-hook 'font-lock-mode-hook 'hc-highlight-trailing-whitespace)
+#+END_SRC
 
+** Rainbow delimiters
+   Parantheses have different colors.
+
+   Rainbow delimiters in all programming modes (Emacs 24+ needed for prog-mode).
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'rainbow-delimiters)
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+#+END_SRC
 
+** Global auto-complete
+
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'auto-complete)
 (require 'auto-complete)
 (setq ac-delay 0
       ac-use-fuzzy t
       ac-auto-start 2)
+#+END_SRC
 
+** Clearcase
+   Clearcase version control
+
+   Because it was written a looooong time back (round 2004), directory-sep-char
+   needs to be set. This mode also takes forever to load (about 4 seconds) so
+   we load it on demand instead.
+#+BEGIN_SRC emacs-lisp
 (defun clearcase-mode-on ()
   (interactive)
   (setq directory-sep-char ?/)
   (require 'clearcase))
+#+END_SRC
 
+** Nyan cat
+   *nyan-mode* is an analog indicator of your position in the buffer. The Cat
+   should go from left to right in your mode-line, as you move your point from
+   0% to 100%.
+
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'nyan-mode)
 (require 'nyan-mode)
 (nyan-mode 1)
-
+#+END_SRC
+** Misc modes
+*** Winner
+    Remember last window settings
+#+BEGIN_SRC emacs-lisp
 (winner-mode 1)
+#+END_SRC
 
+*** Show-paren-mode
+    Visualization for matching parenthesis
+#+BEGIN_SRC emacs-lisp
 (show-paren-mode t)
+#+END_SRC
 
+*** No toolbars/scrollbars
+#+BEGIN_SRC emacs-lisp
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
+#+END_SRC
 
+*** Higlighting current line
+#+BEGIN_SRC emacs-lisp
 (global-hl-line-mode 1)
+#+END_SRC
 
+*** Uniquify buffers
+    uniquify overrides Emacs’ default mechanism for making buffer names unique
+    (using suffixes like <2>, <3> etc.) with a more sensible behaviour which use
+    parts of the file names to make the buffer names distinguishable.
+
+#+BEGIN_SRC emacs-lisp
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-strip-common-suffix t)
+#+END_SRC
 
-(fset 'yes-or-no-p 'y-or-n-p)
+** Customization
+*** Instead of answering "YES" or "NO"
+#+BEGIN_SRC emacs-lisp
+(fset 'yes-or-no-p 'y-or-n-p)   
+#+END_SRC
 
+*** Global variables
+    
+#+BEGIN_SRC emacs-lisp
 (setq standard-indent 2
       doc-view-continuous t
       inhibit-startup-screen t
       find-file-wildcards t)
+#+END_SRC
 
+*** Buffer-local variables
+#+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil
               fill-column 80)
+#+END_SRC
 
+*** Default fontsize
+    The default font/fontsize can differ much between computers, better to set
+    it.
+
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10"))
+#+END_SRC
 
+*** Backups/Autosave files
+    We don't want to leave a lot of autosave files and backup files everywhere.
+
+#+BEGIN_SRC emacs-elisp
+(setq
+   backup-by-copying t             ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.emacs.d/.saves")) ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)              ; use versioned backups
+#+END_SRC
+** Hooks
+*** Create parent directory when creating new files
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'find-file-not-found-functions #'create-non-existent-directory)
+#+END_SRC
 
+* Completion
+  I think we should only use either auto-complete-mode or company-mode, even if
+  you can extend one with the others backend.
+
+** Auto-complete
+#+BEGIN_SRC emacs-lisp
 ;(ensure-pkg 'auto-complete 'auto-complete-config)
 ;(require 'auto-complete)
 ;(setq ac-auto-show-menu 0.01
 ;      ac-auto-start 1
 ;      ac-delay 0.01)
+#+END_SRC
 
+** Company-mode
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'company)
 (add-hook 'after-init-hook 'global-company-mode)
+#+END_SRC
 
+* C
+#+BEGIN_SRC emacs-lisp
 (add-hook 'c-mode-hook
           (lambda () (local-set-key (kbd "M-,") #'pop-tag-mark)))
 (add-hook 'c-mode-hook
           (lambda () (local-set-key (kbd "M-*") #'tags-loop-continue)))
+#+END_SRC
 
+* Erlang
+  Which file-extentions to start Erlang on.
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.[eh]rl\\'" . erlang-mode))
 (add-to-list 'auto-mode-alist '("\\.yaws?\\'" . erlang-mode))
 (add-to-list 'auto-mode-alist '("\\.escript?\\'" . erlang-mode))
+#+END_SRC
 
+  Ensure that erlang-mode is installed and find the `erlang-root-dir' (where the
+  =erl= binary is located).
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'erlang)
 (require 'erlang-start)
 (let ((erootdir (if (boundp 'erlang-root-dir) erlang-root-dir nil))
@@ -193,11 +377,39 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
         (if (equal exe-find "")
             (setq erlang-root-dir shell-cmd-find)
           (setq erlang-root-dir exe-find))))
+#+END_SRC
 
+  Set the manual directory and indent level and add Erlangs Emacs directory to
+  the load-path.
+#+BEGIN_SRC emacs-elisp
+(setq erlang-indent-level 4)
+
+(add-to-list 'load-path (file-expand-wildcards
+                         (concat erlang-root-dir
+                                 "../lib/tools-*/emacs")))
+#+END_SRC
+
+** EDTS
+   Very powerful development toolkit for Erlang, a must have. Currently only
+   works partitally for Windows at the moment. If you are a Windows user, please
+   contact me, I have som thought on this problem.
+
+   Check: https://github.com/tjarvstrand/edts
+
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'edts)
 (setq edts-man-root (expand-file-name ".." erlang-root-dir))
 (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
+#+END_SRC
 
+** Quviq QuickCheck
+   Automated testing using properties.
+   Commercial, this is why we don't auto-install it.
+   Just load it if its there.
+
+   Check: http://www.quviq.com
+
+#+BEGIN_SRC emacs-lisp
 (defvar eqc-root-dir (expand-file-name "lib/eqc-1.30.0"
                                        erlang-root-dir)
  "Where EQC is installed.")
@@ -210,12 +422,24 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
     (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
     (setq eqc-max-menu-length 30))
+#+END_SRC
 
+* Elisp
+** Elisp-slime-nav
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'elisp-slime-nav)
 (require 'elisp-slime-nav)
 (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
 (add-hook 'lisp-interaction-mode-hook 'elisp-slime-nav-mode)
+#+END_SRC
 
+** Paredit
+   ParEdit helps **keep parentheses balanced** and adds many keys for moving
+   S-expressions and moving around in S-expressions. Its behavior can be jarring
+   for those who may want transient periods of unbalanced parentheses, such as
+   when typing parentheses directly or commenting out code line by line.
+
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'paredit)
 (require 'paredit)
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
@@ -223,82 +447,134 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
 (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+#+END_SRC
 
+* Eshell
+  Eshell is a command shell written in Emacs Lisp. Everything it does, it uses
+  Emacs’s facilities to do. This means that Eshell is as portable as Emacs
+  itself. It also means that cooperation with Lisp code is natural and seamless.
+
+  Unlike the other shells in Emacs, Eshell does not inherit from comint-mode.
+  This means that hooks and routines written for comint-mode won’t work with
+  Eshell.
+
+  For more information check:
+  https://www.masteringemacs.org/article/complete-guide-mastering-eshell
+
+#+BEGIN_SRC emacs-lisp
 (defalias 'emacs 'find-file)
 (defalias 'ec 'find-file)
 (defalias 'd 'dired)
 
 (setenv "TERM" "xterm-256color")
 (setenv "PAGER" "cat")
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp
 (eval-after-load 'esh-opt
    '(progn
      (require 'em-cmpl)
      (require 'em-prompt)
      (require 'em-term)
      (require 'em-unix)
+#+END_SRC
 
-(add-to-list 'eshell-visual-commands "el")
-(add-to-list 'eshell-visual-commands "elinks")
-(add-to-list 'eshell-visual-commands "htop")
-(add-to-list 'eshell-visual-commands "tail")
+  Some commands are too complex to be displayed by Eshell directly, and require
+  special handling. An example would be =top=, a program that won’t work with a
+  dumb terminal. To support these commands Eshell will run a =term= session when
+  you invoke a command Eshell considers visual.
+#+BEGIN_SRC emacs-lisp
+    (add-to-list 'eshell-visual-commands "el")
+    (add-to-list 'eshell-visual-commands "elinks")
+    (add-to-list 'eshell-visual-commands "htop")
+    (add-to-list 'eshell-visual-commands "tail")
+#+END_SRC
 
-(require 'em-hist)
-(setq eshell-history-size 20000
-      eshell-save-history-on-exit t
-      eshell-hist-ignoredups t)
+  Eshell history settings
+#+BEGIN_SRC emacs-lisp
+     (require 'em-hist)
+     (setq eshell-history-size 20000
+           eshell-save-history-on-exit t
+           eshell-hist-ignoredups t)
 
 
-;; History if Helm is installed
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (define-key eshell-mode-map (kbd "M-l")
-              'helm-eshell-history)))
-;; History if ido is installed
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (local-set-key
-             (kbd "C-c h")
-             (lambda ()
-               (interactive)
-               (insert
-                (ido-completing-read
-                 "Eshell history: "
-                 (delete-dups
-                  (ring-elements eshell-history-ring))))))
-            (local-set-key (kbd "C-c C-h") 'eshell-list-history)))
+     ;; History if Helm is installed
+     (add-hook 'eshell-mode-hook
+               (lambda ()
+                 (define-key eshell-mode-map (kbd "M-l")
+                   'helm-eshell-history)))
+     ;; History if ido is installed
+     (add-hook 'eshell-mode-hook
+               (lambda ()
+                 (local-set-key
+                  (kbd "C-c h")
+                  (lambda ()
+                    (interactive)
+                    (insert
+                     (ido-completing-read
+                      "Eshell history: "
+                      (delete-dups
+                       (ring-elements eshell-history-ring))))))
+                 (local-set-key (kbd "C-c C-h") 'eshell-list-history)))
+#+END_SRC
 
+  The smart display is meant to improve the write-run-revise cycle all
+  commandline hackers go through. It works by not letting the point follow the
+  output of a command you execute, like a normal terminal would. Instead, the
+  point is kept on the line of the command you executed, letting you revise it
+  easily without having to use =M-p= and =M-n= or the history modification
+  commands.
+#+BEGIN_SRC emacs-lisp
 (require 'em-smart)
 
 (setq eshell-where-to-jump 'begin
       eshell-review-quick-commands nil
       eshell-smart-space-goes-to-end t)
+#+END_SRC
 
-(add-hook 'eshell-mode-hook
-          '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
+  Hooks and tar/gzip
+#+BEGIN_SRC emacs-lisp
+     (add-hook 'eshell-mode-hook
+               '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
 
-(add-to-list 'eshell-command-completions-alist
-             '("gunzip" "gz\\'"))
-(add-to-list 'eshell-command-completions-alist
-             '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
-(add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
+     (add-to-list 'eshell-command-completions-alist
+                  '("gunzip" "gz\\'"))
+     (add-to-list 'eshell-command-completions-alist
+                  '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
+     (add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
+#+END_SRC
 
-(ensure-pkg 'eshell-prompt-extras 'virtualenvwrapper)
+  Display extra information and color for your eshell prompt with
+  `eshell-prompt-extras'.
+#+BEGIN_SRC emacs-lisp
+    (ensure-pkg 'eshell-prompt-extras 'virtualenvwrapper)
 
-;; Show python virtual environment information
-(require 'virtualenvwrapper)
-(venv-initialize-eshell)
+    ;; Show python virtual environment information
+    (require 'virtualenvwrapper)
+    (venv-initialize-eshell)
 
-(require 'eshell-prompt-extras)
-(setq eshell-highlight-prompt t
-      epe-git-dirty-char "*"
-      eshell-prompt-function 'epe-theme-dakrone)))
+    (require 'eshell-prompt-extras)
+    (setq eshell-highlight-prompt t
+          epe-git-dirty-char "*"
+          eshell-prompt-function 'epe-theme-dakrone)))
+#+END_SRC
 
+* Gnus
+  Gnus is an Emacs package for reading e-mail and Usenet news (and many other
+  things). It offers features that other news and mail readers lack.
+
+#+BEGIN_SRC emacs-lisp
 (autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
 (add-hook 'message-setup-hook 'gnus-alias-determine-identity)
+#+END_SRC
 
+* Haskell
+  Which file-extentions that should start Haskell mode.
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.hs\\'" . haskell-mode))
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'haskell-mode 'hi2)
 (eval-after-load 'haskell-mode
     '(progn
@@ -314,9 +590,15 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
       (turn-on-haskell-decl-scan)
 
       (setq haskell-compile-command "ghc -Wall -threaded -eventlog -rtsopts %s")))
+#+END_SRC
 
+* Java
+  Which file-extentions that should start Java mode.
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.java\\'" . java-mode))
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'android-mode)
 (eval-after-load 'java-mode
     '(progn
@@ -324,12 +606,25 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
       (android-mode)
       (custom-set-variables '(android-mode-sdk-dir
                               "~/Android/android-sdk-linux"))))
+#+END_SRC
 
+* Javascript
+  js2 could either be installed as a major mode
+  =(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))=
+  or as a minor mode under js.
+#+BEGIN_SRC emacs-lisp
 (add-hook 'js-mode-hook 'js2-minor-mode)
+#+END_SRC
 
+  Also hook it on for shell scripts running via =node.js=
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
 ; (add-to-list 'interpreter-mode-alist '("node" . js-mode))
+#+END_SRC
 
+  It was a long time ago I coded Javascript. These settings should be inspected
+  closely and refactored.
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'coffee-mode 'js-comint 'js2-mode 'json-mode 'ac-js2)
 (eval-after-load 'js-mode
   '(progn
@@ -365,9 +660,14 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
           js2-indent-on-enter-key t
           js2-auto-indent-p t
           js2-bounce-indent-p nil)))
+#+END_SRC
 
+* LaTeX
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.(la)?tex\\'" . LaTeX))
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'auctex 'auctex-latexmk 'ispell 'ac-ispell 'writegood-mode
             'smartparens 'ac-math)
 (require 'tex-mode)
@@ -415,7 +715,11 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
           '(("Default"
              (lambda () (interactive) (progn (TeX-clean) (find-file-other-window "%o")))))
           TeX-view-program-selection '((output-pdf "Default")))))
+#+END_SRC
 
+  Define skeletons when creating new .tex-files
+  http://www.hyegar.com/blog/2014/12/16/orgmode-latex-and-animations/
+#+BEGIN_SRC emacs-lisp
 (define-skeleton my-tex-default
   "Latex default skeleton"
   (concat
@@ -427,11 +731,20 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
    "\\end{document}"))
 
 (define-auto-insert "\\.tex\\'" 'my-tex-default)
+#+END_SRC
 
+  From https://github.com/fxfactorial/emacsd/blob/master/init.el
+  Improve resolution at cost of computation and "poll" the file for changes.
+#+BEGIN_SRC emacs-lisp
 (add-hook 'doc-view-mode-hook (lambda ()
                                 (setq doc-view-resolution 300)
                                 (auto-revert-mode)))
+#+END_SRC
 
+* Org
+
+  Customization
+#+BEGIN_SRC emacs-lisp
 (eval-after-load "org"
   '(progn
      (setq
@@ -466,25 +779,31 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 ;;;        org-mobile-force-id-on-agenda-items nil
 ;;;        org-habit-show-habits-only-for-today nil
       )
+#+END_SRC
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (java . t)
-   (dot . t)
-   (ditaa . t)
-   (R . t)
-   (python . t)
-   (ruby . t)
-   (gnuplot . t)
-   (clojure . t)
-   (sh . t)
-   (ledger . t)
-   (org . t)
-   (plantuml . t)
-   (latex . t)))
+  Which Org sources that should be loaded.
+#+BEGIN_SRC emacs-lisp
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((emacs-lisp . t)
+        (java . t)
+        (dot . t)
+        (ditaa . t)
+        (R . t)
+        (python . t)
+        (ruby . t)
+        (gnuplot . t)
+        (clojure . t)
+        (sh . t)
+        (ledger . t)
+        (org . t)
+        (plantuml . t)
+        (latex . t)))
+#+END_SRC
 
-(define-key org-mode-map (kbd "C-c l") 'org-store-link)
+  Keybindings
+#+BEGIN_SRC emacs-lisp
+     (define-key org-mode-map (kbd "C-c l") 'org-store-link)
      (define-key org-mode-map (kbd "C-c c") 'org-capture)
      (define-key org-mode-map (kbd "C-c a") 'org-agenda)
 ;     (define-key org-mode-map (kbd "C-c C-c") 'org-todo)
@@ -495,58 +814,70 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
      ;; Insert template (special function defined below)
      (define-key org-mode-map (kbd "C-#") 'org-begin-template)
+#+END_SRC
 
-(lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t))))
+#+BEGIN_SRC emacs-lisp
+     (lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t))))
 
-(defun org-begin-template ()
-  "Make a template at point."
-  (interactive)
-  (if (org-at-table-p)
-      (call-interactively 'org-table-rotate-recalc-marks)
-    (let* ((choices '(("s" . "SRC")
-                      ("e" . "EXAMPLE")
-                      ("q" . "QUOTE")
-                      ("v" . "VERSE")
-                      ("c" . "CENTER")
-                      ("l" . "LaTeX")
-                      ("h" . "HTML")
-                      ("a" . "ASCII")))
-           (key
-            (key-description
-             (vector
-              (read-key
-               (concat (propertize "Template type: " 'face 'minibuffer-prompt)
-                       (mapconcat (lambda (choice)
-                                    (concat (propertize (car choice) 'face 'font-lock-type-face)
-                                            ": "
-                                            (cdr choice)))
-                                  choices
-                                  ", ")))))))
-      (let ((result (assoc key choices)))
-        (when result
-          (let ((choice (cdr result)))
-            (cond
-             ((region-active-p)
-              (let ((start (region-beginning))
-                    (end (region-end)))
-                (goto-char end)
-                (insert "\n#+END_" choice)
-                (goto-char start)
-                (insert "#+BEGIN_" choice "\n")))
-             (t
-              (insert "#+BEGIN_" choice "\n")
-              (save-excursion (insert "\n#+END_" choice))))))))))))
+     (defun org-begin-template ()
+       "Make a template at point."
+       (interactive)
+       (if (org-at-table-p)
+           (call-interactively 'org-table-rotate-recalc-marks)
+         (let* ((choices '(("s" . "SRC")
+                           ("e" . "EXAMPLE")
+                           ("q" . "QUOTE")
+                           ("v" . "VERSE")
+                           ("c" . "CENTER")
+                           ("l" . "LaTeX")
+                           ("h" . "HTML")
+                           ("a" . "ASCII")))
+                (key
+                 (key-description
+                  (vector
+                   (read-key
+                    (concat (propertize "Template type: " 'face 'minibuffer-prompt)
+                            (mapconcat (lambda (choice)
+                                         (concat (propertize (car choice) 'face 'font-lock-type-face)
+                                                 ": "
+                                                 (cdr choice)))
+                                       choices
+                                       ", ")))))))
+           (let ((result (assoc key choices)))
+             (when result
+               (let ((choice (cdr result)))
+                 (cond
+                  ((region-active-p)
+                   (let ((start (region-beginning))
+                         (end (region-end)))
+                     (goto-char end)
+                     (insert "\n#+END_" choice)
+                     (goto-char start)
+                     (insert "#+BEGIN_" choice "\n")))
+                  (t
+                   (insert "#+BEGIN_" choice "\n")
+                   (save-excursion (insert "\n#+END_" choice))))))))))))
+#+END_SRC
 
+* Python
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'python 'elpy)
 ; (add-to-list 'load-path (expand-file-name "python-2*/" "~/.emacs.d/elpa/"))
 (require 'python "python.el")
 (setq python-indent-offset 4)
 (elpy-enable)
+#+END_SRC
 
+* Misc Modes
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.php5?\\'" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+#+END_SRC
 
+* Custom
+** Functions
+#+BEGIN_SRC emacs-lisp
 (defun open-dot-emacs ()
   (interactive)
   (let ((user-init-file-org (concat (file-name-directory user-init-file)
@@ -603,7 +934,10 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                (y-or-n-p
                 (format q parent-directory)))
       (make-directory parent-directory t))))
+#+END_SRC
 
+** Keybindings
+#+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "\C-c\C-k") 'compile)
 
 (global-set-key (kbd "\C-c e") 'open-dot-emacs)
@@ -629,3 +963,4 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (global-set-key (kbd "<f11>") 'fullscreen)
 
 (global-set-key (kbd "C-z") 'eof)
+#+END_SRC
