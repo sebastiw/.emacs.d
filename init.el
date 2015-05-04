@@ -154,7 +154,45 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10"))
 
+(defvar oni:normal-color "yellow"
+  "Cursor color to pass along to `set-cursor-color' for normal
+  buffers.")
+
+(defvar oni:normal-cursor-type 'bar
+  "A `cursor-type' for normal buffers.")
+
+(defvar oni:overwrite-color "red"
+  "Cursor color to pass along to `set-cursor-color' for buffers
+  in overwrite mode.")
+
+(defvar oni:overwrite-cursor-type 'box
+  "A `cursor-type' for buffers in overwrite mode.")
+
+(defvar oni:read-only-color "gray"
+  "Cursor color to pass along to `set-cursor-color' for read-only
+  buffers.")
+
+(defvar oni:read-only-cursor-type 'hbar
+  "A `cursor-type' for read-only buffers.")
+
+(defun oni:set-cursor-according-to-mode ()
+  "Change cursor color and type according to some minor modes."
+  (cond
+   (buffer-read-only
+    (set-cursor-color oni:read-only-color)
+    (setq cursor-type oni:read-only-cursor-type))
+   (overwrite-mode
+    (set-cursor-color oni:overwrite-color)
+    (setq cursor-type oni:overwrite-cursor-type))
+   (t
+    (set-cursor-color oni:normal-color)
+    (setq cursor-type oni:normal-cursor-type))))
+
+(add-hook 'post-command-hook 'oni:set-cursor-according-to-mode)
+
 (add-to-list 'find-file-not-found-functions #'create-non-existent-directory)
+
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
 ;(ensure-pkg 'auto-complete 'auto-complete-config)
 ;(require 'auto-complete)
@@ -236,7 +274,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
      (require 'em-cmpl)
      (require 'em-prompt)
      (require 'em-term)
-     (require 'em-unix)
+     ; (require 'em-unix)
 
 (add-to-list 'eshell-visual-commands "el")
 (add-to-list 'eshell-visual-commands "elinks")
@@ -281,7 +319,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
              '("gunzip" "gz\\'"))
 (add-to-list 'eshell-command-completions-alist
              '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
-(add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
+;(add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
 
 (ensure-pkg 'eshell-prompt-extras 'virtualenvwrapper)
 
@@ -290,9 +328,35 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (venv-initialize-eshell)
 
 (require 'eshell-prompt-extras)
+
+(require 'cl)
+(defun oni:shorten-dir (dir)
+  "Shorten a directory, (almost) like fish does it."
+  (let ((scount (1- (count ?/ dir))))
+    (dotimes (i scount)
+      (string-match "\\(/\\.?.\\)[^/]+" dir)
+      (setq dir (replace-match "\\1" nil nil dir))))
+  dir)
+(defun oni:eshell-prompt-function ()
+  (let ((status (if (zerop eshell-last-command-status) ?+ ?-))
+        (hostname (shell-command-to-string "hostname"))
+        (dir (abbreviate-file-name (eshell/pwd)))
+        (branch
+         (shell-command-to-string
+          "git branch --contains HEAD 2>/dev/null | sed -e '/^[^*]/d'"))
+        (userstatus (if (zerop (user-uid)) ?# ?$)))
+    (format "%c%s:%s@%s %c "
+            status
+            (substring hostname 0 -1)
+            (oni:shorten-dir dir)
+            (when (not (string= branch ""))
+              (substring branch 2 -1))
+            userstatus)))
+
 (setq eshell-highlight-prompt t
       epe-git-dirty-char "*"
-      eshell-prompt-function 'epe-theme-dakrone)))
+      eshell-prompt-function 'oni:eshell-prompt-function ;epe-theme-dakrone
+)))
 
 (autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
 (add-hook 'message-setup-hook 'gnus-alias-determine-identity)
@@ -461,6 +525,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
       org-reverse-note-order t
       ;; TeX-like sub and superscripts with X^{some} and Y_{thing}
       org-use-sub-superscripts '{}
+      ;; Hide the markup elements
+      org-hide-emphasis-markers t
 ;;;        org-agenda-tags-todo-honor-ignore-options t
 ;;;        org-clock-modeline-total 'today
 ;;;        org-mobile-force-id-on-agenda-items nil
@@ -547,12 +613,15 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (add-to-list 'auto-mode-alist '("\\.php5?\\'" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 
+(autoload 'xmodmap-mode "xmodmap-mode" nil t)
+(add-to-list 'auto-mode-alist '("^\\.Xmodmap$" . xmodmap-mode))
+
 (defun open-dot-emacs ()
   (interactive)
   (let ((user-init-file-org (concat (file-name-directory user-init-file)
                                     (file-name-base user-init-file)
                                     ".org")))
-    (if (file-exist-p user-init-file-org)
+    (if (file-exists-p user-init-file-org)
       (find-file user-init-file-org)
      (find-file user-init-file))))
 
