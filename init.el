@@ -154,7 +154,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10"))
 
-(defvar oni:normal-color "yellow"
+(defvar oni:normal-color "DarkOliveGreen"
   "Cursor color to pass along to `set-cursor-color' for normal
   buffers.")
 
@@ -168,7 +168,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (defvar oni:overwrite-cursor-type 'box
   "A `cursor-type' for buffers in overwrite mode.")
 
-(defvar oni:read-only-color "gray"
+(defvar oni:read-only-color "DarkGrey"
   "Cursor color to pass along to `set-cursor-color' for read-only
   buffers.")
 
@@ -323,40 +323,41 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (ensure-pkg 'eshell-prompt-extras 'virtualenvwrapper)
 
-;; Show python virtual environment information
-(require 'virtualenvwrapper)
-(venv-initialize-eshell)
+    ;; Show python virtual environment information
+    (require 'virtualenvwrapper)
+    (venv-initialize-eshell)
 
-(require 'eshell-prompt-extras)
+    (require 'eshell-prompt-extras)
 
-(require 'cl)
-(defun oni:shorten-dir (dir)
-  "Shorten a directory, (almost) like fish does it."
-  (let ((scount (1- (count ?/ dir))))
-    (dotimes (i scount)
-      (string-match "\\(/\\.?.\\)[^/]+" dir)
-      (setq dir (replace-match "\\1" nil nil dir))))
-  dir)
-(defun oni:eshell-prompt-function ()
-  (let ((status (if (zerop eshell-last-command-status) ?+ ?-))
-        (hostname (shell-command-to-string "hostname"))
-        (dir (abbreviate-file-name (eshell/pwd)))
-        (branch
-         (shell-command-to-string
-          "git branch --contains HEAD 2>/dev/null | sed -e '/^[^*]/d'"))
-        (userstatus (if (zerop (user-uid)) ?# ?$)))
-    (format "%c%s:%s@%s %c "
-            status
-            (substring hostname 0 -1)
-            (oni:shorten-dir dir)
-            (when (not (string= branch ""))
-              (substring branch 2 -1))
-            userstatus)))
+    (require 'cl)
+    (defun oni:shorten-dir (dir)
+      "Shorten a directory, (almost) like fish does it."
+      (let ((scount (1- (count ?/ dir))))
+        (dotimes (i scount)
+          (string-match "\\(/\\.?.\\)[^/]+" dir)
+          (setq dir (replace-match "\\1" nil nil dir))))
+      dir)
+    (defun oni:eshell-prompt-function ()
+      (let ((status (if (zerop eshell-last-command-status) ?+ ?-))
+            (hostname (shell-command-to-string "hostname"))
+            (dir (abbreviate-file-name (eshell/pwd)))
+            (branch
+             (shell-command-to-string
+              "sh -c \"git branch --contains HEAD 2>/dev/null\""))
+            (userstatus (if (zerop (user-uid)) ?# ?$)))
+        (format "%c%s:%s%s %c "
+                status
+                (substring hostname 0 -1)
+                (oni:shorten-dir dir)
+                (if (not (string= branch ""))
+                  (concat "@" (substring branch 2 -1))
+                 "")
+                userstatus)))
 
-(setq eshell-highlight-prompt t
-      epe-git-dirty-char "*"
-      eshell-prompt-function 'oni:eshell-prompt-function ;epe-theme-dakrone
-)))
+    (setq eshell-highlight-prompt t
+;          epe-git-dirty-char "*"
+          eshell-prompt-function 'oni:eshell-prompt-function ;epe-theme-dakrone
+    )))
 
 (autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
 (add-hook 'message-setup-hook 'gnus-alias-determine-identity)

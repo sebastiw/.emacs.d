@@ -322,7 +322,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     Check: http://org.ryuslash.org/dotfiles/emacs/init.html
 
 #+BEGIN_SRC emacs-lisp
-(defvar oni:normal-color "yellow"
+(defvar oni:normal-color "DarkOliveGreen"
   "Cursor color to pass along to `set-cursor-color' for normal
   buffers.")
 
@@ -336,7 +336,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (defvar oni:overwrite-cursor-type 'box
   "A `cursor-type' for buffers in overwrite mode.")
 
-(defvar oni:read-only-color "gray"
+(defvar oni:read-only-color "DarkGrey"
   "Cursor color to pass along to `set-cursor-color' for read-only
   buffers.")
 
@@ -517,6 +517,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   For more information check:
   https://www.masteringemacs.org/article/complete-guide-mastering-eshell
 
+** Aliases
 #+BEGIN_SRC emacs-lisp
 (defalias 'emacs 'find-file)
 (defalias 'ec 'find-file)
@@ -526,6 +527,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (setenv "PAGER" "cat")
 #+END_SRC
 
+** Some default requires
 #+BEGIN_SRC emacs-lisp
 (eval-after-load 'esh-opt
    '(progn
@@ -535,6 +537,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
      ; (require 'em-unix)
 #+END_SRC
 
+** Visual commands
   Some commands are too complex to be displayed by Eshell directly, and require
   special handling. An example would be =top=, a program that won’t work with a
   dumb terminal. To support these commands Eshell will run a =term= session when
@@ -546,7 +549,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     (add-to-list 'eshell-visual-commands "tail")
 #+END_SRC
 
-  Eshell history settings
+** Eshell history settings
 #+BEGIN_SRC emacs-lisp
      (require 'em-hist)
      (setq eshell-history-size 20000
@@ -574,6 +577,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                  (local-set-key (kbd "C-c C-h") 'eshell-list-history)))
 #+END_SRC
 
+** Smart display
   The smart display is meant to improve the write-run-revise cycle all
   commandline hackers go through. It works by not letting the point follow the
   output of a command you execute, like a normal terminal would. Instead, the
@@ -588,7 +592,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
       eshell-smart-space-goes-to-end t)
 #+END_SRC
 
-  Hooks and tar/gzip
+** Hooks and tar/gzip
 #+BEGIN_SRC emacs-lisp
      (add-hook 'eshell-mode-hook
                '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
@@ -600,8 +604,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
      ;(add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
 #+END_SRC
 
-  Display extra information and color for your eshell prompt with
-  `eshell-prompt-extras'.
+** Change how prompt look like
+   Display extra information and color for your eshell prompt with
+   `eshell-prompt-extras'.
 #+BEGIN_SRC emacs-lisp
     (ensure-pkg 'eshell-prompt-extras 'virtualenvwrapper)
 
@@ -625,18 +630,19 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
             (dir (abbreviate-file-name (eshell/pwd)))
             (branch
              (shell-command-to-string
-              "git branch --contains HEAD 2>/dev/null | sed -e '/^[^*]/d'"))
+              "sh -c \"git branch --contains HEAD 2>/dev/null\""))
             (userstatus (if (zerop (user-uid)) ?# ?$)))
-        (format "%c%s:%s@%s %c "
+        (format "%c%s:%s%s %c "
                 status
                 (substring hostname 0 -1)
                 (oni:shorten-dir dir)
-                (when (not (string= branch ""))
-                  (substring branch 2 -1))
+                (if (not (string= branch ""))
+                  (concat "@" (substring branch 2 -1))
+                 "")
                 userstatus)))
 
     (setq eshell-highlight-prompt t
-          epe-git-dirty-char "*"
+;          epe-git-dirty-char "*"
           eshell-prompt-function 'oni:eshell-prompt-function ;epe-theme-dakrone
     )))
 #+END_SRC
