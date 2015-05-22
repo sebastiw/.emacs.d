@@ -142,6 +142,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-strip-common-suffix t)
 
+(column-number-mode 1)
+
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq standard-indent 2

@@ -272,6 +272,11 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
       uniquify-strip-common-suffix t)
 #+END_SRC
 
+*** Column number indicator
+#+BEGIN_SRC emacs-lisp
+(column-number-mode 1)
+#+END_SRC
+
 ** Customization
 *** Instead of answering "YES" or "NO"
 #+BEGIN_SRC emacs-lisp
