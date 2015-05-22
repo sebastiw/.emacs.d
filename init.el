@@ -497,13 +497,18 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                                 (setq doc-view-resolution 300)
                                 (auto-revert-mode)))
 
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+;; Where to keep org agenda files
+(setq org-agenda-files (list "~/ORG/"))
+
 (eval-after-load "org"
   '(progn
      (setq
       ;; Indent after a new node?
       org-adapt-indentation t
-      ;; Where to keep org agenda files
-      org-agenda-files (list "~/ORG/")
       ;; Stupid yanks, Monday is the first day of the week
       calendar-week-start-day 1
       ;; Do not dim blocked items
@@ -524,6 +529,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
       org-refile-use-outline-path t
       ;; Store new notes at the beginning
       org-reverse-note-order t
+      ;; Be able to mark a region using Shift
+      org-support-shift-select t
       ;; TeX-like sub and superscripts with X^{some} and Y_{thing}
       org-use-sub-superscripts '{}
       ;; Hide the markup elements
@@ -551,9 +558,10 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
    (plantuml . t)
    (latex . t)))
 
-(define-key org-mode-map (kbd "C-c l") 'org-store-link)
-     (define-key org-mode-map (kbd "C-c c") 'org-capture)
-     (define-key org-mode-map (kbd "C-c a") 'org-agenda)
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/ORG/gtd.org" "Inbox")
+             "* TODO %^{Brief Description}\n%U\n%?")))
+
 ;     (define-key org-mode-map (kbd "C-c C-c") 'org-todo)
 ;     (define-key org-mode-map (kbd "C-c C-k") 'org-ctrl-c-ctrl-c)
 
