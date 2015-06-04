@@ -642,10 +642,6 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   (interactive)
   (insert-file "~/.emacs.d/.latexmall"))
 
-(defun insert-random-number ()
-  (interactive)
-  (insert (number-to-string (random 100))))
-
 (defun fullscreen ()
   (interactive)
   (set-frame-parameter nil 'fullscreen
@@ -681,6 +677,62 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                (y-or-n-p
                 (format q parent-directory)))
       (make-directory parent-directory t))))
+
+(defun insert-random-number ()
+  (interactive)
+  (insert (number-to-string (random 100))))
+
+(defun hex-to-dec ()
+  "Prints the decimal value of a hexadecimal string under cursor.
+Samples of valid input:
+
+  ffff
+  0xffff
+  #xffff
+  FFFF
+  0xFFFF
+  #xFFFF
+
+Test cases
+  64*0xc8+#x12c 190*0x1f4+#x258
+  100 200 300   400 500 600"
+  (interactive)
+
+  (let (inputStr tempStr p1 p2)
+    (save-excursion
+      (search-backward-regexp "[^0-9A-Fa-fx#]" nil t)
+      (forward-char)
+      (setq p1 (point))
+      (search-forward-regexp "[^0-9A-Fa-fx#]" nil t)
+      (backward-char)
+      (setq p2 (point)))
+
+    (setq inputStr (buffer-substring-no-properties p1 p2))
+
+    (let ((case-fold-search nil))
+      (setq tempStr (replace-regexp-in-string "^0x" "" inputStr)) ; C, Perl, …
+      (setq tempStr (replace-regexp-in-string "^#x" "" tempStr)) ; elisp …
+      (setq tempStr (replace-regexp-in-string "^#" "" tempStr))  ; CSS …
+      )
+
+    (message "Hex %s is %d" tempStr (string-to-number tempStr 16))))
+
+(defun dec-to-hex ()
+  "Convert decimal numbers to hexadecimal."
+  (interactive)
+
+  (let (inputStr p1 p2)
+    (save-excursion
+      (search-backward-regexp "[^0-9]" nil t)
+      (forward-char)
+      (setq p1 (point))
+      (search-forward-regexp "[^0-9]" nil t)
+      (backward-char)
+      (setq p2 (point)))
+
+  (setq inputStr (buffer-substring-no-properties p1 p2))
+
+  (message "Dec %s is 0x%X" inputStr (string-to-number inputStr 10))))
 
 (global-set-key (kbd "\C-c\C-k") 'compile)
 
