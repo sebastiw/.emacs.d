@@ -620,6 +620,14 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (setq python-indent-offset 4)
 (elpy-enable)
 
+(ensure-pkg 'ensime)
+(ensure-pkg 'scala-mode2)
+(eval-after-load 'scala-mode
+  '(progn
+     (require 'ensime)
+     (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+     (ensime)))
+
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.php5?\\'" . php-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
