@@ -744,6 +744,30 @@ Test cases
 
   (message "Dec %s is 0x%X" inputStr (string-to-number inputStr 10))))
 
+(defun dec-to-bin ()
+  "Convert decimal numbers to binary."
+  (interactive)
+
+  (let (inputStr p1 p2)
+    (save-excursion
+      (search-backward-regexp "[^0-9]" nil t)
+      (forward-char)
+      (setq p1 (point))
+      (search-forward-regexp "[^0-9]" nil t)
+      (backward-char)
+      (setq p2 (point)))
+
+  (setq inputStr (buffer-substring-no-properties p1 p2)
+        i (string-to-number inputStr 10))
+
+  (let ((res ""))
+    (while (not (= i 0))
+      (setq res (concat (if (= 1 (logand i 1)) "1" "0") res))
+      (setq i (lsh i -1)))
+    (if (string= res "")
+        (setq res "0"))
+    (message "Dec %s is %s" inputStr res))))
+
 (global-set-key (kbd "\C-c\C-k") 'compile)
 
 (global-set-key (kbd "\C-c e") 'open-dot-emacs)
