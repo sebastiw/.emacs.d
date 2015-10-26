@@ -1,4 +1,9 @@
 
+(let ((minver 24))
+  (unless (>= emacs-major-version minver)
+    (error "Your Emacs is too old -- this config requires v%s or higher"
+           minver)))
+
 (add-to-list 'load-path (expand-file-name "other" user-emacs-directory))
 
 (defun sanityinc/time-subtract-millis (b a)
@@ -63,34 +68,14 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                                    (global-set-key [(shift meta x)] 'smex-major-mode-commands)
                                    (smex-major-mode-commands)))
 
-(ensure-pkg 'ido 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
+(ensure-pkg 'swiper)
+(require 'swiper)
+(ivy-mode 1)
+(setq magit-completing-read-function 'ivy-completing-read)
+(setq ivy-use-virtual-buffers t)
 
-(require 'ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(setq ido-enable-flex-matching t)
-
-(setq org-completion-use-ido t)
-(setq magit-completing-read-function 'magit-ido-completing-read)
-
-(require 'ido-vertical-mode)
-(setq ido-use-faces t)
-(set-face-attribute 'ido-vertical-first-match-face nil
-                    :background nil
-                    :foreground "orange")
-(set-face-attribute 'ido-vertical-only-match-face nil
-                    :background nil
-                    :foreground nil)
-(set-face-attribute 'ido-vertical-match-face nil
-                    :foreground nil)
-(ido-vertical-mode 1)
-
-(require 'ido-ubiquitous)
-(ido-ubiquitous-mode 1)
-
-(ensure-pkg 'ido-hacks)
-(require 'ido-hacks)
-(ido-hacks-mode)
+(ensure-pkg 'magit)
+(require 'magit)
 
 (ensure-pkg 'popwin)
 (require 'popwin)
@@ -102,16 +87,10 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
 (global-fci-mode 1)
 
-(ensure-pkg 'highlight-chars)
-(require 'highlight-chars)
-;(hc-toggle-highlight-tabs t)
-;(hc-toggle-highlight-trailing-whitespace t)
-(add-hook 'font-lock-mode-hook 'hc-highlight-tabs)
-(add-hook 'font-lock-mode-hook 'hc-highlight-trailing-whitespace)
-
 (ensure-pkg 'rainbow-delimiters)
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(setq rainbow-delimiters-max-face-count 1)
 
 (ensure-pkg 'auto-complete)
 (require 'auto-complete)
@@ -155,6 +134,19 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
               fill-column 80)
 
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10"))
+
+(when (find-font (font-spec :name "Monoid"))
+     ; (set-frame-font "Monoid-8")
+     (add-to-list 'default-frame-alist '(font . "Monoid-8")))
+
+(setq
+   backup-by-copying t             ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.emacs.d/.saves")) ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)              ; use versioned backups
 
 (defvar oni:normal-color "DarkOliveGreen"
   "Cursor color to pass along to `set-cursor-color' for normal
@@ -234,6 +226,12 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
             (setq erlang-root-dir shell-cmd-find)
           (setq erlang-root-dir exe-find))))
 
+(setq erlang-indent-level 4)
+
+(add-to-list 'load-path (file-expand-wildcards
+                         (concat erlang-root-dir
+                                 "../lib/tools-*/emacs")))
+
 (ensure-pkg 'edts)
 (setq edts-man-root (expand-file-name ".." erlang-root-dir))
 (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
@@ -271,17 +269,23 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (setenv "TERM" "xterm-256color")
 (setenv "PAGER" "cat")
 
-(eval-after-load 'esh-opt
-   '(progn
-     (require 'em-cmpl)
-     (require 'em-prompt)
-     (require 'em-term)
-     ; (require 'em-unix)
+(require 'eshell)
+  (eval-after-load 'esh-opt
+    '(progn
+
+(require 'em-cmpl)
+(require 'em-prompt)
+(require 'em-term)
+(require 'em-unix) ;; Had to download and compile esh-ext.el again..
+
+(setq pcomplete-cycle-completions nil)
+(setq eshell-cmpl-cycle-completions nil)
 
 (add-to-list 'eshell-visual-commands "el")
 (add-to-list 'eshell-visual-commands "elinks")
 (add-to-list 'eshell-visual-commands "htop")
 (add-to-list 'eshell-visual-commands "tail")
+(add-to-list 'eshell-visual-commands "ssh")
 
 (require 'em-hist)
 (setq eshell-history-size 20000
@@ -315,13 +319,13 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
       eshell-smart-space-goes-to-end t)
 
 (add-hook 'eshell-mode-hook
-          '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
+               '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
 
-(add-to-list 'eshell-command-completions-alist
-             '("gunzip" "gz\\'"))
-(add-to-list 'eshell-command-completions-alist
-             '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
-;(add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
+;     (add-to-list 'eshell-command-completions-alist
+;                  '("gunzip" "gz\\'"))
+;     (add-to-list 'eshell-command-completions-alist
+;                  '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
+     ;(add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
 
 (ensure-pkg 'eshell-prompt-extras 'virtualenvwrapper)
 
@@ -359,7 +363,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     (setq eshell-highlight-prompt t
 ;          epe-git-dirty-char "*"
           eshell-prompt-function 'oni:eshell-prompt-function ;epe-theme-dakrone
-    )))
+    )
+
+))
 
 (autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
 (add-hook 'message-setup-hook 'gnus-alias-determine-identity)
@@ -508,6 +514,29 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (eval-after-load "org"
   '(progn
+     (setq org-latex-pdf-process
+           (quote ("pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
+                   "bibtex %b"
+                   "pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
+                   "pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f")))
+     ;; (setq org-latex-pdf-process (quote ("texi2dvi -p -b -V %f")))
+     (require 'ox-latex)
+     (add-to-list 'org-latex-classes
+                  '("acmtog" "\\documentclass{acmtog}"
+                    ("\\section{%s}" . "\\section*{%s}")
+                    ("\\subsection{%s}" . "\\subsection*{%s}")
+                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                    ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+     (add-to-list 'org-latex-classes
+                  '("acm_proc_article-sp" "\\documentclass{acm_proc_article-sp}"
+                    ("\\section{%s}" . "\\section*{%s}")
+                    ("\\subsection{%s}" . "\\subsection*{%s}")
+                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                    ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+     ))
+
+(eval-after-load "org"
+  '(progn
      (setq
       ;; Indent after a new node?
       org-adapt-indentation t
@@ -535,12 +564,15 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
       org-support-shift-select t
       ;; TeX-like sub and superscripts with X^{some} and Y_{thing}
       org-use-sub-superscripts '{}
+      ;; C-a and C-e will ignore some stuff on first attempt
+      org-special-ctrl-a/e t
       ;; Hide the markup elements
       org-hide-emphasis-markers t
 ;;;        org-agenda-tags-todo-honor-ignore-options t
 ;;;        org-clock-modeline-total 'today
 ;;;        org-mobile-force-id-on-agenda-items nil
 ;;;        org-habit-show-habits-only-for-today nil
+
       )
 
 (org-babel-do-load-languages
@@ -575,44 +607,45 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t))))
 
-(defun org-begin-template ()
-  "Make a template at point."
-  (interactive)
-  (if (org-at-table-p)
-      (call-interactively 'org-table-rotate-recalc-marks)
-    (let* ((choices '(("s" . "SRC")
-                      ("e" . "EXAMPLE")
-                      ("q" . "QUOTE")
-                      ("v" . "VERSE")
-                      ("c" . "CENTER")
-                      ("l" . "LaTeX")
-                      ("h" . "HTML")
-                      ("a" . "ASCII")))
-           (key
-            (key-description
-             (vector
-              (read-key
-               (concat (propertize "Template type: " 'face 'minibuffer-prompt)
-                       (mapconcat (lambda (choice)
-                                    (concat (propertize (car choice) 'face 'font-lock-type-face)
-                                            ": "
-                                            (cdr choice)))
-                                  choices
-                                  ", ")))))))
-      (let ((result (assoc key choices)))
-        (when result
-          (let ((choice (cdr result)))
-            (cond
-             ((region-active-p)
-              (let ((start (region-beginning))
-                    (end (region-end)))
-                (goto-char end)
-                (insert "\n#+END_" choice)
-                (goto-char start)
-                (insert "#+BEGIN_" choice "\n")))
-             (t
-              (insert "#+BEGIN_" choice "\n")
-              (save-excursion (insert "\n#+END_" choice))))))))))))
+     (defun org-begin-template ()
+       "Make a template at point."
+       (interactive)
+       (if (org-at-table-p)
+           (call-interactively 'org-table-rotate-recalc-marks)
+         (let* ((choices '(("s" . "SRC")
+                           ("e" . "EXAMPLE")
+                           ("q" . "QUOTE")
+                           ("v" . "VERSE")
+                           ("c" . "CENTER")
+                           ("l" . "LaTeX")
+                           ("h" . "HTML")
+                           ("a" . "ASCII")))
+                (key
+                 (key-description
+                  (vector
+                   (read-key
+                    (concat (propertize "Template type: " 'face 'minibuffer-prompt)
+                            (mapconcat (lambda (choice)
+                                         (concat (propertize (car choice) 'face 'font-lock-type-face)
+                                                 ": "
+                                                 (cdr choice)))
+                                       choices
+                                       ", ")))))))
+           (let ((result (assoc key choices)))
+             (when result
+               (let ((choice (cdr result)))
+                 (cond
+                  ((region-active-p)
+                   (let ((start (region-beginning))
+                         (end (region-end)))
+                     (goto-char end)
+                     (insert "\n#+END_" choice)
+                     (goto-char start)
+                     (insert "#+BEGIN_" choice "\n")))
+                  (t
+                   (insert "#+BEGIN_" choice "\n")
+                   (save-excursion (insert "\n#+END_" choice))))))))))
+))
 
 (ensure-pkg 'python 'elpy)
 ; (add-to-list 'load-path (expand-file-name "python-2*/" "~/.emacs.d/elpa/"))
@@ -622,10 +655,11 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (ensure-pkg 'ensime)
 (ensure-pkg 'scala-mode2)
-(eval-after-load 'scala-mode
+
+(eval-after-load 'scala-mode2
   '(progn
      (require 'ensime)
-     (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+;;   (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
      (ensime)))
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -768,12 +802,12 @@ Test cases
         (setq res "0"))
     (message "Dec %s is %s" inputStr res))))
 
-(global-set-key (kbd "\C-c\C-k") 'compile)
+(global-set-key (kbd "C-c C-k") 'compile)
 
-(global-set-key (kbd "\C-c e") 'open-dot-emacs)
+(global-set-key (kbd "C-c e") 'open-dot-emacs)
 
-(global-set-key "\C-x\C-m" 'execute-extended-command)
-(global-set-key "\C-c\C-m" 'execute-extended-command)
+(global-set-key (kbd "C-x C-m") 'execute-extended-command)
+(global-set-key (kbd "C-c C-m") 'execute-extended-command)
 
 (global-set-key (kbd "C-<tab>") 'other-window)
 (global-set-key (kbd "<C-S-iso-lefttab>") 'select-previous-window)
@@ -793,3 +827,23 @@ Test cases
 (global-set-key (kbd "<f11>") 'fullscreen)
 
 (global-set-key (kbd "C-z") 'eof)
+
+;; IDO mode keymaps
+;; (add-hook 'ido-vertical-mode-hook
+;;           (lambda ()
+;;             (define-key ido-completion-map (kbd "C-p") 'ido-prev-match)
+;;             (define-key ido-completion-map (kbd "C-n") 'ido-next-match)))
+;; (define-key ido-file-completion-map (kbd "C-p") 'ido-prev-match)
+;; (define-key ido-file-completion-map (kbd "C-n") 'ido-next-match)
+;; (define-key ido-buffer-completion-map (kbd "C-p") 'ido-prev-match)
+;; (define-key ido-buffer-completion-map (kbd "C-n") 'ido-next-match)
+
+;; Ivy + Swiper
+(global-set-key (kbd "C-s") 'swiper)
+(global-set-key (kbd "C-r") 'swiper)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key [f6] 'ivy-resume)
+
+(define-key magit-mode-map (kbd "C-<tab>") 'other-window)
+
+(setq-default bidi-paragraph-direction 'left-to-right)

@@ -7,7 +7,7 @@
   Simply reload changes with =C-c i=.
 * Requirements
   The minimum version to use this init-file is *emacs 24*
-#+BEGIN_SRC emacs-elisp
+#+BEGIN_SRC emacs-lisp
 (let ((minver 24))
   (unless (>= emacs-major-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher"
@@ -105,7 +105,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 ** Interactively do things (ido)
    ido-mode, easier minibuffer/file lookups.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ensure-pkg 'ido 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
 
 (require 'ido)
@@ -115,39 +115,55 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 #+END_SRC
 
    Org-mode and magit have own ido-completion
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (setq org-completion-use-ido t)
 (setq magit-completing-read-function 'magit-ido-completing-read)
 #+END_SRC
 
    ido-vertical-mode will show all alternative files vertically.
-#+BEGIN_SRC emacs-lisp
-(require 'ido-vertical-mode)
-(setq ido-use-faces t)
-(set-face-attribute 'ido-vertical-first-match-face nil
-                    :background nil
-                    :foreground "orange")
-(set-face-attribute 'ido-vertical-only-match-face nil
-                    :background nil
-                    :foreground nil)
-(set-face-attribute 'ido-vertical-match-face nil
-                    :foreground nil)
-(ido-vertical-mode 1)
+#+BEGIN_SRC emacs-lisp :tangle no
+  (require 'ido-vertical-mode)
+  (eval-after-load "ido"
+    '(progn
+       (setq ido-use-faces t)
+       (set-face-attribute 'ido-vertical-first-match-face nil
+                           :background nil
+                           :foreground "orange")
+       (set-face-attribute 'ido-vertical-only-match-face nil
+                           :background nil
+                           :foreground nil)
+       (set-face-attribute 'ido-vertical-match-face nil
+                           :foreground nil)))
+  (ido-vertical-mode 1)
 #+END_SRC
 
    ido-ubiquitous, ido-mode everywhere possible
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (require 'ido-ubiquitous)
 (ido-ubiquitous-mode 1)
 #+END_SRC
 
    Advices for ido-mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ensure-pkg 'ido-hacks)
 (require 'ido-hacks)
 (ido-hacks-mode)
 #+END_SRC
 
+** Ivy-mode (similar to IDO)
+#+BEGIN_SRC emacs-lisp
+  (ensure-pkg 'swiper)
+  (require 'swiper)
+  (ivy-mode 1)
+  (setq magit-completing-read-function 'ivy-completing-read)
+  (setq ivy-use-virtual-buffers t)
+#+END_SRC
+
+** Magit
+#+BEGIN_SRC emacs-lisp
+  (ensure-pkg 'magit)
+  (require 'magit)
+#+END_SRC
 ** Popup windows
    Help buffers are only displayed temporarily and when needed.
 
@@ -184,7 +200,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
    *highlight-chars* lets you easily highlight any sets of characters that you
     choose, including whitespace characters.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ensure-pkg 'highlight-chars)
 (require 'highlight-chars)
 ;(hc-toggle-highlight-tabs t)
@@ -201,6 +217,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (ensure-pkg 'rainbow-delimiters)
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(setq rainbow-delimiters-max-face-count 1)
 #+END_SRC
 
 ** Global auto-complete
@@ -280,11 +297,11 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 ** Customization
 *** Instead of answering "YES" or "NO"
 #+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)   
+(fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 *** Global variables
-    
+
 #+BEGIN_SRC emacs-lisp
 (setq standard-indent 2
       doc-view-continuous t
@@ -298,18 +315,22 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
               fill-column 80)
 #+END_SRC
 
-*** Default fontsize
+*** Default font/fontsize
     The default font/fontsize can differ much between computers, better to set
     it.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10"))
+
+(when (find-font (font-spec :name "Monoid"))
+     ; (set-frame-font "Monoid-8")
+     (add-to-list 'default-frame-alist '(font . "Monoid-8")))
 #+END_SRC
 
 *** Backups/Autosave files
     We don't want to leave a lot of autosave files and backup files everywhere.
 
-#+BEGIN_SRC emacs-elisp
+#+BEGIN_SRC emacs-lisp
 (setq
    backup-by-copying t             ; don't clobber symlinks
    backup-directory-alist
@@ -442,7 +463,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
   Set the manual directory and indent level and add Erlangs Emacs directory to
   the load-path.
-#+BEGIN_SRC emacs-elisp
+#+BEGIN_SRC emacs-lisp
 (setq erlang-indent-level 4)
 
 (add-to-list 'load-path (file-expand-wildcards
@@ -532,14 +553,24 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (setenv "PAGER" "cat")
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(require 'eshell)
+  (eval-after-load 'esh-opt
+    '(progn
+#+END_SRC
+
 ** Some default requires
 #+BEGIN_SRC emacs-lisp
-(eval-after-load 'esh-opt
-   '(progn
-     (require 'em-cmpl)
-     (require 'em-prompt)
-     (require 'em-term)
-     ; (require 'em-unix)
+  (require 'em-cmpl)
+  (require 'em-prompt)
+  (require 'em-term)
+  (require 'em-unix) ;; Had to download and compile esh-ext.el again..
+#+END_SRC
+
+** Completion
+#+BEGIN_SRC emacs-lisp
+  (setq pcomplete-cycle-completions nil)
+  (setq eshell-cmpl-cycle-completions nil)
 #+END_SRC
 
 ** Visual commands
@@ -552,6 +583,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     (add-to-list 'eshell-visual-commands "elinks")
     (add-to-list 'eshell-visual-commands "htop")
     (add-to-list 'eshell-visual-commands "tail")
+    (add-to-list 'eshell-visual-commands "ssh")
 #+END_SRC
 
 ** Eshell history settings
@@ -590,11 +622,11 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   easily without having to use =M-p= and =M-n= or the history modification
   commands.
 #+BEGIN_SRC emacs-lisp
-(require 'em-smart)
+  (require 'em-smart)
 
-(setq eshell-where-to-jump 'begin
-      eshell-review-quick-commands nil
-      eshell-smart-space-goes-to-end t)
+  (setq eshell-where-to-jump 'begin
+        eshell-review-quick-commands nil
+        eshell-smart-space-goes-to-end t)
 #+END_SRC
 
 ** Hooks and tar/gzip
@@ -602,10 +634,10 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
      (add-hook 'eshell-mode-hook
                '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
 
-     (add-to-list 'eshell-command-completions-alist
-                  '("gunzip" "gz\\'"))
-     (add-to-list 'eshell-command-completions-alist
-                  '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
+;     (add-to-list 'eshell-command-completions-alist
+;                  '("gunzip" "gz\\'"))
+;     (add-to-list 'eshell-command-completions-alist
+;                  '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
      ;(add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
 #+END_SRC
 
@@ -649,9 +681,12 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     (setq eshell-highlight-prompt t
 ;          epe-git-dirty-char "*"
           eshell-prompt-function 'oni:eshell-prompt-function ;epe-theme-dakrone
-    )))
+    )
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+))
+#+END_SRC
 * Gnus
   Gnus is an Emacs package for reading e-mail and Usenet news (and many other
   things). It offers features that other news and mail readers lack.
@@ -851,44 +886,73 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (setq org-agenda-files (list "~/ORG/"))
 #+END_SRC
 
+  Exporting LaTeX
+#+BEGIN_SRC emacs-lisp
+  (eval-after-load "org"
+    '(progn
+       (setq org-latex-pdf-process
+             (quote ("pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
+                     "bibtex %b"
+                     "pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
+                     "pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f")))
+       ;; (setq org-latex-pdf-process (quote ("texi2dvi -p -b -V %f")))
+       (require 'ox-latex)
+       (add-to-list 'org-latex-classes
+                    '("acmtog" "\\documentclass{acmtog}"
+                      ("\\section{%s}" . "\\section*{%s}")
+                      ("\\subsection{%s}" . "\\subsection*{%s}")
+                      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                      ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+       (add-to-list 'org-latex-classes
+                    '("acm_proc_article-sp" "\\documentclass{acm_proc_article-sp}"
+                      ("\\section{%s}" . "\\section*{%s}")
+                      ("\\subsection{%s}" . "\\subsection*{%s}")
+                      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                      ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+       ))
+#+END_SRC
+
   Customization
 #+BEGIN_SRC emacs-lisp
-(eval-after-load "org"
-  '(progn
-     (setq
-      ;; Indent after a new node?
-      org-adapt-indentation t
-      ;; Stupid yanks, Monday is the first day of the week
-      calendar-week-start-day 1
-      ;; Do not dim blocked items
-      org-agenda-dim-blocked-tasks nil
-      ;; How many days to include in overview
-      org-agenda-span 'week
-      ;; Show all occurrences of a repeating timestamp
-      org-agenda-repeating-timestamp-show-all nil
-      ;; Don't show deadlines if the item is done
-      org-agenda-skip-deadline-if-done t
-      ;; Don't show scheduled items in agenda if done
-      org-agenda-skip-scheduled-if-done t
-      ;; Start agenda on the current day
-      org-agenda-start-on-weekday nil
-      ;; Unchecked boxes will block switching the parent to DONE
-      org-enforce-todo-checkbox-dependencies t
-      ;; Provide refile targets as paths
-      org-refile-use-outline-path t
-      ;; Store new notes at the beginning
-      org-reverse-note-order t
-      ;; Be able to mark a region using Shift
-      org-support-shift-select t
-      ;; TeX-like sub and superscripts with X^{some} and Y_{thing}
-      org-use-sub-superscripts '{}
-      ;; Hide the markup elements
-      org-hide-emphasis-markers t
-;;;        org-agenda-tags-todo-honor-ignore-options t
-;;;        org-clock-modeline-total 'today
-;;;        org-mobile-force-id-on-agenda-items nil
-;;;        org-habit-show-habits-only-for-today nil
-      )
+  (eval-after-load "org"
+    '(progn
+       (setq
+        ;; Indent after a new node?
+        org-adapt-indentation t
+        ;; Stupid yanks, Monday is the first day of the week
+        calendar-week-start-day 1
+        ;; Do not dim blocked items
+        org-agenda-dim-blocked-tasks nil
+        ;; How many days to include in overview
+        org-agenda-span 'week
+        ;; Show all occurrences of a repeating timestamp
+        org-agenda-repeating-timestamp-show-all nil
+        ;; Don't show deadlines if the item is done
+        org-agenda-skip-deadline-if-done t
+        ;; Don't show scheduled items in agenda if done
+        org-agenda-skip-scheduled-if-done t
+        ;; Start agenda on the current day
+        org-agenda-start-on-weekday nil
+        ;; Unchecked boxes will block switching the parent to DONE
+        org-enforce-todo-checkbox-dependencies t
+        ;; Provide refile targets as paths
+        org-refile-use-outline-path t
+        ;; Store new notes at the beginning
+        org-reverse-note-order t
+        ;; Be able to mark a region using Shift
+        org-support-shift-select t
+        ;; TeX-like sub and superscripts with X^{some} and Y_{thing}
+        org-use-sub-superscripts '{}
+        ;; C-a and C-e will ignore some stuff on first attempt
+        org-special-ctrl-a/e t
+        ;; Hide the markup elements
+        org-hide-emphasis-markers t
+  ;;;        org-agenda-tags-todo-honor-ignore-options t
+  ;;;        org-clock-modeline-total 'today
+  ;;;        org-mobile-force-id-on-agenda-items nil
+  ;;;        org-habit-show-habits-only-for-today nil
+
+        )
 #+END_SRC
 
   Which Org sources that should be loaded.
@@ -919,7 +983,6 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 #+END_SRC
 
-
   Keybindings
 #+BEGIN_SRC emacs-lisp
 ;     (define-key org-mode-map (kbd "C-c C-c") 'org-todo)
@@ -932,47 +995,49 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
      (define-key org-mode-map (kbd "C-#") 'org-begin-template)
 #+END_SRC
 
+  Misc
 #+BEGIN_SRC emacs-lisp
-     (lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t))))
+       (lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t))))
 
-     (defun org-begin-template ()
-       "Make a template at point."
-       (interactive)
-       (if (org-at-table-p)
-           (call-interactively 'org-table-rotate-recalc-marks)
-         (let* ((choices '(("s" . "SRC")
-                           ("e" . "EXAMPLE")
-                           ("q" . "QUOTE")
-                           ("v" . "VERSE")
-                           ("c" . "CENTER")
-                           ("l" . "LaTeX")
-                           ("h" . "HTML")
-                           ("a" . "ASCII")))
-                (key
-                 (key-description
-                  (vector
-                   (read-key
-                    (concat (propertize "Template type: " 'face 'minibuffer-prompt)
-                            (mapconcat (lambda (choice)
-                                         (concat (propertize (car choice) 'face 'font-lock-type-face)
-                                                 ": "
-                                                 (cdr choice)))
-                                       choices
-                                       ", ")))))))
-           (let ((result (assoc key choices)))
-             (when result
-               (let ((choice (cdr result)))
-                 (cond
-                  ((region-active-p)
-                   (let ((start (region-beginning))
-                         (end (region-end)))
-                     (goto-char end)
-                     (insert "\n#+END_" choice)
-                     (goto-char start)
-                     (insert "#+BEGIN_" choice "\n")))
-                  (t
-                   (insert "#+BEGIN_" choice "\n")
-                   (save-excursion (insert "\n#+END_" choice))))))))))))
+       (defun org-begin-template ()
+         "Make a template at point."
+         (interactive)
+         (if (org-at-table-p)
+             (call-interactively 'org-table-rotate-recalc-marks)
+           (let* ((choices '(("s" . "SRC")
+                             ("e" . "EXAMPLE")
+                             ("q" . "QUOTE")
+                             ("v" . "VERSE")
+                             ("c" . "CENTER")
+                             ("l" . "LaTeX")
+                             ("h" . "HTML")
+                             ("a" . "ASCII")))
+                  (key
+                   (key-description
+                    (vector
+                     (read-key
+                      (concat (propertize "Template type: " 'face 'minibuffer-prompt)
+                              (mapconcat (lambda (choice)
+                                           (concat (propertize (car choice) 'face 'font-lock-type-face)
+                                                   ": "
+                                                   (cdr choice)))
+                                         choices
+                                         ", ")))))))
+             (let ((result (assoc key choices)))
+               (when result
+                 (let ((choice (cdr result)))
+                   (cond
+                    ((region-active-p)
+                     (let ((start (region-beginning))
+                           (end (region-end)))
+                       (goto-char end)
+                       (insert "\n#+END_" choice)
+                       (goto-char start)
+                       (insert "#+BEGIN_" choice "\n")))
+                    (t
+                     (insert "#+BEGIN_" choice "\n")
+                     (save-excursion (insert "\n#+END_" choice))))))))))
+  ))
 #+END_SRC
 
 * Python
@@ -988,10 +1053,11 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 #+BEGIN_SRC emacs-lisp
 (ensure-pkg 'ensime)
 (ensure-pkg 'scala-mode2)
-(eval-after-load 'scala-mode
+
+(eval-after-load 'scala-mode2
   '(progn
      (require 'ensime)
-     (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+;;   (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
      (ensime)))
 #+END_SRC
 
@@ -1158,31 +1224,49 @@ Test cases
 
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "\C-c\C-k") 'compile)
+  (global-set-key (kbd "C-c C-k") 'compile)
 
-(global-set-key (kbd "\C-c e") 'open-dot-emacs)
+  (global-set-key (kbd "C-c e") 'open-dot-emacs)
 
-(global-set-key "\C-x\C-m" 'execute-extended-command)
-(global-set-key "\C-c\C-m" 'execute-extended-command)
+  (global-set-key (kbd "C-x C-m") 'execute-extended-command)
+  (global-set-key (kbd "C-c C-m") 'execute-extended-command)
 
-(global-set-key (kbd "C-<tab>") 'other-window)
-(global-set-key (kbd "<C-S-iso-lefttab>") 'select-previous-window)
+  (global-set-key (kbd "C-<tab>") 'other-window)
+  (global-set-key (kbd "<C-S-iso-lefttab>") 'select-previous-window)
 
-(global-set-key (kbd "C-h o") 'find-library)
+  (global-set-key (kbd "C-h o") 'find-library)
 
-(global-set-key (kbd "M-n") 'forward-paragraph)
-(global-set-key (kbd "M-p") 'backward-paragraph)
+  (global-set-key (kbd "M-n") 'forward-paragraph)
+  (global-set-key (kbd "M-p") 'backward-paragraph)
 
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-;; This is your old M-x.
-;(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+  ;; This is your old M-x.
+  ;(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
-(global-set-key (kbd "M-,") 'pop-tag-mark)
+  (global-set-key (kbd "M-,") 'pop-tag-mark)
 
-(global-set-key (kbd "<f11>") 'fullscreen)
+  (global-set-key (kbd "<f11>") 'fullscreen)
 
-(global-set-key (kbd "C-z") 'eof)
+  (global-set-key (kbd "C-z") 'eof)
+
+  ;; IDO mode keymaps
+  ;; (add-hook 'ido-vertical-mode-hook
+  ;;           (lambda ()
+  ;;             (define-key ido-completion-map (kbd "C-p") 'ido-prev-match)
+  ;;             (define-key ido-completion-map (kbd "C-n") 'ido-next-match)))
+  ;; (define-key ido-file-completion-map (kbd "C-p") 'ido-prev-match)
+  ;; (define-key ido-file-completion-map (kbd "C-n") 'ido-next-match)
+  ;; (define-key ido-buffer-completion-map (kbd "C-p") 'ido-prev-match)
+  ;; (define-key ido-buffer-completion-map (kbd "C-n") 'ido-next-match)
+
+  ;; Ivy + Swiper
+  (global-set-key (kbd "C-s") 'swiper)
+  (global-set-key (kbd "C-r") 'swiper)
+  (global-set-key (kbd "C-c C-r") 'ivy-resume)
+  (global-set-key [f6] 'ivy-resume)
+
+  (define-key magit-mode-map (kbd "C-<tab>") 'other-window)
 #+END_SRC
 ** Settings
 *** Bi-directional text
@@ -1190,6 +1274,6 @@ Test cases
     too dependent on it. However, telling it to always print text =left-to-right=
     should speed things up if you never have any bi-directional text to view.
 
-#+BEGIN_SRC emacs-elisp
+#+BEGIN_SRC emacs-lisp
 (setq-default bidi-paragraph-direction 'left-to-right)
 #+END_SRC
