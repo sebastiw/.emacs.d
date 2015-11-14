@@ -27,16 +27,34 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                                                            require-start-time))
                      t)))))
 
+(setq tls-checktrust t)
+
+(let ((trustfile
+       (replace-regexp-in-string
+        "\\\\" "/"
+        (replace-regexp-in-string
+         "\n" ""
+         (shell-command-to-string "python -m certifi")))))
+  (setq tls-program
+        (list
+         (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
+                 (if (eq window-system 'w32) ".exe" "") trustfile)))
+  (setq gnutls-verify-error t)
+  (setq gnutls-trustfiles (list trustfile)))
+
 (defvar elpa-dir "elpa"
   "Which directory elpa packages should be installed in.")
 
 (require 'package)
 (setq package-archives
-      '(("gnu"       . "http://elpa.gnu.org/packages/")
-        ("marmalade" . "http://marmalade-repo.org/packages/")
-        ("melpa"     . "http://melpa.milkbox.net/packages/")
-        ("org"       . "http://orgmode.org/elpa/")
-        ("elpy"      . "http://jorgenschaefer.github.io/packages/")))
+      '(("gnu"       . "https://elpa.gnu.org/packages/")
+        ("melpa"     . "https://stable.melpa.org/packages/")
+        ("marmalade" . "https://marmalade-repo.org/packages/")
+        ("elpy"      . "https://jorgenschaefer.github.io/packages/")
+
+        ;; Untrusted, maybe not really needed as org exist in gnu as well
+        ;; ("org"       . "http://orgmode.org/elpa/")
+        ))
 
 (unless (file-exists-p  (concat user-emacs-directory elpa-dir))
   (message "The directory %s does not exist, creating it." elpa-dir)

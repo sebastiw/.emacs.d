@@ -1,6 +1,11 @@
 * Installation of this ORG file
   *First time*
-  Do =M-x org-babel-load-file= and provide =~/.emacs.d/init.org=. This will
+  Because of some of this elisp makes sure that emacs checks TLS certificates,
+  We must first execute/install:
+  1. python -m pip install --user certifi
+  2. apt-get install gnutls-bin
+
+  Then do =M-x org-babel-load-file= and provide =~/.emacs.d/init.org=. This will
   evaluate every piece of emacs-lisp code available here.
 
   *Following times*
@@ -48,25 +53,68 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 #+END_SRC
 
 * Packages
+  First of all lets have some security [fn:your_text_editor_is_malware].
+
+  Two things are needed for this to work.
+  1. python -m pip install --user certifi
+  2. apt-get install gnutls-bin
+#+BEGIN_SRC emacs-lisp
+  (setq tls-checktrust t)
+
+  (let ((trustfile
+         (replace-regexp-in-string
+          "\\\\" "/"
+          (replace-regexp-in-string
+           "\n" ""
+           (shell-command-to-string "python -m certifi")))))
+    (setq tls-program
+          (list
+           (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
+                   (if (eq window-system 'w32) ".exe" "") trustfile)))
+    (setq gnutls-verify-error t)
+    (setq gnutls-trustfiles (list trustfile)))
+#+END_SRC
+
+  This can be evaluated against the following snippet. If you evaluate it and
+  you get an error, your trust roots aren’t set up right and you can’t connect
+  to a valid site.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (if (condition-case e
+          (progn
+            (url-retrieve "https://wrong-host.badssl.com/"
+                          (lambda (retrieved) t))
+            (url-retrieve "https://self-signed.badssl.com/"
+                          (lambda (retrieved) t))
+            t)
+        ('error nil))
+      (error "tls misconfigured")
+    (url-retrieve "https://badssl.com"
+                  (lambda (retrieved) t)))
+#+END_SRC
+
   Repos install in the =~/.emacs.d/elpa/= directory.
 
 #+BEGIN_SRC emacs-lisp
-(defvar elpa-dir "elpa"
-  "Which directory elpa packages should be installed in.")
+  (defvar elpa-dir "elpa"
+    "Which directory elpa packages should be installed in.")
 
-(require 'package)
-(setq package-archives
-      '(("gnu"       . "http://elpa.gnu.org/packages/")
-        ("marmalade" . "http://marmalade-repo.org/packages/")
-        ("melpa"     . "http://melpa.milkbox.net/packages/")
-        ("org"       . "http://orgmode.org/elpa/")
-        ("elpy"      . "http://jorgenschaefer.github.io/packages/")))
+  (require 'package)
+  (setq package-archives
+        '(("gnu"       . "https://elpa.gnu.org/packages/")
+          ("melpa"     . "https://stable.melpa.org/packages/")
+          ("marmalade" . "https://marmalade-repo.org/packages/")
+          ("elpy"      . "https://jorgenschaefer.github.io/packages/")
 
-(unless (file-exists-p  (concat user-emacs-directory elpa-dir))
-  (message "The directory %s does not exist, creating it." elpa-dir)
-  (package-refresh-contents))
+          ;; Untrusted, maybe not really needed as org exist in gnu as well
+          ;; ("org"       . "http://orgmode.org/elpa/")
+          ))
 
-(package-initialize)
+  (unless (file-exists-p  (concat user-emacs-directory elpa-dir))
+    (message "The directory %s does not exist, creating it." elpa-dir)
+    (package-refresh-contents))
+
+  (package-initialize)
 #+END_SRC
 
   We also define a function for automatic installation of packages, to be used
@@ -1290,3 +1338,6 @@ Test cases
 #+BEGIN_SRC emacs-lisp
 (setq-default bidi-paragraph-direction 'left-to-right)
 #+END_SRC
+
+* References
+[fn:your_text_editor_is_malware] Your Text Editor Is Malware <2015-11-12 Thu> https://glyph.twistedmatrix.com/2015/11/editor-malware.html
