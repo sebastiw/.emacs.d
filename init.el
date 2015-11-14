@@ -525,6 +525,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                                 (setq doc-view-resolution 300)
                                 (auto-revert-mode)))
 
+(ensure-pkg 'pdf-tools)
+(pdf-tools-install)
+
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c c") 'org-capture)
 (global-set-key (kbd "C-c a") 'org-agenda)
