@@ -22,6 +22,13 @@
 * Preinit stuff
   Here we place thing we would like to load first, for example benchmarking.
 
+** Garbage collect
+   Garbage collect is default after 800kB
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default gc-cons-threshold 10000000) ;; 10mB
+#+END_SRC
+
 ** Load paths
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path (expand-file-name "other" user-emacs-directory))
@@ -154,18 +161,21 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 ** Interactively do things (ido)
    ido-mode, easier minibuffer/file lookups.
 #+BEGIN_SRC emacs-lisp :tangle no
-(ensure-pkg 'ido 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
+  (ensure-pkg 'ido 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
 
-(require 'ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(setq ido-enable-flex-matching t)
+  (require 'ido)
+  (ido-mode 1)
+  (ido-everywhere 1)
+  (setq ido-enable-flex-matching t
+        ido-ignore-extensions t
+        ido-use-filename-at-point 'guess
+        ido-create-new-buffer 'always)
 #+END_SRC
 
    Org-mode and magit have own ido-completion
 #+BEGIN_SRC emacs-lisp :tangle no
-(setq org-completion-use-ido t)
-(setq magit-completing-read-function 'magit-ido-completing-read)
+  (setq org-completion-use-ido t)
+  (setq magit-completing-read-function 'magit-ido-completing-read)
 #+END_SRC
 
    ido-vertical-mode will show all alternative files vertically.

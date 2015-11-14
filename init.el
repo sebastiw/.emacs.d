@@ -4,6 +4,8 @@
     (error "Your Emacs is too old -- this config requires v%s or higher"
            minver)))
 
+(setq-default gc-cons-threshold 10000000) ;; 10mB
+
 (add-to-list 'load-path (expand-file-name "other" user-emacs-directory))
 
 (defun sanityinc/time-subtract-millis (b a)
