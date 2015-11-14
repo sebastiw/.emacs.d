@@ -100,7 +100,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (defun clearcase-mode-on ()
   (interactive)
-  (setq directory-sep-char ?/)
+  (setq directory-sep-char ?/
+        clearcase-checkin-arguments (quote ("-nc"))
+        clearcase-checkout-arguments (quote ("-nc")))
   (require 'clearcase))
 
 (ensure-pkg 'nyan-mode)

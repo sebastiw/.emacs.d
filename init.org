@@ -237,10 +237,12 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
    needs to be set. This mode also takes forever to load (about 4 seconds) so
    we load it on demand instead.
 #+BEGIN_SRC emacs-lisp
-(defun clearcase-mode-on ()
-  (interactive)
-  (setq directory-sep-char ?/)
-  (require 'clearcase))
+  (defun clearcase-mode-on ()
+    (interactive)
+    (setq directory-sep-char ?/
+          clearcase-checkin-arguments (quote ("-nc"))
+          clearcase-checkout-arguments (quote ("-nc")))
+    (require 'clearcase))
 #+END_SRC
 
 ** Nyan cat
@@ -440,25 +442,25 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   Ensure that erlang-mode is installed and find the `erlang-root-dir' (where the
   =erl= binary is located).
 #+BEGIN_SRC emacs-lisp
-(ensure-pkg 'erlang)
-(require 'erlang-start)
-(let ((erootdir (if (boundp 'erlang-root-dir) erlang-root-dir nil))
-        (exe-find (if (executable-find "erl")
-                      (directory-file-name (file-name-directory (executable-find "erl")))
-                    nil))
-        (shell-cmd-find (if (file-name-directory (shell-command-to-string "which erl"))
-                            (directory-file-name (file-name-directory (shell-command-to-string "which erl")))
-                          nil)))
+  (ensure-pkg 'erlang)
+  (require 'erlang-start)
+  (let ((erootdir (if (boundp 'erlang-root-dir) erlang-root-dir nil))
+          (exe-find (if (executable-find "erl")
+                        (directory-file-name (file-name-directory (executable-find "erl")))
+                      nil))
+          (shell-cmd-find (if (file-name-directory (shell-command-to-string "which erl"))
+                              (directory-file-name (file-name-directory (shell-command-to-string "which erl")))
+                            nil)))
 
-    (if (and (equal erootdir nil)
-             (equal exe-find "")
-             (equal shell-cmd-find ""))
-        (error "Could not find erlang, set the variable `erlang-root-dir'"))
+      (if (and (equal erootdir nil)
+               (equal exe-find "")
+               (equal shell-cmd-find ""))
+          (error "Could not find erlang, set the variable `erlang-root-dir'"))
 
-    (if (equal erootdir nil)
-        (if (equal exe-find "")
-            (setq erlang-root-dir shell-cmd-find)
-          (setq erlang-root-dir exe-find))))
+      (if (equal erootdir nil)
+          (if (equal exe-find "")
+              (setq erlang-root-dir shell-cmd-find)
+            (setq erlang-root-dir exe-find))))
 #+END_SRC
 
   Set the manual directory and indent level and add Erlangs Emacs directory to
@@ -469,6 +471,17 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (add-to-list 'load-path (file-expand-wildcards
                          (concat erlang-root-dir
                                  "../lib/tools-*/emacs")))
+#+END_SRC
+
+** Distel
+   A powerful toolkit for Erlang development, but EDTS is newer and does a lot
+   of the configuration/discovery automatically. Some people however like Distel
+   better.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (add-to-list 'load-path "/home/esebwed/Programmering/distel/elisp")
+  (require 'distel)
+  (distel-setup)
 #+END_SRC
 
 ** EDTS
