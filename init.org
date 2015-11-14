@@ -931,6 +931,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 #+END_SRC
 
 * Org
+  Org is one of the most powerful modes in Emacs. It is used for organizing and
+  keeping track of activities, notes, dates, and for writing papers
+  etc. [fn:organize-your-life-in-plain-text]
 
   There are three top keys that should always work whereever you are.
   Store a link to a file, capture a new task, and open the org-agenda.
@@ -1340,4 +1343,5 @@ Test cases
 #+END_SRC
 
 * References
-[fn:your_text_editor_is_malware] Your Text Editor Is Malware <2015-11-12 Thu> https://glyph.twistedmatrix.com/2015/11/editor-malware.html
+[fn:your_text_editor_is_malware] Your Text Editor Is Malware - <2015-11-12 Thu> - https://glyph.twistedmatrix.com/2015/11/editor-malware.html
+[fn:organize_your_life_in_plain_text] Organize Your Life In Plain Text - updated <2015-06-19 Fri> - http://doc.norang.ca/org-mode.html
