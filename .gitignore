@@ -5,3 +5,10 @@ ac-comphist.dat
 eshell/
 edts/
 auto-save-list/
+abbrev_defs
+bookmarks
+ensime/
+ido.last
+*~
+network-security.data
+tramp
