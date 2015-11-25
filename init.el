@@ -797,7 +797,7 @@ Test cases
 
   (let (inputStr tempStr p1 p2)
     (save-excursion
-      (search-backward-regexp "[^0-9A-Fa-fx#]" nil t)
+      (search-backward-regexp "[^0-9A-Fa-f]" nil t)
       (forward-char)
       (setq p1 (point))
       (search-forward-regexp "[^0-9A-Fa-fx#]" nil t)
@@ -810,7 +810,7 @@ Test cases
       (setq tempStr (replace-regexp-in-string "^0x" "" inputStr)) ; C, Perl, …
       (setq tempStr (replace-regexp-in-string "^#x" "" tempStr)) ; elisp …
       (setq tempStr (replace-regexp-in-string "^#" "" tempStr))  ; CSS …
-      )
+    )
 
     (message "Hex %s is %d" tempStr (string-to-number tempStr 16))))
 
@@ -855,6 +855,55 @@ Test cases
         (setq res "0"))
     (message "Dec %s is %s" inputStr res))))
 
+(defun hex-to-bin ()
+  "Convert hexadecimal numbers to binary."
+  (interactive)
+
+  (let (inputStr tempStr p1 p2)
+    (save-excursion
+      (search-backward-regexp "[^0-9A-Fa-f]" nil t)
+      (forward-char)
+      (setq p1 (point))
+      (search-forward-regexp "[^0-9A-Fa-fx#]" nil t)
+      (backward-char)
+      (setq p2 (point)))
+
+    (setq inputStr (buffer-substring-no-properties p1 p2))
+
+    (let ((case-fold-search nil))
+      (setq tempStr (replace-regexp-in-string "^0x" "" inputStr)) ; C, Perl, …
+      (setq tempStr (replace-regexp-in-string "^#x" "" tempStr)) ; elisp …
+      (setq tempStr (replace-regexp-in-string "^#" "" tempStr))  ; CSS …
+
+    (let ((res "")
+          (i (string-to-number (format "%d" (string-to-number tempStr 16)) 10)))
+      (while (not (= i 0))
+        (setq res (concat (if (= 1 (logand i 1)) "1" "0") res))
+        (setq i (lsh i -1)))
+      (if (string= res "")
+          (setq res "0"))
+
+    (message "Hex %s is %s" inputStr res)))))
+
+(setq seba/move-include-whitespace t)
+(defun seba/move-beginning-of-line ()
+  "Toggle between moving to beginning-of-text and beginning-of-line."
+  (interactive)
+  (setq seba/move-include-whitespace (not seba/move-include-whitespace))
+  (if seba/move-include-whitespace
+      (beginning-of-line)
+    (beginning-of-line-text)))
+
+(defun seba/move-end-of-line ()
+  "Toggle between moving to end-of-text and end-of-line."
+  (interactive)
+  (setq seba/move-include-whitespace (not seba/move-include-whitespace))
+  (if seba/move-include-whitespace
+      (end-of-line)
+    (move-end-of-line nil)
+    (re-search-backward "^\\|[^[:space:]]")
+    (forward-char)))
+
 (global-set-key (kbd "C-c C-k") 'compile)
 
 (global-set-key (kbd "C-c e") 'open-dot-emacs)
@@ -880,6 +929,9 @@ Test cases
 (global-set-key (kbd "<f11>") 'fullscreen)
 
 (global-set-key (kbd "C-z") 'eof)
+
+(global-set-key (kbd "C-a") 'seba/move-beginning-of-line)
+(global-set-key (kbd "C-e") 'seba/move-end-of-line)
 
 ;; IDO mode keymaps
 (define-key ido-common-completion-map (kbd "C-p") 'ido-prev-match)
