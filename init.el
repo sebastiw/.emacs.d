@@ -88,11 +88,39 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                                    (global-set-key [(shift meta x)] 'smex-major-mode-commands)
                                    (smex-major-mode-commands)))
 
-(ensure-pkg 'swiper)
-(require 'swiper)
-(ivy-mode 1)
-(setq magit-completing-read-function 'ivy-completing-read)
-(setq ivy-use-virtual-buffers t)
+(ensure-pkg 'ido 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
+
+(require 'ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(setq ido-enable-flex-matching t
+      ido-ignore-extensions t
+      ido-use-filename-at-point 'guess
+      ido-create-new-buffer 'always)
+
+(setq org-completion-use-ido t)
+(setq magit-completing-read-function 'magit-ido-completing-read)
+
+(require 'ido-vertical-mode)
+(eval-after-load "ido"
+  '(progn
+     (setq ido-use-faces t)
+     (set-face-attribute 'ido-vertical-first-match-face nil
+                         :background nil
+                         :foreground "orange")
+     (set-face-attribute 'ido-vertical-only-match-face nil
+                         :background nil
+                         :foreground nil)
+     (set-face-attribute 'ido-vertical-match-face nil
+                         :foreground nil)))
+(ido-vertical-mode 1)
+
+(require 'ido-ubiquitous)
+(ido-ubiquitous-mode 1)
+
+(ensure-pkg 'ido-hacks)
+(require 'ido-hacks)
+(ido-hacks-mode)
 
 (ensure-pkg 'magit)
 (require 'magit)
@@ -854,20 +882,14 @@ Test cases
 (global-set-key (kbd "C-z") 'eof)
 
 ;; IDO mode keymaps
-;; (add-hook 'ido-vertical-mode-hook
-;;           (lambda ()
-;;             (define-key ido-completion-map (kbd "C-p") 'ido-prev-match)
-;;             (define-key ido-completion-map (kbd "C-n") 'ido-next-match)))
-;; (define-key ido-file-completion-map (kbd "C-p") 'ido-prev-match)
-;; (define-key ido-file-completion-map (kbd "C-n") 'ido-next-match)
-;; (define-key ido-buffer-completion-map (kbd "C-p") 'ido-prev-match)
-;; (define-key ido-buffer-completion-map (kbd "C-n") 'ido-next-match)
+(define-key ido-common-completion-map (kbd "C-p") 'ido-prev-match)
+(define-key ido-common-completion-map (kbd "C-n") 'ido-next-match)
 
 ;; Ivy + Swiper
-(global-set-key (kbd "C-s") 'swiper)
-(global-set-key (kbd "C-r") 'swiper)
-(global-set-key (kbd "C-c C-r") 'ivy-resume)
-(global-set-key [f6] 'ivy-resume)
+;; (global-set-key (kbd "C-s") 'swiper)
+;; (global-set-key (kbd "C-r") 'swiper)
+;; (global-set-key (kbd "C-c C-r") 'ivy-resume)
+;; (global-set-key [f6] 'ivy-resume)
 
 (define-key magit-mode-map (kbd "C-<tab>") 'other-window)
 

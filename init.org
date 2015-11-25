@@ -160,7 +160,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 ** Interactively do things (ido)
    ido-mode, easier minibuffer/file lookups.
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
   (ensure-pkg 'ido 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
 
   (require 'ido)
@@ -173,13 +173,13 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 #+END_SRC
 
    Org-mode and magit have own ido-completion
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
   (setq org-completion-use-ido t)
   (setq magit-completing-read-function 'magit-ido-completing-read)
 #+END_SRC
 
    ido-vertical-mode will show all alternative files vertically.
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
   (require 'ido-vertical-mode)
   (eval-after-load "ido"
     '(progn
@@ -196,20 +196,20 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 #+END_SRC
 
    ido-ubiquitous, ido-mode everywhere possible
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (require 'ido-ubiquitous)
 (ido-ubiquitous-mode 1)
 #+END_SRC
 
    Advices for ido-mode
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (ensure-pkg 'ido-hacks)
 (require 'ido-hacks)
 (ido-hacks-mode)
 #+END_SRC
 
 ** Ivy-mode (similar to IDO)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   (ensure-pkg 'swiper)
   (require 'swiper)
   (ivy-mode 1)
@@ -1340,20 +1340,14 @@ Test cases
   (global-set-key (kbd "C-z") 'eof)
 
   ;; IDO mode keymaps
-  ;; (add-hook 'ido-vertical-mode-hook
-  ;;           (lambda ()
-  ;;             (define-key ido-completion-map (kbd "C-p") 'ido-prev-match)
-  ;;             (define-key ido-completion-map (kbd "C-n") 'ido-next-match)))
-  ;; (define-key ido-file-completion-map (kbd "C-p") 'ido-prev-match)
-  ;; (define-key ido-file-completion-map (kbd "C-n") 'ido-next-match)
-  ;; (define-key ido-buffer-completion-map (kbd "C-p") 'ido-prev-match)
-  ;; (define-key ido-buffer-completion-map (kbd "C-n") 'ido-next-match)
+  (define-key ido-common-completion-map (kbd "C-p") 'ido-prev-match)
+  (define-key ido-common-completion-map (kbd "C-n") 'ido-next-match)
 
   ;; Ivy + Swiper
-  (global-set-key (kbd "C-s") 'swiper)
-  (global-set-key (kbd "C-r") 'swiper)
-  (global-set-key (kbd "C-c C-r") 'ivy-resume)
-  (global-set-key [f6] 'ivy-resume)
+  ;; (global-set-key (kbd "C-s") 'swiper)
+  ;; (global-set-key (kbd "C-r") 'swiper)
+  ;; (global-set-key (kbd "C-c C-r") 'ivy-resume)
+  ;; (global-set-key [f6] 'ivy-resume)
 
   (define-key magit-mode-map (kbd "C-<tab>") 'other-window)
 #+END_SRC
