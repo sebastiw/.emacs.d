@@ -257,7 +257,6 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (add-to-list 'auto-mode-alist '("\\.escript?\\'" . erlang-mode))
 
 (ensure-pkg 'erlang)
-(require 'erlang-start)
 (let ((erootdir (if (boundp 'erlang-root-dir) erlang-root-dir nil))
         (exe-find (if (executable-find "erl")
                       (directory-file-name (file-name-directory (executable-find "erl")))
@@ -276,11 +275,17 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
             (setq erlang-root-dir shell-cmd-find)
           (setq erlang-root-dir exe-find))))
 
-(setq erlang-indent-level 4)
-
+(setq erlang-man-root (expand-file-name ".." erlang-root-dir))
 (add-to-list 'load-path (file-expand-wildcards
                          (concat erlang-root-dir
                                  "../lib/tools-*/emacs")))
+
+(require 'erlang-start)
+
+(add-to-list 'load-path "~/Programmering/company-distel/")
+(require 'company-distel)
+(with-eval-after-load 'company
+(add-to-list 'company-backends 'company-distel))
 
 (ensure-pkg 'edts)
 (setq edts-man-root (expand-file-name ".." erlang-root-dir))
@@ -946,3 +951,5 @@ Test cases
 (define-key magit-mode-map (kbd "C-<tab>") 'other-window)
 
 (setq-default bidi-paragraph-direction 'left-to-right)
+
+(setq initial-scratch-message nil)
