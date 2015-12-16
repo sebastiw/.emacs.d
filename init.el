@@ -149,8 +149,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (defun clearcase-mode-on ()
   (interactive)
   (setq directory-sep-char ?/
-        clearcase-checkin-arguments (quote ("-nc"))
-        clearcase-checkout-arguments (quote ("-nc")))
+        ;clearcase-checkin-arguments (quote ("-nc"))
+        ;clearcase-checkout-arguments (quote ("-nc"))
+        )
   (require 'clearcase))
 
 (ensure-pkg 'nyan-mode)
@@ -281,11 +282,6 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                                  "../lib/tools-*/emacs")))
 
 (require 'erlang-start)
-
-(add-to-list 'load-path "~/Programmering/company-distel/")
-(require 'company-distel)
-(with-eval-after-load 'company
-(add-to-list 'company-backends 'company-distel))
 
 (ensure-pkg 'edts)
 (setq edts-man-root (expand-file-name ".." erlang-root-dir))
@@ -726,6 +722,10 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (autoload 'xmodmap-mode "xmodmap-mode" nil t)
 (add-to-list 'auto-mode-alist '("^\\.Xmodmap$" . xmodmap-mode))
+
+(when (file-exists-p "/vobs/gsn/tools/3pp/erlang_bt_tool/adaptations/emacs/")
+  (add-to-list 'load-path "/vobs/gsn/tools/3pp/erlang_bt_tool/adaptations/emacs/")
+  (require 'emacs_bt))
 
 (defun open-dot-emacs ()
   (interactive)
