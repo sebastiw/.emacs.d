@@ -29,7 +29,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                                                            require-start-time))
                      t)))))
 
-(setq tls-checktrust t)
+(setq gnutls-log-level 0)
+
+(setq tls-checktrust 'ask)
 
 (let ((trustfile
        (replace-regexp-in-string
@@ -37,20 +39,26 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
         (replace-regexp-in-string
          "\n" ""
          (shell-command-to-string "python -m certifi")))))
-  (setq tls-program
-        (list
-         (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
-                 (if (eq window-system 'w32) ".exe" "") trustfile)))
-  (setq gnutls-verify-error t)
-  (setq gnutls-trustfiles (list trustfile)))
+  ;; (setq tls-program
+  ;;       (list
+  ;;        (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
+  ;;                (if (eq window-system 'w32) ".exe" "") trustfile)))
+  (setq gnutls-verify-error nil)
+  (setq gnutls-trustfiles (list trustfile))
+  (add-to-list 'gnutls-trustfiles "/etc/ssl/certs/ca-certificates.crt")
+  (add-to-list 'gnutls-trustfiles "/etc/pki/tls/certs/ca-bundle.crt")
+  (add-to-list 'gnutls-trustfiles "/etc/ssl/ca-bundle.pem")
+  (add-to-list 'gnutls-trustfiles "/usr/ssl/certs/ca-bundle.crt")
+  (add-to-list 'gnutls-trustfiles "/usr/local/share/certs/ca-root-nss.crt"))
 
-(defvar elpa-dir "elpa"
-  "Which directory elpa packages should be installed in.")
+(defconst elpa-dir "elpa"
+  "Which directory elpa packages is installed in. Defined in package.el.")
 
 (require 'package)
 (setq package-archives
-      '(("gnu"       . "https://elpa.gnu.org/packages/")
-        ("melpa"     . "https://stable.melpa.org/packages/")
+      '(
+        ("gnu"       . "https://elpa.gnu.org/packages/")
+        ("melpa"     . "https://melpa.org/packages/")
         ("marmalade" . "https://marmalade-repo.org/packages/")
         ("elpy"      . "https://jorgenschaefer.github.io/packages/")
 
@@ -59,7 +67,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
         ))
 
 (unless (file-exists-p  (concat user-emacs-directory elpa-dir))
-  (message "The directory %s does not exist, creating it." elpa-dir)
+  (message "No packages exists yet, refreshing archives.")
   (package-refresh-contents))
 
 (package-initialize)
@@ -238,14 +246,11 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
-;(ensure-pkg 'auto-complete 'auto-complete-config)
-;(require 'auto-complete)
-;(setq ac-auto-show-menu 0.01
-;      ac-auto-start 1
-;      ac-delay 0.01)
-
-(ensure-pkg 'company)
-(add-hook 'after-init-hook 'global-company-mode)
+(ensure-pkg 'auto-complete) ; 'auto-complete-config
+(require 'auto-complete)
+(setq ac-auto-show-menu 0.01
+      ac-auto-start 1
+      ac-delay 0.01)
 
 (add-hook 'c-mode-hook
           (lambda () (local-set-key (kbd "M-,") #'pop-tag-mark)))
@@ -275,20 +280,15 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
             (setq erlang-root-dir shell-cmd-find)
           (setq erlang-root-dir exe-find))))
 
-(setq erlang-man-root (expand-file-name ".." erlang-root-dir))
+(setq erlang-man-root (expand-file-name "../lib/erlang" erlang-root-dir))
 (add-to-list 'load-path (file-expand-wildcards
                          (concat erlang-root-dir
                                  "../lib/tools-*/emacs")))
 
 (require 'erlang-start)
 
-(add-to-list 'load-path "~/Programmering/company-distel/")
-(require 'company-distel)
-(with-eval-after-load 'company
-(add-to-list 'company-backends 'company-distel))
-
 (ensure-pkg 'edts)
-(setq edts-man-root (expand-file-name ".." erlang-root-dir))
+(setq edts-man-root erlang-man-root)
 (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
 
 (defvar eqc-root-dir (expand-file-name "lib/eqc-1.30.0"
@@ -404,7 +404,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
             (dir (abbreviate-file-name (eshell/pwd)))
             (branch
              (shell-command-to-string
-              "sh -c \"git branch --contains HEAD 2>/dev/null\""))
+              "sh -c \"git branch --contains HEAD 2>/dev/null | grep \\*\""))
             (userstatus (if (zerop (user-uid)) ?# ?$)))
         (format "%c%s:%s%s %c "
                 status
@@ -419,6 +419,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 ;          epe-git-dirty-char "*"
           eshell-prompt-function 'oni:eshell-prompt-function ;epe-theme-dakrone
     )
+
+(setq shell-prompt-pattern "^.*eselnts1349[^>]* *")
 
 ))
 

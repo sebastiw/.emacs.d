@@ -65,21 +65,36 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   Two things are needed for this to work.
   1. python -m pip install --user certifi
   2. apt-get install gnutls-bin
-#+BEGIN_SRC emacs-lisp
-  (setq tls-checktrust t)
 
+  Debug level; 0 minimum
+#+BEGIN_SRC emacs-lisp
+  (setq gnutls-log-level 0)
+#+END_SRC
+
+  Check if a certificate can be trusted
+#+BEGIN_SRC emacs-lisp
+  (setq tls-checktrust 'ask)
+#+END_SRC
+
+  Set the trustfile and which program to use.
+#+BEGIN_SRC emacs-lisp
   (let ((trustfile
          (replace-regexp-in-string
           "\\\\" "/"
           (replace-regexp-in-string
            "\n" ""
            (shell-command-to-string "python -m certifi")))))
-    (setq tls-program
-          (list
-           (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
-                   (if (eq window-system 'w32) ".exe" "") trustfile)))
-    (setq gnutls-verify-error t)
-    (setq gnutls-trustfiles (list trustfile)))
+    ;; (setq tls-program
+    ;;       (list
+    ;;        (format "gnutls-cli%s --x509cafile %s -p %%p %%h"
+    ;;                (if (eq window-system 'w32) ".exe" "") trustfile)))
+    (setq gnutls-verify-error nil)
+    (setq gnutls-trustfiles (list trustfile))
+    (add-to-list 'gnutls-trustfiles "/etc/ssl/certs/ca-certificates.crt")
+    (add-to-list 'gnutls-trustfiles "/etc/pki/tls/certs/ca-bundle.crt")
+    (add-to-list 'gnutls-trustfiles "/etc/ssl/ca-bundle.pem")
+    (add-to-list 'gnutls-trustfiles "/usr/ssl/certs/ca-bundle.crt")
+    (add-to-list 'gnutls-trustfiles "/usr/local/share/certs/ca-root-nss.crt"))
 #+END_SRC
 
   This can be evaluated against the following snippet. If you evaluate it and
@@ -103,13 +118,14 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   Repos install in the =~/.emacs.d/elpa/= directory.
 
 #+BEGIN_SRC emacs-lisp
-  (defvar elpa-dir "elpa"
-    "Which directory elpa packages should be installed in.")
+  (defconst elpa-dir "elpa"
+    "Which directory elpa packages is installed in. Defined in package.el.")
 
   (require 'package)
   (setq package-archives
-        '(("gnu"       . "https://elpa.gnu.org/packages/")
-          ("melpa"     . "https://stable.melpa.org/packages/")
+        '(
+          ("gnu"       . "https://elpa.gnu.org/packages/")
+          ("melpa"     . "https://melpa.org/packages/")
           ("marmalade" . "https://marmalade-repo.org/packages/")
           ("elpy"      . "https://jorgenschaefer.github.io/packages/")
 
@@ -118,7 +134,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
           ))
 
   (unless (file-exists-p  (concat user-emacs-directory elpa-dir))
-    (message "The directory %s does not exist, creating it." elpa-dir)
+    (message "No packages exists yet, refreshing archives.")
     (package-refresh-contents))
 
   (package-initialize)
@@ -468,15 +484,15 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 ** Auto-complete
 #+BEGIN_SRC emacs-lisp
-;(ensure-pkg 'auto-complete 'auto-complete-config)
-;(require 'auto-complete)
-;(setq ac-auto-show-menu 0.01
-;      ac-auto-start 1
-;      ac-delay 0.01)
+(ensure-pkg 'auto-complete) ; 'auto-complete-config
+(require 'auto-complete)
+(setq ac-auto-show-menu 0.01
+      ac-auto-start 1
+      ac-delay 0.01)
 #+END_SRC
 
 ** Company-mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ensure-pkg 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 #+END_SRC
@@ -522,10 +538,10 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
   Set the manual directory and add Erlangs Emacs directory to the load-path.
 #+BEGIN_SRC emacs-lisp
-(setq erlang-man-root (expand-file-name ".." erlang-root-dir))
-(add-to-list 'load-path (file-expand-wildcards
-                         (concat erlang-root-dir
-                                 "../lib/tools-*/emacs")))
+  (setq erlang-man-root (expand-file-name "../lib/erlang" erlang-root-dir))
+  (add-to-list 'load-path (file-expand-wildcards
+                           (concat erlang-root-dir
+                                   "../lib/tools-*/emacs")))
 #+END_SRC
 
   Require Erlang
@@ -539,18 +555,47 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
    better.
 
 #+BEGIN_SRC emacs-lisp :tangle no
-  (add-to-list 'load-path "/home/esebwed/Programmering/distel/elisp")
+  (add-to-list 'load-path "/home/esebwed/Programmering/distel/elisp/")
   (require 'distel)
   (distel-setup)
   ;; prevent annyoing hang-on-compile
   (defvar inferior-erlang-prompt-timeout t)
+  (setq erl-nodename-cache
+      (make-symbol
+       (concat
+        "emacs@"
+        (car (split-string (shell-command-to-string "hostname"))))))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+*** Code-completion for distel
+
+#+BEGIN_SRC emacs-lisp :tangle no
   (add-to-list 'load-path "~/Programmering/company-distel/")
+#+END_SRC
+
+    Company
+#+BEGIN_SRC emacs-lisp :tangle no
   (require 'company-distel)
   (with-eval-after-load 'company
-  (add-to-list 'company-backends 'company-distel))
+    (add-to-list 'company-backends 'company-distel))
+#+END_SRC
+
+    Auto-complete
+#+BEGIN_SRC emacs-lisp :tangle no
+  (require 'auto-complete)
+  (require 'auto-complete-distel)
+  (add-hook 'erlang-mode-hook '(lambda () (add-to-list 'ac-sources 'auto-complete-distel)))
+#+END_SRC
+
+** Wrangler
+
+   Wrangler is an Erlang refactoring tool that supports interactive refactoring
+   of Erlang programs.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (add-to-list 'load-path
+    "/usr/local/lib/erlang/lib/wrangler-1.2.0/elisp")
+  (require 'wrangler)
 #+END_SRC
 
 ** EDTS
@@ -561,9 +606,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
    Check: https://github.com/tjarvstrand/edts
 
 #+BEGIN_SRC emacs-lisp
-(ensure-pkg 'edts)
-(setq edts-man-root (expand-file-name ".." erlang-root-dir))
-(add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
+  (ensure-pkg 'edts)
+  (setq edts-man-root erlang-man-root)
+  (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
 #+END_SRC
 
 ** Quviq QuickCheck
@@ -749,7 +794,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
             (dir (abbreviate-file-name (eshell/pwd)))
             (branch
              (shell-command-to-string
-              "sh -c \"git branch --contains HEAD 2>/dev/null\""))
+              "sh -c \"git branch --contains HEAD 2>/dev/null | grep \\*\""))
             (userstatus (if (zerop (user-uid)) ?# ?$)))
         (format "%c%s:%s%s %c "
                 status
@@ -764,6 +809,14 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 ;          epe-git-dirty-char "*"
           eshell-prompt-function 'oni:eshell-prompt-function ;epe-theme-dakrone
     )
+#+END_SRC
+
+** Tramp
+
+   To make sure tramp can find out if it has successfully connected to the
+   remote shell. Change this to fit your needs.
+#+BEGIN_SRC emacs-lisp
+  (setq shell-prompt-pattern "^.*eselnts1349[^>]* *")
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
