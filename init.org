@@ -1,4 +1,5 @@
 * Installation of this ORG file
+
   *First time*
   Because of some of this elisp makes sure that emacs checks TLS certificates,
   We must first execute/install:
@@ -10,57 +11,93 @@
 
   *Following times*
   Simply reload changes with =C-c i=.
+
 * Requirements
-  The minimum version to use this init-file is *emacs 24*
+
+  This init-file assumes *Emacs 25* but will probably work with Emacs 24.
+
 #+BEGIN_SRC emacs-lisp
-(let ((minver 24))
-  (unless (>= emacs-major-version minver)
-    (error "Your Emacs is too old -- this config requires v%s or higher"
-           minver)))
+  (let ((minver 24)
+        (recver 25))
+    (if (< emacs-major-version minver)
+        (error "Your Emacs is too old -- this config requires v%s or higher"
+               minver)
+      (when (< emacs-major-version recver)
+        (format-message
+         (concat "You are probably fine with Emacs v%s for this init-file, but "
+                 "I cannot guarantee it. Recommended version of Emacs is v%s")
+         minver recver))))
+#+END_SRC
+
+  It also assumes Unix, but could probably be run on other OSes.
+
+#+BEGIN_SRC emacs-lisp
+  (let ((recos "gnu/linux"))
+    (when (not (string-equal system-type recos))
+      (format-message
+       (concat "You might be fine with %s as OS for this init-file, but I cannot "
+               "guarantee it. Recommended OS is %s")
+       system-type recos)))
 #+END_SRC
 
 * Preinit stuff
+
   Here we place thing we would like to load first, for example benchmarking.
 
 ** Garbage collect
-   Garbage collect is default after 800kB
+
+   Garbage collection is default after 800kB, lets raise it some.
+   This might speedup Emacs but will cost in memory consumtion.
 
 #+BEGIN_SRC emacs-lisp
   (setq-default gc-cons-threshold 10000000) ;; 10mB
 #+END_SRC
 
 ** Load paths
+
+   So I have a directory ~.emacs.d/other/~ from where I want to load custom elisp
+   files.
+
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path (expand-file-name "other" user-emacs-directory))
+  (add-to-list 'load-path (expand-file-name "other" user-emacs-directory))
 #+END_SRC
 
-** Benchmarking how fast/slow different files load
-  After emacs have started, do =C-h v sanityinc/require-times=
+** Benchmarking
+
+   This will measure how fast/slow different elisp files are to load.
+   When Emacs have started, do =C-h v sanityinc/require-times=
+   Thank you Steve Purcell!
+
 #+BEGIN_SRC emacs-lisp
-(defun sanityinc/time-subtract-millis (b a)
-  (* 1000.0 (float-time (time-subtract b a))))
+  (defun sanityinc/time-subtract-millis (b a)
+    (* 1000.0 (float-time (time-subtract b a))))
 
-(defvar sanityinc/require-times nil
-  "A list of (FEATURE . LOAD-DURATION).
-LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
+  (defvar sanityinc/require-times nil
+    "A list of (FEATURE . LOAD-DURATION).
+  LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
-(defadvice require
-  (around build-require-times (feature &optional filename noerror) activate)
-  "Note in `sanityinc/require-times' the time taken to require each feature."
-  (let* ((already-loaded (memq feature features))
-         (require-start-time (and (not already-loaded) (current-time))))
-    (prog1
-        ad-do-it
-      (when (and (not already-loaded) (memq feature features))
-        (add-to-list 'sanityinc/require-times
-                     (cons feature
-                           (sanityinc/time-subtract-millis (current-time)
-                                                           require-start-time))
-                     t)))))
+  (defadvice require
+    (around build-require-times (feature &optional filename noerror) activate)
+    "Note in `sanityinc/require-times' the time taken to require each feature."
+    (let* ((already-loaded (memq feature features))
+           (require-start-time (and (not already-loaded) (current-time))))
+      (prog1
+          ad-do-it
+        (when (and (not already-loaded) (memq feature features))
+          (add-to-list 'sanityinc/require-times
+                       (cons feature
+                             (sanityinc/time-subtract-millis (current-time)
+                                                             require-start-time))
+                       t)))))
 #+END_SRC
 
 * Packages
-  First of all lets have some security [fn:your_text_editor_is_malware].
+
+  First of all, let us add some security.
+
+  This is taken from the blog post:
+  "Your Text Editor Is Malware" on <2015-11-12 Thu>
+  https://glyph.twistedmatrix.com/2015/11/editor-malware.html
 
   Two things are needed for this to work.
   1. python -m pip install --user certifi
@@ -115,12 +152,16 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                   (lambda (retrieved) t)))
 #+END_SRC
 
-  Repos install in the =~/.emacs.d/elpa/= directory.
+  I want my packages to install into the =~/.emacs.d/elpa/= directory.
 
 #+BEGIN_SRC emacs-lisp
   (defconst elpa-dir "elpa"
     "Which directory elpa packages is installed in. Defined in package.el.")
+#+END_SRC
 
+  Initiate packages
+
+#+BEGIN_SRC emacs-lisp
   (require 'package)
   (setq package-archives
         '(
@@ -128,9 +169,6 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
           ("melpa"     . "https://melpa.org/packages/")
           ("marmalade" . "https://marmalade-repo.org/packages/")
           ("elpy"      . "https://jorgenschaefer.github.io/packages/")
-
-          ;; Untrusted, maybe not really needed as org exist in gnu as well
-          ;; ("org"       . "http://orgmode.org/elpa/")
           ))
 
   (unless (file-exists-p  (concat user-emacs-directory elpa-dir))
@@ -144,51 +182,108 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   on demand.
 
 #+BEGIN_SRC emacs-lisp
-(defun ensure-pkg (&rest pkgs)
-  "If package PKG is not installed, install it."
-  (dolist (pkg pkgs)
-    (unless (package-installed-p pkg)
-      (progn
-        (unless (assoc pkg package-archive-contents)
-          (package-refresh-contents))
-        (package-install pkg)))))
+  (defun ensure-pkg (&rest pkgs)
+    "If package PKG is not installed, install it."
+    (dolist (pkg pkgs)
+      (unless (package-installed-p pkg)
+        (progn
+          (unless (assoc pkg package-archive-contents)
+            (package-refresh-contents))
+          (package-install pkg)))))
 #+END_SRC
 
 * Global modes
-** Smart M-x (smex)
-   To get a faster startup-time, we only load smex when it's needed.
-#+BEGIN_SRC emacs-lisp
-(ensure-pkg 'smex)
-(global-set-key [(meta x)] (lambda ()
-                             (interactive)
-                             (or (boundp 'smex-cache)
-                                 (smex-initialize))
-                             (global-set-key [(meta x)] 'smex)
-                             (smex)))
 
-(global-set-key [(shift meta x)] (lambda ()
-                                   (interactive)
-                                   (or (boundp 'smex-cache)
-                                       (smex-initialize))
-                                   (global-set-key [(shift meta x)] 'smex-major-mode-commands)
-                                   (smex-major-mode-commands)))
+** smex
+
+   Smex stands for Smart M-x, and is an M-x enhancement. It is built on top of
+   IDO. Read more at https://github.com/nonsequitur/smex
+
+#+BEGIN_SRC emacs-lisp
+  (ensure-pkg 'smex)
 #+END_SRC
 
-** Interactively do things (ido)
-   ido-mode, easier minibuffer/file lookups.
-#+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'ido 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
+   To get a faster startup-time, we only load smex when it's needed (that's why
+   we use lambdas).  Bind ~M-x~ to `smex', and ~S-M-x~ to `smex-major-mode-commands'
+   which is like smex, but for the current major mode only.
 
+#+BEGIN_SRC emacs-lisp
+  (global-set-key [(meta x)] (lambda ()
+                               (interactive)
+                               (or (boundp 'smex-cache)
+                                   (smex-initialize))
+                               (global-set-key [(meta x)] 'smex)
+                               (smex)))
+
+  (global-set-key [(shift meta x)] (lambda ()
+                                     (interactive)
+                                     (or (boundp 'smex-cache)
+                                         (smex-initialize))
+                                     (global-set-key [(shift meta x)] 'smex-major-mode-commands)
+                                     (smex-major-mode-commands)))
+#+END_SRC
+
+** ido
+
+   Ido stands for Interactively do things, it is part of Emacs since v22.
+   It make it easier output for the minibuffer.
+
+#+BEGIN_SRC emacs-lisp
   (require 'ido)
   (ido-mode 1)
+#+END_SRC
+
+   I want to use it everywhere possible!
+
+#+BEGIN_SRC emacs-lisp
   (ido-everywhere 1)
-  (setq ido-enable-flex-matching t
-        ido-ignore-extensions t
-        ido-use-filename-at-point 'guess
-        ido-create-new-buffer 'always)
+#+END_SRC
+
+   Enable flexible string matching, which means that if the entered string does
+   not match any item, any item containing the entered characters in the given
+   sequence will match.
+
+#+BEGIN_SRC emacs-lisp
+  (setq ido-enable-flex-matching t)
+#+END_SRC
+
+   Ignore files in `completion-ignored-extensions’ list.
+
+#+BEGIN_SRC emacs-lisp
+  (setq ido-ignore-extensions t)
+#+END_SRC
+
+   Make Ido look for a filename at point.
+   May use `ffap-guesser’ to guess whether text at point is a filename.
+   If found, use that as the starting point for filename selection.
+
+   This basically means when doing `find-file' ~C-x C-f~ it will check if the
+   current word at point is a filename or not, if it is, use that as a starting
+   point for `find-file'.
+
+#+BEGIN_SRC emacs-lisp
+  (setq ido-use-filename-at-point 'guess)
+#+END_SRC
+
+   Specify whether a new buffer is created if no buffer matches substring.
+   Choices are ‘always’ to create new buffers unconditionally, ‘prompt’ to ask
+   user whether to create buffer, or ‘never’ to never create new buffer.
+
+   I really like this feature. Create new buffers when specifying a new
+   buffer-name to ido-switch-buffer ~C-x b~.
+
+#+BEGIN_SRC emacs-lisp
+  (setq ido-create-new-buffer 'always)
+#+END_SRC
+
+   Also install some ido-minor modes.
+
+#+BEGIN_SRC emacs-lisp
+  (ensure-pkg 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
 #+END_SRC
 
    Org-mode and magit have own ido-completion
+
 #+BEGIN_SRC emacs-lisp
   (setq org-completion-use-ido t)
   (setq magit-completing-read-function 'magit-ido-completing-read)
@@ -1497,6 +1592,5 @@ Test cases
 #+END_SRC
 
 * References
-[fn:your_text_editor_is_malware] Your Text Editor Is Malware - <2015-11-12 Thu> - https://glyph.twistedmatrix.com/2015/11/editor-malware.html
 [fn:organize_your_life_in_plain_text] Organize Your Life In Plain Text - <2015-11-14 Sat> - http://doc.norang.ca/org-mode.html
 [fn:pdf-tools] PDF Tools README - <2015-11-14 Sat> - https://github.com/politza/pdf-tools
