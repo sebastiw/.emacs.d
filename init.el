@@ -1,8 +1,32 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   ;;
+;;                                                                          ;;
+;;                 You are looking in the wrong file...                     ;;
+;;          Go to the init.org file instead, where you will find            ;;
+;;               an explanation to all parameters as well.                  ;;
+;;                                                                          ;;
+;;                             Good luck!                                   ;;
+;;                                                                          ;;
+;;  NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(let ((minver 24))
-  (unless (>= emacs-major-version minver)
-    (error "Your Emacs is too old -- this config requires v%s or higher"
-           minver)))
+(let ((minver 24)
+      (recver 25))
+  (if (< emacs-major-version minver)
+      (error "Your Emacs is too old -- this config requires v%s or higher"
+             minver)
+    (when (< emacs-major-version recver)
+      (format-message
+       (concat "You are probably fine with Emacs v%s for this init-file, but "
+               "I cannot guarantee it. Recommended version of Emacs is v%s")
+       minver recver))))
+
+(let ((recos "gnu/linux"))
+  (when (not (string-equal system-type recos))
+    (format-message
+     (concat "You might be fine with %s as OS for this init-file, but I "
+             "cannot guarantee it. Recommended OS is %s")
+     system-type recos)))
 
 (setq-default gc-cons-threshold 10000000) ;; 10mB
 
@@ -61,9 +85,6 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
         ("melpa"     . "https://melpa.org/packages/")
         ("marmalade" . "https://marmalade-repo.org/packages/")
         ("elpy"      . "https://jorgenschaefer.github.io/packages/")
-
-        ;; Untrusted, maybe not really needed as org exist in gnu as well
-        ;; ("org"       . "http://orgmode.org/elpa/")
         ))
 
 (unless (file-exists-p  (concat user-emacs-directory elpa-dir))
@@ -81,676 +102,27 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
           (package-refresh-contents))
         (package-install pkg)))))
 
-(ensure-pkg 'smex)
-(global-set-key [(meta x)] (lambda ()
-                             (interactive)
-                             (or (boundp 'smex-cache)
-                                 (smex-initialize))
-                             (global-set-key [(meta x)] 'smex)
-                             (smex)))
+(setq-default bidi-paragraph-direction 'left-to-right)
 
-(global-set-key [(shift meta x)] (lambda ()
-                                   (interactive)
-                                   (or (boundp 'smex-cache)
-                                       (smex-initialize))
-                                   (global-set-key [(shift meta x)] 'smex-major-mode-commands)
-                                   (smex-major-mode-commands)))
+(setq initial-scratch-message nil)
 
-(ensure-pkg 'ido 'ido-vertical-mode 'ido-ubiquitous 'ido-hacks)
-
-(require 'ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(setq ido-enable-flex-matching t
-      ido-ignore-extensions t
-      ido-use-filename-at-point 'guess
-      ido-create-new-buffer 'always)
-
-(setq org-completion-use-ido t)
-(setq magit-completing-read-function 'magit-ido-completing-read)
-
-(require 'ido-vertical-mode)
-(eval-after-load "ido"
-  '(progn
-     (setq ido-use-faces t)
-     (set-face-attribute 'ido-vertical-first-match-face nil
-                         :background nil
-                         :foreground "orange")
-     (set-face-attribute 'ido-vertical-only-match-face nil
-                         :background nil
-                         :foreground nil)
-     (set-face-attribute 'ido-vertical-match-face nil
-                         :foreground nil)))
-(ido-vertical-mode 1)
-
-(require 'ido-ubiquitous)
-(ido-ubiquitous-mode 1)
-
-(ensure-pkg 'ido-hacks)
-(require 'ido-hacks)
-(ido-hacks-mode)
-
-(ensure-pkg 'magit)
-(require 'magit)
-
-(ensure-pkg 'popwin)
-(require 'popwin)
-(popwin-mode 1)
-
-(ensure-pkg 'fill-column-indicator)
-(require 'fill-column-indicator)
-
-(define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
-(global-fci-mode 1)
-
-(ensure-pkg 'rainbow-delimiters)
-(require 'rainbow-delimiters)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-(setq rainbow-delimiters-max-face-count 1)
-
-(ensure-pkg 'auto-complete)
-(require 'auto-complete)
-(setq ac-delay 0
-      ac-use-fuzzy t
-      ac-auto-start 2)
-
-(defun clearcase-mode-on ()
-  (interactive)
-  (setq directory-sep-char ?/
-        ;clearcase-checkin-arguments (quote ("-nc"))
-        ;clearcase-checkout-arguments (quote ("-nc"))
-        )
-  (require 'clearcase))
-
-(ensure-pkg 'nyan-mode)
-(require 'nyan-mode)
-(nyan-mode 1)
-
-(winner-mode 1)
-
-(show-paren-mode t)
-
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-
-(global-hl-line-mode 1)
-
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward
-      uniquify-strip-common-suffix t)
-
-(column-number-mode 1)
-
-(fset 'yes-or-no-p 'y-or-n-p)
-
-(setq standard-indent 2
-      doc-view-continuous t
-      inhibit-startup-screen t
-      find-file-wildcards t)
-
-(setq-default indent-tabs-mode nil
-              fill-column 80)
-
-(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10"))
-
-(when (find-font (font-spec :name "Monoid"))
-     ; (set-frame-font "Monoid-8")
-     (add-to-list 'default-frame-alist '(font . "Monoid-8")))
-
-(setq
-   backup-by-copying t             ; don't clobber symlinks
-   backup-directory-alist
-    '(("." . "~/.emacs.d/.saves")) ; don't litter my fs tree
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)              ; use versioned backups
-
-(defvar oni:normal-color "DarkOliveGreen"
-  "Cursor color to pass along to `set-cursor-color' for normal
-  buffers.")
-
-(defvar oni:normal-cursor-type 'bar
-  "A `cursor-type' for normal buffers.")
-
-(defvar oni:overwrite-color "red"
-  "Cursor color to pass along to `set-cursor-color' for buffers
-  in overwrite mode.")
-
-(defvar oni:overwrite-cursor-type 'box
-  "A `cursor-type' for buffers in overwrite mode.")
-
-(defvar oni:read-only-color "DarkGrey"
-  "Cursor color to pass along to `set-cursor-color' for read-only
-  buffers.")
-
-(defvar oni:read-only-cursor-type 'hbar
-  "A `cursor-type' for read-only buffers.")
-
-(defun oni:set-cursor-according-to-mode ()
-  "Change cursor color and type according to some minor modes."
-  (cond
-   (buffer-read-only
-    (set-cursor-color oni:read-only-color)
-    (setq cursor-type oni:read-only-cursor-type))
-   (overwrite-mode
-    (set-cursor-color oni:overwrite-color)
-    (setq cursor-type oni:overwrite-cursor-type))
-   (t
-    (set-cursor-color oni:normal-color)
-    (setq cursor-type oni:normal-cursor-type))))
-
-(add-hook 'post-command-hook 'oni:set-cursor-according-to-mode)
-
-(add-to-list 'find-file-not-found-functions #'create-non-existent-directory)
-
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
-
-(ensure-pkg 'auto-complete) ; 'auto-complete-config
-(require 'auto-complete)
-(setq ac-auto-show-menu 0.01
-      ac-auto-start 1
-      ac-delay 0.01)
-
-(add-hook 'c-mode-hook
-          (lambda () (local-set-key (kbd "M-,") #'pop-tag-mark)))
-(add-hook 'c-mode-hook
-          (lambda () (local-set-key (kbd "M-*") #'tags-loop-continue)))
-
-(add-to-list 'auto-mode-alist '("\\.[eh]rl\\'" . erlang-mode))
-(add-to-list 'auto-mode-alist '("\\.yaws?\\'" . erlang-mode))
-(add-to-list 'auto-mode-alist '("\\.escript?\\'" . erlang-mode))
-
-(ensure-pkg 'erlang)
-(let ((erootdir (if (boundp 'erlang-root-dir) erlang-root-dir nil))
-        (exe-find (if (executable-find "erl")
-                      (directory-file-name (file-name-directory (executable-find "erl")))
-                    nil))
-        (shell-cmd-find (if (file-name-directory (shell-command-to-string "which erl"))
-                            (directory-file-name (file-name-directory (shell-command-to-string "which erl")))
-                          nil)))
-
-    (if (and (equal erootdir nil)
-             (equal exe-find "")
-             (equal shell-cmd-find ""))
-        (error "Could not find erlang, set the variable `erlang-root-dir'"))
-
-    (if (equal erootdir nil)
-        (if (equal exe-find "")
-            (setq erlang-root-dir shell-cmd-find)
-          (setq erlang-root-dir exe-find))))
-
-(setq erlang-man-root (expand-file-name "../lib/erlang" erlang-root-dir))
-(add-to-list 'load-path (file-expand-wildcards
-                         (concat erlang-root-dir
-                                 "../lib/tools-*/emacs")))
-
-(require 'erlang-start)
-
-(ensure-pkg 'edts)
-(setq edts-man-root erlang-man-root)
-(add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
-
-(defvar eqc-root-dir (expand-file-name "lib/eqc-1.30.0"
-                                       erlang-root-dir)
- "Where EQC is installed.")
-(defvar eqc-load-path (expand-file-name "lib/eqc-1.30.0/emacs/"
-                                        erlang-root-dir)
- "EQC's load path.")
-
-(when (file-exists-p eqc-root-dir)
-    (add-to-list 'load-path eqc-load-path)
-    (autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
-    (add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
-    (setq eqc-max-menu-length 30))
-
-(ensure-pkg 'elisp-slime-nav)
-(require 'elisp-slime-nav)
-(add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
-(add-hook 'lisp-interaction-mode-hook 'elisp-slime-nav-mode)
-
-(ensure-pkg 'paredit)
-(require 'paredit)
-(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-
-(defalias 'emacs 'find-file)
-(defalias 'ec 'find-file)
-(defalias 'd 'dired)
-
-(setenv "TERM" "xterm-256color")
-(setenv "PAGER" "cat")
-
-(require 'eshell)
-  (eval-after-load 'esh-opt
-    '(progn
-
-(require 'em-cmpl)
-(require 'em-prompt)
-(require 'em-term)
-(require 'em-unix) ;; Had to download and compile esh-ext.el again..
-
-(setq pcomplete-cycle-completions nil)
-(setq eshell-cmpl-cycle-completions nil)
-
-(add-to-list 'eshell-visual-commands "el")
-(add-to-list 'eshell-visual-commands "elinks")
-(add-to-list 'eshell-visual-commands "htop")
-(add-to-list 'eshell-visual-commands "tail")
-(add-to-list 'eshell-visual-commands "ssh")
-
-(require 'em-hist)
-(setq eshell-history-size 20000
-      eshell-save-history-on-exit t
-      eshell-hist-ignoredups t)
-
-
-;; History if Helm is installed
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (define-key eshell-mode-map (kbd "M-l")
-              'helm-eshell-history)))
-;; History if ido is installed
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (local-set-key
-             (kbd "C-c h")
-             (lambda ()
-               (interactive)
-               (insert
-                (ido-completing-read
-                 "Eshell history: "
-                 (delete-dups
-                  (ring-elements eshell-history-ring))))))
-            (local-set-key (kbd "C-c C-h") 'eshell-list-history)))
-
-(require 'em-smart)
-
-(setq eshell-where-to-jump 'begin
-      eshell-review-quick-commands nil
-      eshell-smart-space-goes-to-end t)
-
-(add-hook 'eshell-mode-hook
-               '(lambda () (define-key eshell-mode-map "\C-a" 'eshell-bol)))
-
-;     (add-to-list 'eshell-command-completions-alist
-;                  '("gunzip" "gz\\'"))
-;     (add-to-list 'eshell-command-completions-alist
-;                  '("tar" "\\(\\.tar|\\.tgz\\|\\.tar\\.gz\\)\\'"))
-     ;(add-to-list 'eshell-output-filter-functions 'eshell-handle-ansi-color)
-
-(ensure-pkg 'eshell-prompt-extras 'virtualenvwrapper)
-
-    ;; Show python virtual environment information
-    (require 'virtualenvwrapper)
-    (venv-initialize-eshell)
-
-    (require 'eshell-prompt-extras)
-
-    (require 'cl)
-    (defun oni:shorten-dir (dir)
-      "Shorten a directory, (almost) like fish does it."
-      (let ((scount (1- (count ?/ dir))))
-        (dotimes (i scount)
-          (string-match "\\(/\\.?.\\)[^/]+" dir)
-          (setq dir (replace-match "\\1" nil nil dir))))
-      dir)
-    (defun oni:eshell-prompt-function ()
-      (let ((status (if (zerop eshell-last-command-status) ?+ ?-))
-            (hostname (shell-command-to-string "hostname"))
-            (dir (abbreviate-file-name (eshell/pwd)))
-            (branch
-             (shell-command-to-string
-              "sh -c \"git branch --contains HEAD 2>/dev/null | grep \\*\""))
-            (userstatus (if (zerop (user-uid)) ?# ?$)))
-        (format "%c%s:%s%s %c "
-                status
-                (substring hostname 0 -1)
-                (oni:shorten-dir dir)
-                (if (not (string= branch ""))
-                  (concat "@" (substring branch 2 -1))
-                 "")
-                userstatus)))
-
-    (setq eshell-highlight-prompt t
-;          epe-git-dirty-char "*"
-          eshell-prompt-function 'oni:eshell-prompt-function ;epe-theme-dakrone
-    )
-
-(setq shell-prompt-pattern "^.*eselnts1349[^>]* *")
-
-))
-
-(autoload 'gnus-alias-determine-identity "gnus-alias" "" t)
-(add-hook 'message-setup-hook 'gnus-alias-determine-identity)
-
-(add-to-list 'auto-mode-alist '("\\.hs\\'" . haskell-mode))
-
-(ensure-pkg 'haskell-mode 'hi2)
-(eval-after-load 'haskell-mode
-    '(progn
-      (local-set-key (kbd "C-c C-k") 'haskell-compile)
-
-      ;; Haskell-indentation
-      (require 'hi2)
-      (hi2-mode)
-      (require 'haskell-mode-autoloads)
-
-      (turn-on-haskell-indentation)
-      (turn-on-haskell-doc-mode)
-      (turn-on-haskell-decl-scan)
-
-      (setq haskell-compile-command "ghc -Wall -threaded -eventlog -rtsopts %s")))
-
-(add-to-list 'auto-mode-alist '("\\.java\\'" . java-mode))
-
-(ensure-pkg 'android-mode)
-(eval-after-load 'java-mode
-    '(progn
-      (require 'android)
-      (android-mode)
-      (custom-set-variables '(android-mode-sdk-dir
-                              "~/Android/android-sdk-linux"))))
-
-(add-hook 'js-mode-hook 'js2-minor-mode)
-
-(add-to-list 'interpreter-mode-alist '("node" . js2-mode))
-; (add-to-list 'interpreter-mode-alist '("node" . js-mode))
-
-(ensure-pkg 'coffee-mode 'js-comint 'js2-mode 'json-mode 'ac-js2)
-(eval-after-load 'js-mode
-  '(progn
-    (require 'coffee-mode)
-    (require 'js-comint)
-    (require 'js2-mode)
-    (require 'json-mode)
-    (require 'ac-js2)
-
-    (require 'skewer-mode)
-
-    ;; js2-mode-20140114
-    ;; This mode does not yet work with "multi-mode" modes such as `mmm-mode'
-    ;; and `mumamo', although it could be made to do so with some effort.
-    ;; This means that `js2-mode' is currently only useful for editing
-    ;; JavaScript files, and not for editing JavaScript within <script> tags
-    ;; or templates.
-
-    ;; To unset the mouse
-    ;; (global-unset-mouse)
-
-    ;; Imenu support?
-    (js2-imenu-extras-setup)
-
-    (define-key js2-mode-map (kbd "TAB") 'indent-for-tab-command)
-
-    (setq mode-name "JS2"
-          indent-tabs-mode nil
-          js-indent-level 2
-          js2-basic-offset 2
-          js2-use-font-lock-faces t
-          js2-mode-must-byte-compile nil
-          js2-indent-on-enter-key t
-          js2-auto-indent-p t
-          js2-bounce-indent-p nil)))
-
-(add-to-list 'auto-mode-alist '("\\.(la)?tex\\'" . LaTeX))
-
-(ensure-pkg 'auctex 'auctex-latexmk 'ispell 'ac-ispell 'writegood-mode
-            'smartparens 'ac-math)
-(require 'tex-mode)
-(eval-after-load 'LaTeX
-    '(progn
-      (bind-key "C-c i" 'insert-latex LaTeX-mode-map)
-      (bind-key "C-c C-c" 'TeX-comment-or-uncomment-region LaTeX-mode-map)
-      (bind-key "C-c C-k" 'TeX-command-master LaTeX-mode-map)
-
-      (require 'auctex)
-      (require 'auctex-latexmk)
-      (require 'ispell)
-      (require 'ac-ispell)
-      (require 'writegood-mode)
-      (require 'smartparens-latex)
-      (require 'ac-math)
-
-      (auctex-latexmk-setup)
-      (make-local-variable 'ispell-parser)
-      (setq ispell-parser 'tex)
-      (writegood-mode)
-      (smartparens-mode 1)
-      (LaTeX-math-mode)
-
-
-    (visual-line-mode t)
-    (flyspell-mode t)
-    (auto-fill-mode t)
-    (abbrev-mode +1)
-
-    (font-lock-add-keywords nil '(("\\<\\(FIXME\\|TODO\\|BUG\\)" 1 font-lock-warning-face t)))
-
-    (setq-default TeX-master nil)
-
-    (setq LaTeX-command "latex"
-          TeX-parse-self t
-          TeX-auto-save t
-          TeX-PDF-mode t
-          TeX-source-correlate-method 'synctex
-          TeX-source-correlate-mode t
-          TeX-source-correlate-start-server t
-          TeX-clean-confirm nil
-          TeX-view-predicate-list '((output-pdf (string-match "pdf" (TeX-output-extension))))
-          TeX-view-program-list
-          '(("Default"
-             (lambda () (interactive) (progn (TeX-clean) (find-file-other-window "%o")))))
-          TeX-view-program-selection '((output-pdf "Default")))))
-
-(define-skeleton my-tex-default
-  "Latex default skeleton"
-  (concat
-   "\\documentclass[11pt,a4paper]{report}\n"
-   "\\usepackage[OT1]{fontenc}\n"
-   "\\usepackage[utf8x]{inputenc}\n"
-   "\\usepackage[english]{babel}\n\n"
-   "\\begin{document}\n\n\n"
-   "\\end{document}"))
-
-(define-auto-insert "\\.tex\\'" 'my-tex-default)
-
-(add-hook 'doc-view-mode-hook (lambda ()
-                                (setq doc-view-resolution 300)
-                                (auto-revert-mode)))
-
-(ensure-pkg 'pdf-tools)
-(pdf-tools-install)
-
-(global-set-key (kbd "C-c l") 'org-store-link)
-(global-set-key (kbd "C-c c") 'org-capture)
-(global-set-key (kbd "C-c a") 'org-agenda)
-
-;; Where to keep org agenda files
-(setq org-agenda-files (list "~/ORG/"))
-
-(eval-after-load "org"
-  '(progn
-     (setq org-latex-pdf-process
-           (quote ("pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
-                   "bibtex %b"
-                   "pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
-                   "pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f")))
-     ;; (setq org-latex-pdf-process (quote ("texi2dvi -p -b -V %f")))
-     (require 'ox-latex)
-     (add-to-list 'org-latex-classes
-                  '("acmtog" "\\documentclass{acmtog}"
-                    ("\\section{%s}" . "\\section*{%s}")
-                    ("\\subsection{%s}" . "\\subsection*{%s}")
-                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                    ("\\paragraph{%s}" . "\\paragraph*{%s}")))
-     (add-to-list 'org-latex-classes
-                  '("acm_proc_article-sp" "\\documentclass{acm_proc_article-sp}"
-                    ("\\section{%s}" . "\\section*{%s}")
-                    ("\\subsection{%s}" . "\\subsection*{%s}")
-                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                    ("\\paragraph{%s}" . "\\paragraph*{%s}")))
-     ))
-
-(eval-after-load "org"
-  '(progn
-     (setq
-      ;; Indent after a new node?
-      org-adapt-indentation t
-      ;; Stupid yanks, Monday is the first day of the week
-      calendar-week-start-day 1
-      ;; Do not dim blocked items
-      org-agenda-dim-blocked-tasks nil
-      ;; How many days to include in overview
-      org-agenda-span 'week
-      ;; Show all occurrences of a repeating timestamp
-      org-agenda-repeating-timestamp-show-all nil
-      ;; Don't show deadlines if the item is done
-      org-agenda-skip-deadline-if-done t
-      ;; Don't show scheduled items in agenda if done
-      org-agenda-skip-scheduled-if-done t
-      ;; Start agenda on the current day
-      org-agenda-start-on-weekday nil
-      ;; Unchecked boxes will block switching the parent to DONE
-      org-enforce-todo-checkbox-dependencies t
-      ;; Provide refile targets as paths
-      org-refile-use-outline-path t
-      ;; Store new notes at the beginning
-      org-reverse-note-order t
-      ;; Be able to mark a region using Shift
-      org-support-shift-select t
-      ;; TeX-like sub and superscripts with X^{some} and Y_{thing}
-      org-use-sub-superscripts '{}
-      ;; C-a and C-e will ignore some stuff on first attempt
-      org-special-ctrl-a/e t
-      ;; Hide the markup elements
-      org-hide-emphasis-markers t
-;;;        org-agenda-tags-todo-honor-ignore-options t
-;;;        org-clock-modeline-total 'today
-;;;        org-mobile-force-id-on-agenda-items nil
-;;;        org-habit-show-habits-only-for-today nil
-
-      )
-
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (java . t)
-   (dot . t)
-   (ditaa . t)
-   (R . t)
-   (python . t)
-   (ruby . t)
-   (gnuplot . t)
-   (clojure . t)
-   (sh . t)
-   (ledger . t)
-   (org . t)
-   (plantuml . t)
-   (latex . t)))
-
-(setq org-capture-templates
-      '(("t" "Todo" entry (file+headline "~/ORG/gtd.org" "Inbox")
-             "* TODO %^{Brief Description}\n%U\n%?")))
-
-;     (define-key org-mode-map (kbd "C-c C-c") 'org-todo)
-;     (define-key org-mode-map (kbd "C-c C-k") 'org-ctrl-c-ctrl-c)
-
-     ;; I really like to change windows with C-<tab>
-     (define-key org-mode-map (kbd "C-<tab>") 'other-window)
-
-     ;; Insert template (special function defined below)
-     (define-key org-mode-map (kbd "C-#") 'org-begin-template)
-
-(lambda () (font-lock-add-keywords nil '(("\\<\\(FIXME\\|UNREACHABLE\\|REACHABLE\\|BUG\\)" 1 font-lock-warning-face t))))
-
-     (defun org-begin-template ()
-       "Make a template at point."
-       (interactive)
-       (if (org-at-table-p)
-           (call-interactively 'org-table-rotate-recalc-marks)
-         (let* ((choices '(("s" . "SRC")
-                           ("e" . "EXAMPLE")
-                           ("q" . "QUOTE")
-                           ("v" . "VERSE")
-                           ("c" . "CENTER")
-                           ("l" . "LaTeX")
-                           ("h" . "HTML")
-                           ("a" . "ASCII")))
-                (key
-                 (key-description
-                  (vector
-                   (read-key
-                    (concat (propertize "Template type: " 'face 'minibuffer-prompt)
-                            (mapconcat (lambda (choice)
-                                         (concat (propertize (car choice) 'face 'font-lock-type-face)
-                                                 ": "
-                                                 (cdr choice)))
-                                       choices
-                                       ", ")))))))
-           (let ((result (assoc key choices)))
-             (when result
-               (let ((choice (cdr result)))
-                 (cond
-                  ((region-active-p)
-                   (let ((start (region-beginning))
-                         (end (region-end)))
-                     (goto-char end)
-                     (insert "\n#+END_" choice)
-                     (goto-char start)
-                     (insert "#+BEGIN_" choice "\n")))
-                  (t
-                   (insert "#+BEGIN_" choice "\n")
-                   (save-excursion (insert "\n#+END_" choice))))))))))
-))
-
-(ensure-pkg 'python 'elpy)
-; (add-to-list 'load-path (expand-file-name "python-2*/" "~/.emacs.d/elpa/"))
-(require 'python "python.el")
-(setq python-indent-offset 4)
-(elpy-enable)
-
-(ensure-pkg 'ensime)
-(ensure-pkg 'scala-mode2)
-
-(eval-after-load 'scala-mode2
-  '(progn
-     (require 'ensime)
-;;   (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
-     (ensime)))
-
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.php5?\\'" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-
-(autoload 'xmodmap-mode "xmodmap-mode" nil t)
-(add-to-list 'auto-mode-alist '("^\\.Xmodmap$" . xmodmap-mode))
-
-(when (file-exists-p "/vobs/gsn/tools/3pp/erlang_bt_tool/adaptations/emacs/")
-  (add-to-list 'load-path "/vobs/gsn/tools/3pp/erlang_bt_tool/adaptations/emacs/")
-  (require 'emacs_bt))
-
+(global-set-key (kbd "C-c e") 'open-dot-emacs)
 (defun open-dot-emacs ()
   (interactive)
   (let ((user-init-file-org (concat (file-name-directory user-init-file)
                                     (file-name-base user-init-file)
                                     ".org")))
     (if (file-exists-p user-init-file-org)
-      (find-file user-init-file-org)
-     (find-file user-init-file))))
+        (find-file user-init-file-org)
+      (find-file user-init-file))))
 
+(global-set-key (kbd "C-<tab>") 'other-window)
+(global-set-key (kbd "<C-S-iso-lefttab>") 'select-previous-window)
 (defun select-previous-window ()
   (interactive)
   (select-window (previous-window)))
 
-(defun insert-latex ()
-  (interactive)
-  (insert-file "~/.emacs.d/.latexmall"))
-
+(global-set-key (kbd "<f11>") 'fullscreen)
 (defun fullscreen ()
   (interactive)
   (set-frame-parameter nil 'fullscreen
@@ -760,6 +132,13 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   "Untabify current buffer."
   (interactive)
   (save-excursion (untabify (point-min) (point-max))))
+
+(setq-default indent-tabs-mode nil)
+
+(setq whitespace-style '(face trailing tabs lines-tail))
+(whitespace-mode 1)
+
+(global-set-key (kbd "C-z") 'eof)
 
 (defun global-unset-mouse ()
   "Unset all mouse events"
@@ -787,176 +166,154 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
                 (format q parent-directory)))
       (make-directory parent-directory t))))
 
-(defun insert-random-number ()
+(winner-mode 1)
+
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+
+(require 'uniquify)
+
+(setq uniquify-buffer-name-style 'post-forward
+      uniquify-strip-common-suffix t)
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(column-number-mode 1)
+
+(setq
+   backup-by-copying t             ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.emacs.d/.saves")) ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)              ; use versioned backups
+
+(ensure-pkg 'magit)
+(require 'magit)
+
+(eval-after-load 'magit
+  '(progn
+     (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)))
+
+(defun magit-toggle-whitespace ()
   (interactive)
-  (insert (number-to-string (random 100))))
+  (if (member "-w" magit-diff-options)
+      (magit-dont-ignore-whitespace)
+    (magit-ignore-whitespace)))
 
-(defun hex-to-dec ()
-  "Prints the decimal value of a hexadecimal string under cursor.
-Samples of valid input:
-
-  ffff
-  0xffff
-  #xffff
-  FFFF
-  0xFFFF
-  #xFFFF
-
-Test cases
-  64*0xc8+#x12c 190*0x1f4+#x258
-  100 200 300   400 500 600"
+(defun magit-ignore-whitespace ()
   (interactive)
+  (add-to-list 'magit-diff-options "-w")
+  (magit-refresh))
 
-  (let (inputStr tempStr p1 p2)
-    (save-excursion
-      (search-backward-regexp "[^0-9A-Fa-f]" nil t)
-      (forward-char)
-      (setq p1 (point))
-      (search-forward-regexp "[^0-9A-Fa-fx#]" nil t)
-      (backward-char)
-      (setq p2 (point)))
-
-    (setq inputStr (buffer-substring-no-properties p1 p2))
-
-    (let ((case-fold-search nil))
-      (setq tempStr (replace-regexp-in-string "^0x" "" inputStr)) ; C, Perl, …
-      (setq tempStr (replace-regexp-in-string "^#x" "" tempStr)) ; elisp …
-      (setq tempStr (replace-regexp-in-string "^#" "" tempStr))  ; CSS …
-    )
-
-    (message "Hex %s is %d" tempStr (string-to-number tempStr 16))))
-
-(defun dec-to-hex ()
-  "Convert decimal numbers to hexadecimal."
+(defun magit-dont-ignore-whitespace ()
   (interactive)
-
-  (let (inputStr p1 p2)
-    (save-excursion
-      (search-backward-regexp "[^0-9]" nil t)
-      (forward-char)
-      (setq p1 (point))
-      (search-forward-regexp "[^0-9]" nil t)
-      (backward-char)
-      (setq p2 (point)))
-
-  (setq inputStr (buffer-substring-no-properties p1 p2))
-
-  (message "Dec %s is 0x%X" inputStr (string-to-number inputStr 10))))
-
-(defun dec-to-bin ()
-  "Convert decimal numbers to binary."
-  (interactive)
-
-  (let (inputStr p1 p2)
-    (save-excursion
-      (search-backward-regexp "[^0-9]" nil t)
-      (forward-char)
-      (setq p1 (point))
-      (search-forward-regexp "[^0-9]" nil t)
-      (backward-char)
-      (setq p2 (point)))
-
-  (setq inputStr (buffer-substring-no-properties p1 p2)
-        i (string-to-number inputStr 10))
-
-  (let ((res ""))
-    (while (not (= i 0))
-      (setq res (concat (if (= 1 (logand i 1)) "1" "0") res))
-      (setq i (lsh i -1)))
-    (if (string= res "")
-        (setq res "0"))
-    (message "Dec %s is %s" inputStr res))))
-
-(defun hex-to-bin ()
-  "Convert hexadecimal numbers to binary."
-  (interactive)
-
-  (let (inputStr tempStr p1 p2)
-    (save-excursion
-      (search-backward-regexp "[^0-9A-Fa-f]" nil t)
-      (forward-char)
-      (setq p1 (point))
-      (search-forward-regexp "[^0-9A-Fa-fx#]" nil t)
-      (backward-char)
-      (setq p2 (point)))
-
-    (setq inputStr (buffer-substring-no-properties p1 p2))
-
-    (let ((case-fold-search nil))
-      (setq tempStr (replace-regexp-in-string "^0x" "" inputStr)) ; C, Perl, …
-      (setq tempStr (replace-regexp-in-string "^#x" "" tempStr)) ; elisp …
-      (setq tempStr (replace-regexp-in-string "^#" "" tempStr))  ; CSS …
-
-    (let ((res "")
-          (i (string-to-number (format "%d" (string-to-number tempStr 16)) 10)))
-      (while (not (= i 0))
-        (setq res (concat (if (= 1 (logand i 1)) "1" "0") res))
-        (setq i (lsh i -1)))
-      (if (string= res "")
-          (setq res "0"))
-
-    (message "Hex %s is %s" inputStr res)))))
-
-(setq seba/move-include-whitespace t)
-(defun seba/move-beginning-of-line ()
-  "Toggle between moving to beginning-of-text and beginning-of-line."
-  (interactive)
-  (setq seba/move-include-whitespace (not seba/move-include-whitespace))
-  (if seba/move-include-whitespace
-      (beginning-of-line)
-    (beginning-of-line-text)))
-
-(defun seba/move-end-of-line ()
-  "Toggle between moving to end-of-text and end-of-line."
-  (interactive)
-  (setq seba/move-include-whitespace (not seba/move-include-whitespace))
-  (if seba/move-include-whitespace
-      (end-of-line)
-    (move-end-of-line nil)
-    (re-search-backward "^\\|[^[:space:]]")
-    (forward-char)))
-
-(global-set-key (kbd "C-c C-k") 'compile)
-
-(global-set-key (kbd "C-c e") 'open-dot-emacs)
-
-(global-set-key (kbd "C-x C-m") 'execute-extended-command)
-(global-set-key (kbd "C-c C-m") 'execute-extended-command)
-
-(global-set-key (kbd "C-<tab>") 'other-window)
-(global-set-key (kbd "<C-S-iso-lefttab>") 'select-previous-window)
-
-(global-set-key (kbd "C-h o") 'find-library)
-
-(global-set-key (kbd "M-n") 'forward-paragraph)
-(global-set-key (kbd "M-p") 'backward-paragraph)
-
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-;; This is your old M-x.
-;(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
-
-(global-set-key (kbd "M-,") 'pop-tag-mark)
-
-(global-set-key (kbd "<f11>") 'fullscreen)
-
-(global-set-key (kbd "C-z") 'eof)
-
-(global-set-key (kbd "C-a") 'seba/move-beginning-of-line)
-(global-set-key (kbd "C-e") 'seba/move-end-of-line)
-
-;; IDO mode keymaps
-(define-key ido-common-completion-map (kbd "C-p") 'ido-prev-match)
-(define-key ido-common-completion-map (kbd "C-n") 'ido-next-match)
-
-;; Ivy + Swiper
-;; (global-set-key (kbd "C-s") 'swiper)
-;; (global-set-key (kbd "C-r") 'swiper)
-;; (global-set-key (kbd "C-c C-r") 'ivy-resume)
-;; (global-set-key [f6] 'ivy-resume)
+  (setq magit-diff-options (remove "-w" magit-diff-options))
+  (magit-refresh))
 
 (define-key magit-mode-map (kbd "C-<tab>") 'other-window)
 
-(setq-default bidi-paragraph-direction 'left-to-right)
+(ensure-pkg 'org)
+(require 'org)
 
-(setq initial-scratch-message nil)
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+(setq org-agenda-files (list "~/ORG/"))
+
+(setq calendar-week-start-day 1)
+
+(setq org-special-ctrl-a/e t)
+
+(setq org-adapt-indentation t)
+
+(setq org-use-sub-superscripts '{})
+
+(define-key org-mode-map (kbd "C-<tab>") 'other-window)
+
+;(require 'eshell)
+
+(defalias 'ec 'find-file)
+(defalias 'emacs 'find-file)
+
+(with-eval-after-load 'em-term
+    (add-to-list 'eshell-visual-commands "ssh")
+    (add-to-list 'eshell-visual-commands "htop")
+    (add-to-list 'eshell-visual-commands "tail"))
+
+(setq eshell-cmpl-cycle-completions nil)
+
+(setq shell-prompt-pattern "^.*eselnts1349[^>]* *")
+
+(defun clearcase-mode-on ()
+  (interactive)
+  (setq directory-sep-char ?/
+        ;clearcase-checkin-arguments (quote ("-nc"))
+        ;clearcase-checkout-arguments (quote ("-nc"))
+        )
+  (require 'clearcase))
+
+(let ((bt-erl-path (getenv "BT_ERL_PATH")))
+  (when (and bt-erl-path (file-exists-p bt-erl-path))
+    (add-to-list 'load-path bt-erl-path)
+    (require 'emacs_bt)))
+
+(ensure-pkg 'erlang)
+(require 'erlang-start)
+
+(setq erlang-root-dir "/opt/erlang/19.0")
+
+(ensure-pkg 'edts)
+(require 'edts-start)
+
+; (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
+
+(setq edts-man-root "/opt/erlang/19.0/lib/erlang")
+
+
+
+(ensure-pkg 'js-comint)
+(require 'js-comint)
+
+(setq inferior-js-program-command "node")
+
+(with-eval-after-load 'js-mode
+  (define-key js-mode-map (kbd "C-c C-k") 'seba/start-nodejs-in-background)
+  (defun seba/start-nodejs-in-background ()
+    (interactive)
+    (message "Not Implemented Yet")))
+
+(ensure-pkg 'helm)
+(require 'helm-config)
+
+(helm-mode 1)
+
+(helm-autoresize-mode t)
+
+(setq helm-split-window-in-side-p t)
+
+(setq helm-ff-auto-update-initial-value nil)
+
+(setq helm-mode-fuzzy-match t)
+(setq helm-completion-in-region-fuzzy-match t)
+(setq helm-buffers-fuzzy-matching t)
+(setq helm-recentf-fuzzy-match t)
+(setq helm-locate-fuzzy-match t)
+(setq helm-M-x-fuzzy-match t)
+(setq helm-semantic-fuzzy-match t)
+(setq helm-imenu-fuzzy-match t)
+(setq helm-apropos-fuzzy-match t)
+(setq helm-lisp-fuzzy-completion t)
+
+(global-set-key (kbd "C-x C-b")    'helm-buffers-list)
+(global-set-key (kbd "M-x")        'helm-M-x)
+(global-set-key (kbd "C-c h")      'helm-command-prefix)
+(global-set-key (kbd "C-x C-f")    'helm-find-files)
+(global-set-key (kbd "M-y")        'helm-show-kill-ring)
+(global-set-key (kbd "M-s o")      'helm-occur)
+(global-set-key (kbd "C-h SPC")    'helm-all-mark-rings)
+
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
