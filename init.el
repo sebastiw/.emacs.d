@@ -136,7 +136,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (setq-default indent-tabs-mode nil)
 
 (setq whitespace-style '(face trailing tabs lines-tail))
-(whitespace-mode 1)
+(global-whitespace-mode 1)
 
 (global-set-key (kbd "C-z") 'eof)
 

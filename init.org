@@ -294,9 +294,50 @@
 
 *** Show tabs and trailing whitespace
 
+    Show some whitespaces I hate everywhere.
+
+    Styles:
+    |-------------------------+------------------------------------------------|
+    | face                    | enable all visualization via faces instead of  |
+    |                         | via a display table. This value must be set to |
+    |                         | make any of the following group to work.       |
+    |-------------------------+------------------------------------------------|
+    | trailing                | trailing blanks                                |
+    | tabs                    | TABs                                           |
+    | spaces                  | SPACEs and HARD SPACEs                         |
+    | lines                   | lines which have columns beyond                |
+    |                         | ‘whitespace-line-column’. Whole line is        |
+    |                         | highlighted.                                   |
+    | lines-tail              | lines which have columns beyond                |
+    |                         | ‘whitespace-line-column’.                      |
+    | newline                 | NEWLINEs                                       |
+    | empty                   | empty lines at beginning and/or end of buffer. |
+    | indentation::tab        | 8 or more SPACEs at beginning of line.         |
+    | indentation::space      | TABs at beginning of line.                     |
+    | indentation             | 8 or more SPACEs at beginning of line, if      |
+    |                         | ‘indent-tabs-mode’ is non-nil; otherwise, TABs |
+    |                         | at beginning of line.                          |
+    | big-indent              | Big indentations                               |
+    | space-after-tab::tab    | 8 or more SPACEs after a TAB.                  |
+    | space-after-tab::space  | TABs are visualized when 8 or more SPACEs      |
+    |                         | occur after a TAB.                             |
+    | space-after-tab         | 8 or more SPACEs after a TAB are visualized,   |
+    |                         | if ‘indent-tabs-mode’ is non-nil; otherwise,   |
+    |                         | the TABs.                                      |
+    | space-before-tab::tab   | SPACEs before TAB                              |
+    | space-before-tab::space | TABs when SPACEs occur before TAB.             |
+    | space-before-tab        | SPACEs before TAB are visualized, if           |
+    |                         | ‘indent-tabs-mode’ is non-nil; otherwise, the  |
+    |                         | TABs.                                          |
+    |-------------------------+------------------------------------------------|
+    | space-mark              | SPACEs and HARD SPACEs                         |
+    | tab-mark                | TABs                                           |
+    | newline-mark            | NEWLINEs                                       |
+    |-------------------------+------------------------------------------------|
+
 #+BEGIN_SRC emacs-lisp
   (setq whitespace-style '(face trailing tabs lines-tail))
-  (whitespace-mode 1)
+  (global-whitespace-mode 1)
 #+END_SRC
 
 ** Remove suspend
