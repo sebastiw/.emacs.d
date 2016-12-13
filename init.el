@@ -193,27 +193,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (ensure-pkg 'magit)
 (require 'magit)
 
-(eval-after-load 'magit
-  '(progn
-     (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)))
-
-(defun magit-toggle-whitespace ()
-  (interactive)
-  (if (member "-w" magit-diff-options)
-      (magit-dont-ignore-whitespace)
-    (magit-ignore-whitespace)))
-
-(defun magit-ignore-whitespace ()
-  (interactive)
-  (add-to-list 'magit-diff-options "-w")
-  (magit-refresh))
-
-(defun magit-dont-ignore-whitespace ()
-  (interactive)
-  (setq magit-diff-options (remove "-w" magit-diff-options))
-  (magit-refresh))
-
 (define-key magit-mode-map (kbd "C-<tab>") 'other-window)
+
+(global-set-key (kbd "C-c q") 'magit-status)
 
 (ensure-pkg 'org)
 (require 'org)

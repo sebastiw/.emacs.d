@@ -493,36 +493,16 @@
   (require 'magit)
 #+END_SRC
 
-  Let's add a function to ignore whitespace. Taken from Alexander
-  Wingård http://github.com/AlexanderWingard/dotfiles/.emacs
-
-#+BEGIN_SRC emacs-lisp
-  (eval-after-load 'magit
-    '(progn
-       (define-key magit-status-mode-map (kbd "W") 'magit-toggle-whitespace)))
-
-  (defun magit-toggle-whitespace ()
-    (interactive)
-    (if (member "-w" magit-diff-options)
-        (magit-dont-ignore-whitespace)
-      (magit-ignore-whitespace)))
-
-  (defun magit-ignore-whitespace ()
-    (interactive)
-    (add-to-list 'magit-diff-options "-w")
-    (magit-refresh))
-
-  (defun magit-dont-ignore-whitespace ()
-    (interactive)
-    (setq magit-diff-options (remove "-w" magit-diff-options))
-    (magit-refresh))
-#+END_SRC
-
-
   I like to change windows with C-<tab>
 
 #+BEGIN_SRC emacs-lisp
   (define-key magit-mode-map (kbd "C-<tab>") 'other-window)
+#+END_SRC
+
+  Open magit-status in anywhere I am.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c q") 'magit-status)
 #+END_SRC
 
 * Org
