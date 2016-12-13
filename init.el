@@ -246,7 +246,9 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (ensure-pkg 'erlang)
 (require 'erlang-start)
 
-(setq erlang-root-dir "/opt/erlang/19.0")
+(setq erlang-root-dir "/opt/erlang/19.1")
+
+(add-to-list 'exec-path (concat erlang-root-dir "/bin"))
 
 (ensure-pkg 'edts)
 (require 'edts-start)

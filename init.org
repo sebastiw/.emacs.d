@@ -710,7 +710,13 @@
   installed.  The name should not contain the trailing slash.
 
 #+BEGIN_SRC emacs-lisp
-  (setq erlang-root-dir "/opt/erlang/19.0")
+  (setq erlang-root-dir "/opt/erlang/19.1")
+#+END_SRC
+
+  Also add binaries to the exec-path.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
 #+END_SRC
 
 *** EDTS
