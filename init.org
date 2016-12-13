@@ -780,6 +780,12 @@
       (message "Not Implemented Yet")))
 #+END_SRC
 
+** Scala
+
+#+BEGIN_SRC emacs-lisp
+  (ensure-pkg 'scala-mode)
+#+END_SRC
+
 * Misc major modes
 
 ** Helm

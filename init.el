@@ -286,6 +286,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     (interactive)
     (message "Not Implemented Yet")))
 
+(ensure-pkg 'scala-mode)
+
 (ensure-pkg 'helm)
 (require 'helm-config)
 
