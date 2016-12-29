@@ -475,6 +475,17 @@
      version-control t)              ; use versioned backups
 #+END_SRC
 
+** Locale
+
+   System locale to use for formatting time values.
+
+   Make sure that the weekdays in the time stamps of your Org mode
+   files and in the agenda appear in English.
+
+#+BEGIN_SRC emacs-lisp
+  (setq system-time-locale "C")
+#+END_SRC
+
 ** Printer
 
    Setting up the LPR (line printer). You can find your printer name

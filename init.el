@@ -190,6 +190,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
    kept-old-versions 2
    version-control t)              ; use versioned backups
 
+(setq system-time-locale "C")
+
 (ensure-pkg 'magit)
 (require 'magit)
 
