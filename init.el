@@ -202,6 +202,28 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (ensure-pkg 'org)
 (require 'org)
 
+(with-eval-after-load 'org
+;  (require 'ob-python)
+;  (require 'ob-dot)
+;  (require 'ob-R)
+  (require 'ob-gnuplot)
+  (require 'ob-lisp)
+  (require 'ob-org)
+  (require 'ob-calc)
+  (require 'ob-js)
+  (require 'ob-latex)
+  (require 'ob-plantuml)
+  (require 'ob-sh)
+  (require 'ob-ditaa)
+  (require 'ob-awk)
+  (require 'ob-sed)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (C . t)
+;     (python . t)
+     (plantuml . t))))
+
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c c") 'org-capture)
 (global-set-key (kbd "C-c a") 'org-agenda)
@@ -215,6 +237,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (setq org-adapt-indentation t)
 
 (setq org-use-sub-superscripts '{})
+
+(setq org-inline-image-overlays t)
 
 (define-key org-mode-map (kbd "C-<tab>") 'other-window)
 

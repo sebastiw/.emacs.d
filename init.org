@@ -532,6 +532,32 @@
   (require 'org)
 #+END_SRC
 
+  Which code blocks should be able to be executed.
+
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'org
+  ;  (require 'ob-python)
+  ;  (require 'ob-dot)
+  ;  (require 'ob-R)
+    (require 'ob-gnuplot)
+    (require 'ob-lisp)
+    (require 'ob-org)
+    (require 'ob-calc)
+    (require 'ob-js)
+    (require 'ob-latex)
+    (require 'ob-plantuml)
+    (require 'ob-sh)
+    (require 'ob-ditaa)
+    (require 'ob-awk)
+    (require 'ob-sed)
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (C . t)
+  ;     (python . t)
+       (plantuml . t))))
+#+END_SRC
+
   There are three top keys that should always work whereever you are.
   Store a link to a file, capture a new task, and open the org-agenda.
 #+BEGIN_SRC emacs-lisp
@@ -594,6 +620,12 @@
 
 #+BEGIN_SRC emacs-lisp
   (setq org-use-sub-superscripts '{})
+#+END_SRC
+
+  Inline images in the org file.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-inline-image-overlays t)
 #+END_SRC
 
   I really like to change windows with C-<tab>
