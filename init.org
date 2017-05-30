@@ -753,7 +753,7 @@
   installed.  The name should not contain the trailing slash.
 
 #+BEGIN_SRC emacs-lisp
-  (setq erlang-root-dir "/opt/erlang/19.1")
+  (setq erlang-root-dir "/opt/erlang/19.2")
 #+END_SRC
 
   Also add binaries to the exec-path.
@@ -766,17 +766,31 @@
 
 #+BEGIN_SRC emacs-lisp
   (ensure-pkg 'edts)
-  (require 'edts-start)
 #+END_SRC
 
   Start EDTS when Erlang starts.
 
 #+BEGIN_SRC emacs-lisp
-  ; (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
+  (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
 #+END_SRC
 
+  Path to the Erlang documentation.
+
 #+BEGIN_SRC emacs-lisp
-  (setq edts-man-root "/opt/erlang/19.0/lib/erlang")
+  (setq edts-man-root "/opt/erlang/19.2/lib/erlang")
+#+END_SRC
+
+  Set the log level.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (setq edts-log-level 'debug)
+#+END_SRC
+
+** Elixir
+
+#+BEGIN_SRC emacs-lisp
+  (ensure-pkg 'alchemist)
+  (require 'alchemist)
 #+END_SRC
 
 ** Elisp

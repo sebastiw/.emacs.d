@@ -272,16 +272,18 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (ensure-pkg 'erlang)
 (require 'erlang-start)
 
-(setq erlang-root-dir "/opt/erlang/19.1")
+(setq erlang-root-dir "/opt/erlang/19.2")
 
 (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
 
 (ensure-pkg 'edts)
-(require 'edts-start)
 
-; (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
+(add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
 
-(setq edts-man-root "/opt/erlang/19.0/lib/erlang")
+(setq edts-man-root "/opt/erlang/19.2/lib/erlang")
+
+(ensure-pkg 'alchemist)
+(require 'alchemist)
 
 
 
