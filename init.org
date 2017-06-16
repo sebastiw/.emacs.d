@@ -829,6 +829,24 @@
   (ensure-pkg 'scala-mode)
 #+END_SRC
 
+** Clojure
+
+   Time for some Lisp!
+
+#+BEGIN_SRC emacs-lisp
+  (ensure-pkg 'clojure-mode 'clojure-mode-extra-font-locking 'cider)
+#+END_SRC
+
+   Start CIDER (Clojure(Script) Interactive Development Environment
+   that Rocks) when opening a clj-file.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'clojure-mode-hook
+            '(lambda ()
+               (require 'cider)
+               (cider-jack-in)))
+#+END_SRC
+
 * Misc major modes
 
 ** Helm

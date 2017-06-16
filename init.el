@@ -300,6 +300,13 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (ensure-pkg 'scala-mode)
 
+(ensure-pkg 'clojure-mode 'clojure-mode-extra-font-locking 'cider)
+
+(add-hook 'clojure-mode-hook
+          '(lambda ()
+             (require 'cider)
+             (cider-jack-in)))
+
 (ensure-pkg 'helm)
 (require 'helm-config)
 
