@@ -1,4 +1,3 @@
-
 * Installation of this ORG file
 
   *First time*
@@ -549,7 +548,6 @@
     (require 'ob-sh)
     (require 'ob-ditaa)
     (require 'ob-awk)
-    (require 'ob-sed)
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((emacs-lisp . t)

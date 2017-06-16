@@ -216,7 +216,6 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   (require 'ob-sh)
   (require 'ob-ditaa)
   (require 'ob-awk)
-  (require 'ob-sed)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
