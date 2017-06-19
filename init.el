@@ -1,3 +1,4 @@
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   ;;
 ;;                                                                          ;;
@@ -301,10 +302,16 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (ensure-pkg 'clojure-mode 'clojure-mode-extra-font-locking 'cider)
 
+(add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode))
+
 (add-hook 'clojure-mode-hook
           '(lambda ()
-             (require 'cider)
-             (cider-jack-in)))
+             ;; Do not try to start it if it is already started.
+             (condition-case nil
+               (cider-ping)
+               (error
+                 (require 'cider)
+                 (cider-jack-in)))))
 
 (ensure-pkg 'helm)
 (require 'helm-config)

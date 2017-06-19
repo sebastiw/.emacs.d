@@ -835,14 +835,25 @@
   (ensure-pkg 'clojure-mode 'clojure-mode-extra-font-locking 'cider)
 #+END_SRC
 
+   Associate .clj files. .cljs and some other types are already
+   associated. .clj seems not to be working.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode))
+#+END_SRC
+
    Start CIDER (Clojure(Script) Interactive Development Environment
-   that Rocks) when opening a clj-file.
+   that Rocks) when opening a clj-file (if it is not started yet).
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'clojure-mode-hook
             '(lambda ()
-               (require 'cider)
-               (cider-jack-in)))
+               ;; Do not try to start it if it is already started.
+               (condition-case nil
+                 (cider-ping)
+                 (error
+                   (require 'cider)
+                   (cider-jack-in)))))
 #+END_SRC
 
 * Misc major modes
