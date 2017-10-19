@@ -948,3 +948,14 @@
 #+BEGIN_SRC emacs-lisp
   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
 #+END_SRC
+** Markdown
+
+#+BEGIN_SRC emacs-lisp
+  (ensure-pkg 'markdown-mode)
+#+END_SRC
+
+** Yaml
+
+#+BEGIN_SRC emacs-lisp
+  (ensure-pkg 'yaml-mode)
+#+END_SRC

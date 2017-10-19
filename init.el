@@ -348,3 +348,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (global-set-key (kbd "C-h SPC")    'helm-all-mark-rings)
 
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+
+(ensure-pkg 'markdown-mode)
+
+(ensure-pkg 'yaml-mode)
