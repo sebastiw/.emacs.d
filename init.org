@@ -216,7 +216,7 @@
 ** Font
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :font "dejavu sans" :height 200)
+  (set-face-attribute 'default nil :font "monospace" :height 180)
 #+END_SRC
 
 ** Bi-directional text
