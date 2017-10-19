@@ -103,6 +103,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
           (package-refresh-contents))
         (package-install pkg)))))
 
+(set-face-attribute 'default nil :font "dejavu sans" :height 200)
+
 (setq-default bidi-paragraph-direction 'left-to-right)
 
 (setq initial-scratch-message nil)

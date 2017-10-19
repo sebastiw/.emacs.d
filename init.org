@@ -237,6 +237,12 @@
   (setq initial-scratch-message nil)
 #+END_SRC
 
+   Also inhibit the startup help screen
+
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-screen t)
+#+END_SRC
+
 ** Open the .emacs-file
 
    Open this file when ~C-c e~ is pressed.
