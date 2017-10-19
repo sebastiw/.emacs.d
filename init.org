@@ -213,6 +213,12 @@
 
 * Speedup and general annoyance
 
+** Font
+
+#+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'default nil :font "dejavu sans" :height 200)
+#+END_SRC
+
 ** Bi-directional text
 
    Bidi should never be turned off, the emacs display system is, apparently,

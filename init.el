@@ -107,6 +107,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (setq initial-scratch-message nil)
 
+(setq inhibit-startup-screen t)
+
 (global-set-key (kbd "C-c e") 'open-dot-emacs)
 (defun open-dot-emacs ()
   (interactive)
