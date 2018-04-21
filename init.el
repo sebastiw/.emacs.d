@@ -304,6 +304,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     (interactive)
     (message "Not Implemented Yet")))
 
+(setq js-indent-level 2)
+
 (ensure-pkg 'scala-mode)
 
 (ensure-pkg 'clojure-mode 'clojure-mode-extra-font-locking 'cider)

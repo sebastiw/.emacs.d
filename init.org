@@ -839,6 +839,12 @@
       (message "Not Implemented Yet")))
 #+END_SRC
 
+   2 space indentation is often used in js projects.
+
+#+BEGIN_SRC emacs-lisp
+  (setq js-indent-level 2)
+#+END_SRC
+
 ** Scala
 
 #+BEGIN_SRC emacs-lisp
