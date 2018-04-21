@@ -103,7 +103,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
           (package-refresh-contents))
         (package-install pkg)))))
 
-(set-face-attribute 'default nil :font "monospace" :height 180)
+(set-face-attribute 'default nil :font "monospace" :height 100)
 
 (setq-default bidi-paragraph-direction 'left-to-right)
 
@@ -203,6 +203,8 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 (define-key magit-mode-map (kbd "C-<tab>") 'other-window)
 
 (global-set-key (kbd "C-c q") 'magit-status)
+
+(setq magit-log-section-commit-count 0)
 
 (ensure-pkg 'org)
 (require 'org)

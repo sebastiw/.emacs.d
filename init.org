@@ -216,7 +216,7 @@
 ** Font
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :font "monospace" :height 180)
+  (set-face-attribute 'default nil :font "monospace" :height 100)
 #+END_SRC
 
 ** Bi-directional text
@@ -525,6 +525,12 @@
 
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c q") 'magit-status)
+#+END_SRC
+
+  Do not show the "recent commits" section in magit-status
+
+#+BEGIN_SRC emacs-lisp
+  (setq magit-log-section-commit-count 0)
 #+END_SRC
 
 * Org
