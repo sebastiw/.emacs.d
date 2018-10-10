@@ -688,7 +688,7 @@
 
    Fix so Tramp connects correctly.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   (setq shell-prompt-pattern "^.*eselnts1349[^>]* *")
 #+END_SRC
 

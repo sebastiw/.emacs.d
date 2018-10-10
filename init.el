@@ -245,21 +245,6 @@
 
 (setq eshell-cmpl-cycle-completions nil)
 
-(setq shell-prompt-pattern "^.*eselnts1349[^>]* *")
-
-(defun clearcase-mode-on ()
-  (interactive)
-  (setq directory-sep-char ?/
-        ;clearcase-checkin-arguments (quote ("-nc"))
-        ;clearcase-checkout-arguments (quote ("-nc"))
-        )
-  (require 'clearcase))
-
-(let ((bt-erl-path (getenv "BT_ERL_PATH")))
-  (when (and bt-erl-path (file-exists-p bt-erl-path))
-    (add-to-list 'load-path bt-erl-path)
-    (require 'emacs_bt)))
-
 (use-package erlang
   :init (require 'erlang-start)
   :config
