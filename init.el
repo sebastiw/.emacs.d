@@ -1,4 +1,3 @@
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   ;;
 ;;                                                                          ;;
@@ -32,27 +31,6 @@
 (setq-default gc-cons-threshold 10000000) ;; 10mB
 
 (add-to-list 'load-path (expand-file-name "other" user-emacs-directory))
-
-(defun sanityinc/time-subtract-millis (b a)
-  (* 1000.0 (float-time (time-subtract b a))))
-
-(defvar sanityinc/require-times nil
-  "A list of (FEATURE . LOAD-DURATION).
-LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
-
-(defadvice require
-  (around build-require-times (feature &optional filename noerror) activate)
-  "Note in `sanityinc/require-times' the time taken to require each feature."
-  (let* ((already-loaded (memq feature features))
-         (require-start-time (and (not already-loaded) (current-time))))
-    (prog1
-        ad-do-it
-      (when (and (not already-loaded) (memq feature features))
-        (add-to-list 'sanityinc/require-times
-                     (cons feature
-                           (sanityinc/time-subtract-millis (current-time)
-                                                           require-start-time))
-                     t)))))
 
 (setq gnutls-log-level 0)
 
@@ -220,7 +198,7 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   (require 'ob-js)
   (require 'ob-latex)
   (require 'ob-plantuml)
-  (require 'ob-sh)
+;  (require 'ob-sh)
   (require 'ob-ditaa)
   (require 'ob-awk)
   (org-babel-do-load-languages
