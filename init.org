@@ -197,18 +197,14 @@
   (package-initialize)
 #+END_SRC
 
-  We also define a function for automatic installation of packages, to be used
-  on demand.
+  Install use-package to manage other packages
 
 #+BEGIN_SRC emacs-lisp
-  (defun ensure-pkg (&rest pkgs)
-    "If package PKG is not installed, install it."
-    (dolist (pkg pkgs)
-      (unless (package-installed-p pkg)
-        (progn
-          (unless (assoc pkg package-archive-contents)
-            (package-refresh-contents))
-          (package-install pkg)))))
+  (unless (package-installed-p 'use-package)
+    (progn
+      (unless (assoc 'use-package package-archive-contents)
+        (package-refresh-contents))
+      (package-install 'use-package)))
 #+END_SRC
 
 * Speedup and general annoyance
@@ -511,26 +507,16 @@
   Magit is in my opinion invalueable. It is the best git-manager there is!
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'magit)
-  (require 'magit)
-#+END_SRC
-
-  I like to change windows with C-<tab>
-
-#+BEGIN_SRC emacs-lisp
-  (define-key magit-mode-map (kbd "C-<tab>") 'other-window)
-#+END_SRC
-
-  Open magit-status in anywhere I am.
-
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-c q") 'magit-status)
-#+END_SRC
-
-  Do not show the "recent commits" section in magit-status
-
-#+BEGIN_SRC emacs-lisp
-  (setq magit-log-section-commit-count 0)
+  (use-package magit
+    :init
+    (require 'magit)
+    :config
+    (setq magit-log-section-commit-count 0)
+    :bind
+    (("C-c q" . magit-status)
+     :map magit-mode-map
+     ("C-<tab>" . other-window))
+    :ensure t)
 #+END_SRC
 
 * Org
@@ -545,7 +531,6 @@
   invaluable!  [fn:organize-your-life-in-plain-text]
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'org)
   (require 'org)
 #+END_SRC
 
@@ -669,7 +654,15 @@
   `eshell-visual-commands' does not exist until it is loaded.
 
 #+BEGIN_SRC emacs-lisp
-  ;(require 'eshell)
+  (use-package eshell
+    :config
+    (progn
+      (setenv "TERM" "xterm-256color")
+      (setenv "PAGER" "cat")))
+
+  (use-package esh-opt
+    :after eshell)
+
 #+END_SRC
 
 ** Aliases
@@ -723,37 +716,6 @@
   (setq shell-prompt-pattern "^.*eselnts1349[^>]* *")
 #+END_SRC
 
-** Clearcase
-
-   Sometimes I wonder if we are the only one using clearcase. If someone out
-   there still use it, you can do it like this.
-
-   Wrap it in a function and you do not need to automatically initiate it. Just
-   manually call ~clearcase-mode-on~ when needed.
-
-#+BEGIN_SRC emacs-lisp
-  (defun clearcase-mode-on ()
-    (interactive)
-    (setq directory-sep-char ?/
-          ;clearcase-checkin-arguments (quote ("-nc"))
-          ;clearcase-checkout-arguments (quote ("-nc"))
-          )
-    (require 'clearcase))
-#+END_SRC
-
-** BT erl
-
-   BT erl is a common-test framework for Erlang. Load it if it exist.
-
-   Remember to set the environment variable `BT_ERL_PATH'.
-
-#+BEGIN_SRC emacs-lisp
-  (let ((bt-erl-path (getenv "BT_ERL_PATH")))
-    (when (and bt-erl-path (file-exists-p bt-erl-path))
-      (add-to-list 'load-path bt-erl-path)
-      (require 'emacs_bt)))
-#+END_SRC
-
 * Programming
 
 ** Erlang
@@ -761,52 +723,36 @@
    The best programming language there is!
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'erlang)
+  (use-package erlang
+    :init (require 'erlang-start)
+    :config
+    (setq erlang-root-dir "/usr/lib/erlang/")
+    (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
+    :ensure t)
   (require 'erlang-start)
-#+END_SRC
-
-  Erlang root directory.  The directory where the Erlang system is
-  installed.  The name should not contain the trailing slash.
-
-#+BEGIN_SRC emacs-lisp
-  (setq erlang-root-dir "/opt/erlang/19.2")
-#+END_SRC
-
-  Also add binaries to the exec-path.
-
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
-#+END_SRC
-
-*** EDTS
-
-#+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'edts)
 #+END_SRC
 
   Start EDTS when Erlang starts.
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
-#+END_SRC
-
-  Path to the Erlang documentation.
-
-#+BEGIN_SRC emacs-lisp
-  (setq edts-man-root "/opt/erlang/19.2/lib/erlang")
-#+END_SRC
-
-  Set the log level.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (setq edts-log-level 'debug)
+  (use-package edts
+    :load-path "~/git/edts/"
+    :init
+    (setq edts-inhibit-package-check t)
+    (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
+    :config
+    (setq edts-man-root erlang-root-dir)
+    (setq edts-log-level 'debug)
+    :after erlang)
 #+END_SRC
 
 ** Elixir
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'alchemist)
-  (require 'alchemist)
+  (use-package alchemist
+    :init
+    (require 'alchemist)
+    :ensure t)
 #+END_SRC
 
 ** Elisp
@@ -814,6 +760,11 @@
    The second best programming language there is! :)
 
 #+BEGIN_SRC emacs-lisp
+  (use-package elisp-slime-nav
+    :init
+    (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
+      (add-hook hook 'turn-on-elisp-slime-nav-mode))
+    :ensure t)
 #+END_SRC
 
 ** (Node-)JS
@@ -821,34 +772,18 @@
    Use js-comint-mode
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'js-comint)
-  (require 'js-comint)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (setq inferior-js-program-command "node")
-#+END_SRC
-
-   Start nodejs in background on C-c C-k
-
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'js-mode
-    (define-key js-mode-map (kbd "C-c C-k") 'seba/start-nodejs-in-background)
-    (defun seba/start-nodejs-in-background ()
-      (interactive)
-      (message "Not Implemented Yet")))
-#+END_SRC
-
-   2 space indentation is often used in js projects.
-
-#+BEGIN_SRC emacs-lisp
-  (setq js-indent-level 2)
+  (use-package js-comint
+    :init
+    (require 'js-comint)
+    :config
+    (setq inferior-js-program-command "node")
+    (setq js-indent-level 2))
 #+END_SRC
 
 ** Scala
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'scala-mode)
+  (use-package scala-mode)
 #+END_SRC
 
 ** Clojure
@@ -856,28 +791,26 @@
    Time for some Lisp!
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'clojure-mode 'clojure-mode-extra-font-locking 'cider)
+  (use-package clojure-mode
+    :init
+    (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode)))
+  (use-package clojure-mode-extra-font-locking)
+  (use-package cider
+    :after 'clojure-mode
+    :config
+    ;; Do not try to start it if it is already started.
+    (condition-case nil
+        (cider-ping)
+      (error
+       (require 'cider)
+       (cider-jack-in))))
 #+END_SRC
 
-   Associate .clj files. .cljs and some other types are already
-   associated. .clj seems not to be working.
+** Python
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode))
-#+END_SRC
-
-   Start CIDER (Clojure(Script) Interactive Development Environment
-   that Rocks) when opening a clj-file (if it is not started yet).
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'clojure-mode-hook
-            '(lambda ()
-               ;; Do not try to start it if it is already started.
-               (condition-case nil
-                 (cider-ping)
-                 (error
-                   (require 'cider)
-                   (cider-jack-in)))))
+  (use-package jedi
+    :ensure t)
 #+END_SRC
 
 * Misc major modes
@@ -890,84 +823,51 @@
    an item from a list of possible choices.
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'helm)
-  (require 'helm-config)
+  (use-package helm
+    :disabled
+
+    :init
+    (require 'helm-config)
+    (helm-mode 1)
+    :config
+    (helm-autoresize-mode t)
+    (setq helm-split-window-in-side-p t)
+    (setq helm-ff-auto-update-initial-value nil)
+
+    ;; fuzzy matching
+    (setq helm-mode-fuzzy-match t)
+    (setq helm-completion-in-region-fuzzy-match t)
+    (setq helm-buffers-fuzzy-matching t)
+    (setq helm-recentf-fuzzy-match t)
+    (setq helm-locate-fuzzy-match t)
+    (setq helm-M-x-fuzzy-match t)
+    (setq helm-semantic-fuzzy-match t)
+    (setq helm-imenu-fuzzy-match t)
+    (setq helm-apropos-fuzzy-match t)
+    (setq helm-lisp-fuzzy-completion t)
+
+    :bind
+    (("C-x C-b" . helm-buffers-list)
+     ("M-x" .     helm-M-x)
+     ("C-c h" .   helm-command-prefix)
+     ("C-x C-f" . helm-find-files)
+     ("M-y" .     helm-show-kill-ring)
+     ("M-s o" .   helm-occur)
+     ("C-h SPC" . helm-all-mark-rings)
+     :map helm-map
+     ("<tab>" .   helm-execute-persistent-action))
+    )
 #+END_SRC
 
-   Start helm everywhere, as opposed to ~M-x helm-M-x~.
-
-#+BEGIN_SRC emacs-lisp
-  (helm-mode 1)
-#+END_SRC
-
-   Auto resize helm window when enabled.
-   Helm window is re-sized according to ‘helm-autoresize-max-height’
-   and ‘helm-autoresize-min-height’.
-
-#+BEGIN_SRC emacs-lisp
-  (helm-autoresize-mode t)
-#+END_SRC
-
-   I think it is confusing when helm forces all windows to "jump
-   around". Maybe i need to look at
-   http://emacs.stackexchange.com/a/15172
-
-   Forces split inside selected window when non-‘nil’.
-
-#+BEGIN_SRC emacs-lisp
-  (setq helm-split-window-in-side-p t)
-#+END_SRC
-
-   Auto update when only one candidate directory is matched.  Default
-   value when starting ‘helm-find-files’ is nil because it prevent
-   using <backspace> to delete char backward and by the way confuse
-   beginners.  For a better experience with ‘helm-find-files’ set this
-   to non--nil and use C-<backspace> to toggle it.
-
-#+BEGIN_SRC emacs-lisp
-  (setq helm-ff-auto-update-initial-value nil)
-#+END_SRC
-
-   Enable fuzzy matching in ‘helm-mode’ every-where possible.
-
-#+BEGIN_SRC emacs-lisp
-  (setq helm-mode-fuzzy-match t)
-  (setq helm-completion-in-region-fuzzy-match t)
-  (setq helm-buffers-fuzzy-matching t)
-  (setq helm-recentf-fuzzy-match t)
-  (setq helm-locate-fuzzy-match t)
-  (setq helm-M-x-fuzzy-match t)
-  (setq helm-semantic-fuzzy-match t)
-  (setq helm-imenu-fuzzy-match t)
-  (setq helm-apropos-fuzzy-match t)
-  (setq helm-lisp-fuzzy-completion t)
-#+END_SRC
-
-  Bind Helm keys
-
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x C-b")    'helm-buffers-list)
-  (global-set-key (kbd "M-x")        'helm-M-x)
-  (global-set-key (kbd "C-c h")      'helm-command-prefix)
-  (global-set-key (kbd "C-x C-f")    'helm-find-files)
-  (global-set-key (kbd "M-y")        'helm-show-kill-ring)
-  (global-set-key (kbd "M-s o")      'helm-occur)
-  (global-set-key (kbd "C-h SPC")    'helm-all-mark-rings)
-#+END_SRC
-
-  Rebind tab to run persistent action.
-
-#+BEGIN_SRC emacs-lisp
-  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-#+END_SRC
 ** Markdown
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'markdown-mode)
+  (use-package markdown-mode
+    :ensure t)
 #+END_SRC
 
 ** Yaml
 
 #+BEGIN_SRC emacs-lisp
-  (ensure-pkg 'yaml-mode)
+  (use-package yaml-mode)
 #+END_SRC

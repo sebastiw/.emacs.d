@@ -94,14 +94,13 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (package-initialize)
 
-(defun ensure-pkg (&rest pkgs)
-  "If package PKG is not installed, install it."
-  (dolist (pkg pkgs)
-    (unless (package-installed-p pkg)
-      (progn
-        (unless (assoc pkg package-archive-contents)
-          (package-refresh-contents))
-        (package-install pkg)))))
+(unless (package-installed-p 'use-package)
+  (progn
+    (unless (assoc 'use-package package-archive-contents)
+      (package-refresh-contents))
+    (package-install 'use-package)))
+
+(setq use-package-compute-statistics t)
 
 (set-face-attribute 'default nil :font "monospace" :height 100)
 
@@ -197,16 +196,17 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (setq system-time-locale "C")
 
-(ensure-pkg 'magit)
-(require 'magit)
+(use-package magit
+  :init
+  (require 'magit)
+  :config
+  (setq magit-log-section-commit-count 0)
+  :bind
+  (("C-c q" . magit-status)
+   :map magit-mode-map
+   ("C-<tab>" . other-window))
+  :ensure t)
 
-(define-key magit-mode-map (kbd "C-<tab>") 'other-window)
-
-(global-set-key (kbd "C-c q") 'magit-status)
-
-(setq magit-log-section-commit-count 0)
-
-(ensure-pkg 'org)
 (require 'org)
 
 (with-eval-after-load 'org
@@ -248,7 +248,14 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
 
 (define-key org-mode-map (kbd "C-<tab>") 'other-window)
 
-;(require 'eshell)
+(use-package eshell
+  :config
+  (progn
+    (setenv "TERM" "xterm-256color")
+    (setenv "PAGER" "cat")))
+
+(use-package esh-opt
+  :after eshell)
 
 (defalias 'ec 'find-file)
 (defalias 'emacs 'find-file)
@@ -275,84 +282,97 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
     (add-to-list 'load-path bt-erl-path)
     (require 'emacs_bt)))
 
-(ensure-pkg 'erlang)
+(use-package erlang
+  :init (require 'erlang-start)
+  :config
+  (setq erlang-root-dir "/usr/lib/erlang/")
+  (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
+  :ensure t)
 (require 'erlang-start)
 
-(setq erlang-root-dir "/opt/erlang/19.2")
+(use-package edts
+  :load-path "~/git/edts/"
+  :init
+  (setq edts-inhibit-package-check t)
+  (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
+  :config
+  (setq edts-man-root erlang-root-dir)
+  (setq edts-log-level 'debug)
+  :after erlang)
 
-(add-to-list 'exec-path (concat erlang-root-dir "/bin"))
+(use-package alchemist
+  :init
+  (require 'alchemist)
+  :ensure t)
 
-(ensure-pkg 'edts)
+(use-package elisp-slime-nav
+  :init
+  (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
+    (add-hook hook 'turn-on-elisp-slime-nav-mode))
+  :ensure t)
 
-(add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
+(use-package js-comint
+  :init
+  (require 'js-comint)
+  :config
+  (setq inferior-js-program-command "node")
+  (setq js-indent-level 2))
 
-(setq edts-man-root "/opt/erlang/19.2/lib/erlang")
+(use-package scala-mode)
 
-(ensure-pkg 'alchemist)
-(require 'alchemist)
+(use-package clojure-mode
+  :init
+  (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode)))
+(use-package clojure-mode-extra-font-locking)
+(use-package cider
+  :after 'clojure-mode
+  :config
+  ;; Do not try to start it if it is already started.
+  (condition-case nil
+      (cider-ping)
+    (error
+     (require 'cider)
+     (cider-jack-in))))
 
+(use-package jedi
+  :ensure t)
 
+(use-package helm
+  :disabled
 
-(ensure-pkg 'js-comint)
-(require 'js-comint)
+  :init
+  (require 'helm-config)
+  (helm-mode 1)
+  :config
+  (helm-autoresize-mode t)
+  (setq helm-split-window-in-side-p t)
+  (setq helm-ff-auto-update-initial-value nil)
 
-(setq inferior-js-program-command "node")
+  ;; fuzzy matching
+  (setq helm-mode-fuzzy-match t)
+  (setq helm-completion-in-region-fuzzy-match t)
+  (setq helm-buffers-fuzzy-matching t)
+  (setq helm-recentf-fuzzy-match t)
+  (setq helm-locate-fuzzy-match t)
+  (setq helm-M-x-fuzzy-match t)
+  (setq helm-semantic-fuzzy-match t)
+  (setq helm-imenu-fuzzy-match t)
+  (setq helm-apropos-fuzzy-match t)
+  (setq helm-lisp-fuzzy-completion t)
 
-(with-eval-after-load 'js-mode
-  (define-key js-mode-map (kbd "C-c C-k") 'seba/start-nodejs-in-background)
-  (defun seba/start-nodejs-in-background ()
-    (interactive)
-    (message "Not Implemented Yet")))
+  :bind
+  (("C-x C-b" . helm-buffers-list)
+   ("M-x" .     helm-M-x)
+   ("C-c h" .   helm-command-prefix)
+   ("C-x C-f" . helm-find-files)
+   ("M-y" .     helm-show-kill-ring)
+   ("M-s o" .   helm-occur)
+   ("C-h SPC" . helm-all-mark-rings)
+   :map helm-map
+   ("<tab>" .   helm-execute-persistent-action))
+  )
 
-(setq js-indent-level 2)
+(use-package markdown-mode
+  :ensure t)
 
-(ensure-pkg 'scala-mode)
-
-(ensure-pkg 'clojure-mode 'clojure-mode-extra-font-locking 'cider)
-
-(add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode))
-
-(add-hook 'clojure-mode-hook
-          '(lambda ()
-             ;; Do not try to start it if it is already started.
-             (condition-case nil
-               (cider-ping)
-               (error
-                 (require 'cider)
-                 (cider-jack-in)))))
-
-(ensure-pkg 'helm)
-(require 'helm-config)
-
-(helm-mode 1)
-
-(helm-autoresize-mode t)
-
-(setq helm-split-window-in-side-p t)
-
-(setq helm-ff-auto-update-initial-value nil)
-
-(setq helm-mode-fuzzy-match t)
-(setq helm-completion-in-region-fuzzy-match t)
-(setq helm-buffers-fuzzy-matching t)
-(setq helm-recentf-fuzzy-match t)
-(setq helm-locate-fuzzy-match t)
-(setq helm-M-x-fuzzy-match t)
-(setq helm-semantic-fuzzy-match t)
-(setq helm-imenu-fuzzy-match t)
-(setq helm-apropos-fuzzy-match t)
-(setq helm-lisp-fuzzy-completion t)
-
-(global-set-key (kbd "C-x C-b")    'helm-buffers-list)
-(global-set-key (kbd "M-x")        'helm-M-x)
-(global-set-key (kbd "C-c h")      'helm-command-prefix)
-(global-set-key (kbd "C-x C-f")    'helm-find-files)
-(global-set-key (kbd "M-y")        'helm-show-kill-ring)
-(global-set-key (kbd "M-s o")      'helm-occur)
-(global-set-key (kbd "C-h SPC")    'helm-all-mark-rings)
-
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-
-(ensure-pkg 'markdown-mode)
-
-(ensure-pkg 'yaml-mode)
+(use-package yaml-mode)
