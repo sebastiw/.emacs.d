@@ -263,6 +263,13 @@
   (setq edts-log-level 'debug)
   :after erlang)
 
+(use-package wrangler
+  :init (defconst erlang-xemacs-p
+          (string-match "Lucid\\|XEmacs" emacs-version)
+          "Non-nil when running under XEmacs or Lucid Emacs.")
+  :load-path "/usr/local/lib/erlang/lib/wrangler-1.2.0/elisp"
+  :after erlang)
+
 (use-package alchemist
   :init
   (require 'alchemist)

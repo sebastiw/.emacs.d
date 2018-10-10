@@ -722,6 +722,17 @@
     :after erlang)
 #+END_SRC
 
+ Erlang refactoring tool Wrangler.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package wrangler
+    :init (defconst erlang-xemacs-p
+            (string-match "Lucid\\|XEmacs" emacs-version)
+            "Non-nil when running under XEmacs or Lucid Emacs.")
+    :load-path "/usr/local/lib/erlang/lib/wrangler-1.2.0/elisp"
+    :after erlang)
+#+END_SRC
+
 ** Elixir
 
 #+BEGIN_SRC emacs-lisp
