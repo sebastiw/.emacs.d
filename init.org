@@ -1,3 +1,5 @@
+#+PROPERTY: header-args :tangle init.el
+
 * Installation of this ORG file
 
   *First time*
