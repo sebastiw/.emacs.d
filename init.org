@@ -724,15 +724,33 @@
     :after erlang)
 #+END_SRC
 
+  Try out LSP-mode
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package lsp-erlang
+    :load-path "~/git/lsp-erlang"
+    :after erlang)
+#+END_SRC
+
+ Distel
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package distel
+    :load-path "/usr/local/lib/erlang/lib/distel/elisp"
+    :after erlang)
+#+END_SRC
+
  Erlang refactoring tool Wrangler.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package wrangler
-    :init (defconst erlang-xemacs-p
-            (string-match "Lucid\\|XEmacs" emacs-version)
-            "Non-nil when running under XEmacs or Lucid Emacs.")
+    :init
+    (defconst erlang-xemacs-p (string-match "Lucid\\|XEmacs" emacs-version)
+      "Non-nil when running under XEmacs or Lucid Emacs.")
+    (setq erlang-emacs-major-version emacs-major-version)
+    (defalias 'erl-cookie 'derl-cookie)
     :load-path "/usr/local/lib/erlang/lib/wrangler-1.2.0/elisp"
-    :after erlang)
+    :after distel)
 #+END_SRC
 
 ** Elixir
