@@ -185,28 +185,58 @@
    ("C-<tab>" . other-window))
   :ensure t)
 
-(require 'org)
-
-(with-eval-after-load 'org
-;  (require 'ob-python)
-;  (require 'ob-dot)
-;  (require 'ob-R)
-  (require 'ob-gnuplot)
-  (require 'ob-lisp)
-  (require 'ob-org)
-  (require 'ob-calc)
-  (require 'ob-js)
-  (require 'ob-latex)
-  (require 'ob-plantuml)
-;  (require 'ob-sh)
-  (require 'ob-ditaa)
-  (require 'ob-awk)
+(use-package org
+  :config
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
      (C . t)
-;     (python . t)
+     (python . t)
      (plantuml . t))))
+
+(use-package ox-gfm
+  :ensure t
+  :after org)
+(use-package ob-gnuplot
+  :ensure t
+  :after org)
+(use-package ob-lisp
+  :ensure t
+  :after org)
+(use-package ob-org
+  :ensure t
+  :after org)
+(use-package ob-calc
+  :ensure t
+  :after org)
+(use-package ob-js
+  :ensure t
+  :after org)
+(use-package ob-latex
+  :ensure t
+  :after org)
+(use-package ob-plantuml
+  :ensure t
+  :after org)
+(use-package ob-ditaa
+  :ensure t
+  :after org)
+(use-package ob-awk
+  :ensure t
+  :after org)
+
+(use-package ob-python
+  :ensure t
+  :after org)
+(use-package ob-dot
+  :ensure t
+  :after org)
+(use-package ob-R
+  :ensure t
+  :after org)
+(use-package ob-sh
+  :ensure t
+  :after org)
 
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c c") 'org-capture)
