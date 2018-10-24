@@ -193,6 +193,22 @@
   (set-face-attribute 'default nil :font "monospace" :height 100)
 #+END_SRC
 
+** Theme
+
+   Add function to toggle dark/default theme
+
+#+BEGIN_SRC emacs-lisp
+  (defun toggle-dark ()
+    (interactive)
+    (if (boundp 'toggle-dark-flag)
+        (progn
+          (disable-theme 'wheatgrass)
+          (setq toggle-dark-flag nil))
+        (load-theme 'wheatgrass t t)
+        (enable-theme 'wheatgrass)
+        (setq toggle-dark-flag t)))
+#+END_SRC
+
 ** Bi-directional text
 
    Bidi should never be turned off, the emacs display system is, apparently,

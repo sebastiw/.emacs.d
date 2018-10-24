@@ -82,6 +82,16 @@
 
 (set-face-attribute 'default nil :font "monospace" :height 100)
 
+(defun toggle-dark ()
+  (interactive)
+  (if (boundp 'toggle-dark-flag)
+      (progn
+        (disable-theme 'wheatgrass)
+        (setq toggle-dark-flag nil))
+      (load-theme 'wheatgrass t t)
+      (enable-theme 'wheatgrass)
+      (setq toggle-dark-flag t)))
+
 (setq-default bidi-paragraph-direction 'left-to-right)
 
 (setq initial-scratch-message nil)
