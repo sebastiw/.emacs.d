@@ -84,13 +84,13 @@
 
 (defun toggle-dark ()
   (interactive)
-  (if (boundp 'toggle-dark-flag)
+  (if (bound-and-true-p toggle-dark-flag)
       (progn
         (disable-theme 'wheatgrass)
         (setq toggle-dark-flag nil))
-      (load-theme 'wheatgrass t t)
-      (enable-theme 'wheatgrass)
-      (setq toggle-dark-flag t)))
+    (load-theme 'wheatgrass t t)
+    (enable-theme 'wheatgrass)
+    (setq toggle-dark-flag t)))
 
 (setq-default bidi-paragraph-direction 'left-to-right)
 
