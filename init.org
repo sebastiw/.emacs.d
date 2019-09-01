@@ -163,7 +163,7 @@
           ("elpy"      . "https://jorgenschaefer.github.io/packages/")
           ))
 
-  (unless (file-exists-p  (concat user-emacs-directory elpa-dir))
+  (unless (file-exists-p (concat user-emacs-directory elpa-dir))
     (message "No packages exists yet, refreshing archives.")
     (package-refresh-contents))
 
@@ -542,44 +542,30 @@
     :ensure t
     :after org)
   (use-package ob-gnuplot
-    :ensure t
     :after org)
   (use-package ob-lisp
-    :ensure t
     :after org)
   (use-package ob-org
-    :ensure t
     :after org)
   (use-package ob-calc
-    :ensure t
     :after org)
   (use-package ob-js
-    :ensure t
     :after org)
   (use-package ob-latex
-    :ensure t
     :after org)
   (use-package ob-plantuml
-    :ensure t
     :after org)
   (use-package ob-ditaa
-    :ensure t
     :after org)
   (use-package ob-awk
-    :ensure t
     :after org)
-
   (use-package ob-python
-    :ensure t
     :after org)
   (use-package ob-dot
-    :ensure t
     :after org)
   (use-package ob-R
-    :ensure t
     :after org)
-  (use-package ob-sh
-    :ensure t
+  (use-package ob-shell
     :after org)
 #+END_SRC
 
