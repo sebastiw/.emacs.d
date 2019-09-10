@@ -284,6 +284,7 @@
   :init
   (setq edts-inhibit-package-check t)
   (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
+  (add-to-list 'load-path "~/git/edts/elisp/f/")
   :config
   (setq edts-man-root erlang-root-dir)
   (setq edts-log-level 'debug)
