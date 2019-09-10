@@ -812,6 +812,7 @@
 
 #+BEGIN_SRC emacs-lisp
   (use-package js-comint
+    :disabled
     :init
     (require 'js-comint)
     :config

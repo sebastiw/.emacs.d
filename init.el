@@ -66,7 +66,7 @@
         ("elpy"      . "https://jorgenschaefer.github.io/packages/")
         ))
 
-(unless (file-exists-p  (concat user-emacs-directory elpa-dir))
+(unless (file-exists-p (concat user-emacs-directory elpa-dir))
   (message "No packages exists yet, refreshing archives.")
   (package-refresh-contents))
 
@@ -301,6 +301,7 @@
   :ensure t)
 
 (use-package js-comint
+  :disabled
   :init
   (require 'js-comint)
   :config
@@ -365,17 +366,3 @@
   :ensure t)
 
 (use-package yaml-mode)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (multiple-cursors groovy-mode ob-sh ob-R ob-dot ob-python ob-awk ob-ditaa ob-plantuml ob-latex ob-js ob-calc ob-org ob-lisp ob-gnuplot yaml-mode web-mode use-package typescript-mode slime sed-mode scala-mode ox-gfm markdown-mode magit lua-mode lsp-mode keychain-environment json-mode js-comint jedi htmlize helm go-mode flymd f eshell-prompt-extras erlang elisp-slime-nav edit-indirect dockerfile-mode clojure-mode-extra-font-locking cider auto-highlight-symbol alchemist))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
