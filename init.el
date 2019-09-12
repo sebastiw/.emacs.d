@@ -328,6 +328,9 @@
 (use-package jedi
   :ensure t)
 
+(use-package dockerfile-mode
+  :ensure t)
+
 (use-package helm
   :disabled
 
