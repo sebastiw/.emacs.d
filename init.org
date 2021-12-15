@@ -190,7 +190,7 @@
 ** Font
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :font "monospace" :height 100)
+  (set-face-attribute 'default nil :font "Noto Sans Mono" :height 80)
 #+END_SRC
 
 ** Theme
@@ -207,6 +207,12 @@
       (load-theme 'wheatgrass t t)
       (enable-theme 'wheatgrass)
       (setq toggle-dark-flag t)))
+#+END_SRC
+
+   ...and enable it
+
+#+BEGIN_SRC emacs-lisp
+  (toggle-dark)
 #+END_SRC
 
 ** Bi-directional text
@@ -795,6 +801,13 @@
     :ensure t)
 #+END_SRC
 
+** ASN1
+
+#+BEGIN_SRC emacs-lisp
+  (use-package asn1-mode
+    :ensure t)
+#+END_SRC
+
 ** Elisp
 
    The second best programming language there is! :)
@@ -824,7 +837,9 @@
 ** Scala
 
 #+BEGIN_SRC emacs-lisp
-  (use-package scala-mode)
+  (use-package scala-mode
+    :disabled
+    )
 #+END_SRC
 
 ** Clojure
@@ -834,8 +849,12 @@
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
     :init
-    (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode)))
-  (use-package clojure-mode-extra-font-locking)
+    (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode))
+    :disabled
+    )
+  (use-package clojure-mode-extra-font-locking
+    :after 'clojure-mode
+    )
   (use-package cider
     :after 'clojure-mode
     :config
@@ -858,6 +877,33 @@
 
 #+BEGIN_SRC emacs-lisp
   (use-package dockerfile-mode
+    :ensure t)
+#+END_SRC
+
+** Dart/Flutter
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dart-mode
+    :ensure t
+    :hook (dart-mode . flutter-test-mode))
+
+  (use-package flutter
+    :after dart-mode
+    :ensure t
+    :bind (:map dart-mode-map
+                ("C-M-x" . #'flutter-run-or-hot-reload)))
+
+  (use-package lsp-mode
+    :ensure t)
+
+  (use-package lsp-dart
+    :ensure t
+    :hook (dart-mode . lsp))
+
+  ;; Optional packages
+  (use-package lsp-ui
+    :ensure t)
+  (use-package company
     :ensure t)
 #+END_SRC
 
@@ -914,8 +960,34 @@
     :ensure t)
 #+END_SRC
 
+For Github-flavoured markdown previews:
+
+`pip install grip`
+
+#+BEGIN_SRC emacs-lisp
+    (use-package grip-mode
+      :ensure t
+      :hook ((markdown-mode org-mode) . grip-mode)
+      :config (setq grip-update-after-change 'nil))
+#+END_SRC
+
 ** Yaml
 
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode)
+#+END_SRC
+** PCAPs
+
+Nice for viewing
+#+BEGIN_SRC emacs-lisp
+  (use-package pcap-mode
+    :ensure t
+    :defer t)
+#+END_SRC
+
+Nice for editing
+#+BEGIN_SRC emacs-lisp
+  (use-package hexl
+    :mode ("\\.pcap\\'" . hexl-mode)
+    :ensure t)
 #+END_SRC

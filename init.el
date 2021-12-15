@@ -80,7 +80,7 @@
 
 (setq use-package-compute-statistics t)
 
-(set-face-attribute 'default nil :font "monospace" :height 100)
+(set-face-attribute 'default nil :font "Noto Sans Mono" :height 80)
 
 (defun toggle-dark ()
   (interactive)
@@ -91,6 +91,8 @@
     (load-theme 'wheatgrass t t)
     (enable-theme 'wheatgrass)
     (setq toggle-dark-flag t)))
+
+(toggle-dark)
 
 (setq-default bidi-paragraph-direction 'left-to-right)
 
@@ -295,6 +297,9 @@
   (require 'alchemist)
   :ensure t)
 
+(use-package asn1-mode
+  :ensure t)
+
 (use-package elisp-slime-nav
   :init
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
@@ -309,12 +314,18 @@
   (setq inferior-js-program-command "node")
   (setq js-indent-level 2))
 
-(use-package scala-mode)
+(use-package scala-mode
+  :disabled
+  )
 
 (use-package clojure-mode
   :init
-  (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode)))
-(use-package clojure-mode-extra-font-locking)
+  (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode))
+  :disabled
+  )
+(use-package clojure-mode-extra-font-locking
+  :after 'clojure-mode
+  )
 (use-package cider
   :after 'clojure-mode
   :config
@@ -329,6 +340,29 @@
   :ensure t)
 
 (use-package dockerfile-mode
+  :ensure t)
+
+(use-package dart-mode
+  :ensure t
+  :hook (dart-mode . flutter-test-mode))
+
+(use-package flutter
+  :after dart-mode
+  :ensure t
+  :bind (:map dart-mode-map
+              ("C-M-x" . #'flutter-run-or-hot-reload)))
+
+(use-package lsp-mode
+  :ensure t)
+
+(use-package lsp-dart
+  :ensure t
+  :hook (dart-mode . lsp))
+
+;; Optional packages
+(use-package lsp-ui
+  :ensure t)
+(use-package company
   :ensure t)
 
 (use-package helm
@@ -369,4 +403,17 @@
 (use-package markdown-mode
   :ensure t)
 
+(use-package grip-mode
+  :ensure t
+  :hook ((markdown-mode org-mode) . grip-mode)
+  :config (setq grip-update-after-change 'nil))
+
 (use-package yaml-mode)
+
+(use-package pcap-mode
+  :ensure t
+  :defer t)
+
+(use-package hexl
+  :mode ("\\.pcap\\'" . hexl-mode)
+  :ensure t)
