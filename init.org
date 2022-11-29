@@ -858,6 +858,21 @@
     :ensure t)
 #+END_SRC
 
+** COBOL
+
+   COmmon Business Oriented Language
+
+#+BEGIN_SRC emacs-lisp
+  (use-package cobol-mode
+    :init
+    (setq auto-mode-alist
+          (append
+           '(("\\.cob\\'" . cobol-mode)
+             ("\\.cbl\\'" . cobol-mode)
+             ("\\.cpy\\'" . cobol-mode))
+           auto-mode-alist)))
+#+END_SRC
+
 ** (Node-)JS
 
    Use js-comint-mode

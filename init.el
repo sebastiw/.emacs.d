@@ -306,6 +306,15 @@
     (add-hook hook 'turn-on-elisp-slime-nav-mode))
   :ensure t)
 
+(use-package cobol-mode
+  :init
+  (setq auto-mode-alist
+        (append
+         '(("\\.cob\\'" . cobol-mode)
+           ("\\.cbl\\'" . cobol-mode)
+           ("\\.cpy\\'" . cobol-mode))
+         auto-mode-alist)))
+
 (use-package js-comint
   :disabled
   :init
