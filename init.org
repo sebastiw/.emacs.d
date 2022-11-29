@@ -742,17 +742,16 @@
   (use-package erlang
     :init (require 'erlang-start)
     :config
-    (setq erlang-root-dir "/usr/lib/erlang/")
+    (setq erlang-root-dir "~/.kerl/builds/25.0.4/release_25.0.4/")
     (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
     :ensure t)
-  (require 'erlang-start)
 #+END_SRC
 
   Start EDTS when Erlang starts.
 
 #+BEGIN_SRC emacs-lisp
   (use-package edts
-    :load-path "~/git/edts/"
+    ;; :load-path "~/git/edts/"
     :init
     (setq edts-inhibit-package-check t)
     (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
@@ -760,7 +759,8 @@
     :config
     (setq edts-man-root erlang-root-dir)
     (setq edts-log-level 'debug)
-    :after erlang)
+    :after erlang
+    :ensure t)
 #+END_SRC
 
   Try out LSP-mode
@@ -769,6 +769,44 @@
   (use-package lsp-erlang
     :load-path "~/git/lsp-erlang"
     :after erlang)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package yasnippet
+    :ensure t)
+
+  (use-package lsp-mode
+    :ensure t
+    :config
+    (setq lsp-erlang-server-path "~/sources/_build/default/bin/")
+    (add-hook 'erlang-mode-hook #'lsp)
+    )
+
+  (use-package lsp-ui
+    :ensure t
+    :config
+    (setq lsp-ui-sideline-enable nil)
+    (setq lsp-ui-doc-enable t)
+    )
+
+  (use-package company-lsp
+    :ensure t
+    :config
+    (push 'company-lsp company-backends)
+    )
+
+  (use-package helm-lsp
+    :disabled
+    :ensure t
+    )
+
+  (use-package lsp-origami
+    :disabled
+    :ensure t
+    :config
+    (add-hook 'origami-mode-hook #'lsp-origami-mode)
+    (add-hook 'erlang-mode-hook #'origami-mode)
+    )
 #+END_SRC
 
  Distel
@@ -832,6 +870,16 @@
     :config
     (setq inferior-js-program-command "node")
     (setq js-indent-level 2))
+#+END_SRC
+
+** Typescript
+
+#+BEGIN_SRC emacs-lisp
+  (use-package typescript-mode
+    :init
+    (add-to-list 'auto-mode-alist (cons "\\.tsx$" 'typescript-mode))
+    :config
+    (setq typescript-indent-level 2))
 #+END_SRC
 
 ** Scala

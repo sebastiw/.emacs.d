@@ -276,13 +276,12 @@
 (use-package erlang
   :init (require 'erlang-start)
   :config
-  (setq erlang-root-dir "/usr/lib/erlang/")
+  (setq erlang-root-dir "~/.kerl/builds/25.0.4/release_25.0.4/")
   (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
   :ensure t)
-(require 'erlang-start)
 
 (use-package edts
-  :load-path "~/git/edts/"
+  ;; :load-path "~/git/edts/"
   :init
   (setq edts-inhibit-package-check t)
   (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
@@ -290,7 +289,8 @@
   :config
   (setq edts-man-root erlang-root-dir)
   (setq edts-log-level 'debug)
-  :after erlang)
+  :after erlang
+  :ensure t)
 
 (use-package alchemist
   :init
@@ -313,6 +313,12 @@
   :config
   (setq inferior-js-program-command "node")
   (setq js-indent-level 2))
+
+(use-package typescript-mode
+  :init
+  (add-to-list 'auto-mode-alist (cons "\\.tsx$" 'typescript-mode))
+  :config
+  (setq typescript-indent-level 2))
 
 (use-package scala-mode
   :disabled
