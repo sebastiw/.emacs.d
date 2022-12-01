@@ -307,13 +307,9 @@
   :ensure t)
 
 (use-package cobol-mode
-  :init
-  (setq auto-mode-alist
-        (append
-         '(("\\.cob\\'" . cobol-mode)
-           ("\\.cbl\\'" . cobol-mode)
-           ("\\.cpy\\'" . cobol-mode))
-         auto-mode-alist)))
+  :mode (("\\.cob\\'" . cobol-mode)
+         ("\\.cbl\\'" . cobol-mode)
+         ("\\.cpy\\'" . cobol-mode)))
 
 (use-package js-comint
   :disabled
