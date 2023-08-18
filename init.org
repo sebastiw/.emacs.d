@@ -966,6 +966,19 @@
     :ensure t)
 #+END_SRC
 
+** Java/JSP
+
+#+BEGIN_SRC emacs-lisp
+  (use-package web-mode
+    :ensure t
+    :mode (("\\.html?" . web-mode)
+           ("\\.php" . web-mode)
+           ("\\.jsx" . web-mode)
+           ("\\.tsx" . web-mode)
+           ("\\.vue" . web-mode)
+           ("\\.jsp" . web-mode)))
+#+END_SRC
+
 * Misc major modes
 
 ** Helm
@@ -1035,6 +1048,7 @@ For Github-flavoured markdown previews:
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode)
 #+END_SRC
+
 ** PCAPs
 
 Nice for viewing

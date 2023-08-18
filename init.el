@@ -376,6 +376,15 @@
 (use-package company
   :ensure t)
 
+(use-package web-mode
+  :ensure t
+  :mode (("\\.html?" . web-mode)
+         ("\\.php" . web-mode)
+         ("\\.jsx" . web-mode)
+         ("\\.tsx" . web-mode)
+         ("\\.vue" . web-mode)
+         ("\\.jsp" . web-mode)))
+
 (use-package helm
   :disabled
 
