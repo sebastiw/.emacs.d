@@ -1064,3 +1064,47 @@ Nice for editing
     :mode ("\\.pcap\\'" . hexl-mode)
     :ensure t)
 #+END_SRC
+
+** Github copilot
+
+   Fetch and setup straight.
+   straight.el is a package manager for elisp packages on github.
+
+#+BEGIN_SRC emacs-lisp
+    (defvar bootstrap-version)
+    (let ((bootstrap-file
+           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+          (bootstrap-version 5))
+      (unless (file-exists-p bootstrap-file)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             'silent 'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
+      (load bootstrap-file nil 'nomessage))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package copilot
+    :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+    :ensure t)
+#+END_SRC
+
+   Enable it on all programming languages
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'prog-mode-hook 'copilot-mode)
+  (add-hook 'yaml-mode-hook 'copilot-mode)
+#+END_SRC
+
+   Configure keybindings
+
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'company
+    ;; disable inline previews
+    (delq 'company-preview-if-just-one-frontend company-frontends))
+
+  (define-key copilot-completion-map (kbd "C-.") 'copilot-accept-completion)
+#+END_SRC
+

@@ -437,3 +437,29 @@
 (use-package hexl
   :mode ("\\.pcap\\'" . hexl-mode)
   :ensure t)
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(use-package copilot
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+  :ensure t)
+
+(add-hook 'prog-mode-hook 'copilot-mode)
+(add-hook 'yaml-mode-hook 'copilot-mode)
+
+(with-eval-after-load 'company
+  ;; disable inline previews
+  (delq 'company-preview-if-just-one-frontend company-frontends))
+
+(define-key copilot-completion-map (kbd "C-.") 'copilot-accept-completion)
