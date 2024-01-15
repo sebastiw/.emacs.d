@@ -13,3 +13,10 @@ ido.last
 network-security.data
 tramp
 TAGS*
+tree-sitter/
+straight/
+transient/
+url/
+.dap-breakpoints
+.lsp-session-v1
+projects

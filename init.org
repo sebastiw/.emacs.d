@@ -722,16 +722,6 @@
 
 * Work stuff
 
-  This chapter will handle configuration and packages I need for work.
-
-** Tramp
-
-   Fix so Tramp connects correctly.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (setq shell-prompt-pattern "^.*eselnts1349[^>]* *")
-#+END_SRC
-
 * Programming
 
 ** Erlang
@@ -762,6 +752,16 @@
     :after erlang
     :ensure t)
 #+END_SRC
+
+  Tree-sitter support for Erlang
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'treesit-language-source-alist (cons 'erlang '("https://github.com/WhatsApp/tree-sitter-erlang")))
+  (if (not (treesit-language-available-p 'erlang))
+      (treesit-install-language-grammar 'erlang))
+  ; (add-to-list 'major-mode-remap-alist '(erlang-mode . erlang-ts-mode))
+#+END_SRC
+
 
   Try out LSP-mode
 
@@ -846,6 +846,17 @@
     :ensure t)
 #+END_SRC
 
+** Bash
+
+  Tree-sitter support for Bash
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'treesit-language-source-alist (cons 'bash '("https://github.com/tree-sitter/tree-sitter-bash")))
+  (if (not (treesit-language-available-p 'bash))
+      (treesit-install-language-grammar 'bash))
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+#+END_SRC
+
 ** Elisp
 
    The second best programming language there is! :)
@@ -856,6 +867,14 @@
     (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
       (add-hook hook 'turn-on-elisp-slime-nav-mode))
     :ensure t)
+#+END_SRC
+
+  Tree-sitter support for Emacs-Lisp
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'treesit-language-source-alist (cons 'elisp '("https://github.com/Wilfred/tree-sitter-elisp")))
+  (if (not (treesit-language-available-p 'elisp))
+      (treesit-install-language-grammar 'elisp))
 #+END_SRC
 
 ** COBOL
@@ -939,6 +958,15 @@
     :ensure t)
 #+END_SRC
 
+  Tree-sitter support for Dockerfiles
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'treesit-language-source-alist (cons 'dockerfile '("https://github.com/camdencheek/tree-sitter-dockerfile")))
+  (if (not (treesit-language-available-p 'dockerfile))
+      (treesit-install-language-grammar 'dockerfile))
+  (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+#+END_SRC
+
 ** Dart/Flutter
 
 #+BEGIN_SRC emacs-lisp
@@ -977,6 +1005,17 @@
            ("\\.tsx" . web-mode)
            ("\\.vue" . web-mode)
            ("\\.jsp" . web-mode)))
+#+END_SRC
+
+** JSON
+
+  Tree-sitter support for JSON-files
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'treesit-language-source-alist (cons 'json '("https://github.com/tree-sitter/tree-sitter-json")))
+  (if (not (treesit-language-available-p 'json))
+      (treesit-install-language-grammar 'json))
+  (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
 #+END_SRC
 
 * Misc major modes
@@ -1027,7 +1066,7 @@
 
 ** Markdown
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package markdown-mode
     :ensure t)
 #+END_SRC
@@ -1036,17 +1075,33 @@ For Github-flavoured markdown previews:
 
 `pip install grip`
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
     (use-package grip-mode
       :ensure t
       :hook ((markdown-mode org-mode) . grip-mode)
       :config (setq grip-update-after-change 'nil))
 #+END_SRC
 
-** Yaml
+  Tree-sitter support for Markdown
 
 #+BEGIN_SRC emacs-lisp
+  (add-to-list 'treesit-language-source-alist (cons 'markdown '("https://github.com/ikatyang/tree-sitter-markdown")))
+  (if (not (treesit-language-available-p 'markdown))
+      (treesit-install-language-grammar 'markdown))
+#+END_SRC
+
+** Yaml
+
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package yaml-mode)
+#+END_SRC
+
+  Tree-sitter support for YAML-files
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'treesit-language-source-alist (cons 'yaml '("https://github.com/ikatyang/tree-sitter-yaml")))
+  (if (not (treesit-language-available-p 'yaml))
+      (treesit-install-language-grammar 'yaml))
 #+END_SRC
 
 ** PCAPs

@@ -292,6 +292,11 @@
   :after erlang
   :ensure t)
 
+(add-to-list 'treesit-language-source-alist (cons 'erlang '("https://github.com/WhatsApp/tree-sitter-erlang")))
+(if (not (treesit-language-available-p 'erlang))
+    (treesit-install-language-grammar 'erlang))
+; (add-to-list 'major-mode-remap-alist '(erlang-mode . erlang-ts-mode))
+
 (use-package alchemist
   :init
   (require 'alchemist)
@@ -300,11 +305,20 @@
 (use-package asn1-mode
   :ensure t)
 
+(add-to-list 'treesit-language-source-alist (cons 'bash '("https://github.com/tree-sitter/tree-sitter-bash")))
+(if (not (treesit-language-available-p 'bash))
+    (treesit-install-language-grammar 'bash))
+(add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+
 (use-package elisp-slime-nav
   :init
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook 'turn-on-elisp-slime-nav-mode))
   :ensure t)
+
+(add-to-list 'treesit-language-source-alist (cons 'elisp '("https://github.com/Wilfred/tree-sitter-elisp")))
+(if (not (treesit-language-available-p 'elisp))
+    (treesit-install-language-grammar 'elisp))
 
 (use-package cobol-mode
   :mode (("\\.cob\\'" . cobol-mode)
@@ -353,6 +367,11 @@
 (use-package dockerfile-mode
   :ensure t)
 
+(add-to-list 'treesit-language-source-alist (cons 'dockerfile '("https://github.com/camdencheek/tree-sitter-dockerfile")))
+(if (not (treesit-language-available-p 'dockerfile))
+    (treesit-install-language-grammar 'dockerfile))
+(add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+
 (use-package dart-mode
   :ensure t
   :hook (dart-mode . flutter-test-mode))
@@ -384,6 +403,11 @@
          ("\\.tsx" . web-mode)
          ("\\.vue" . web-mode)
          ("\\.jsp" . web-mode)))
+
+(add-to-list 'treesit-language-source-alist (cons 'json '("https://github.com/tree-sitter/tree-sitter-json")))
+(if (not (treesit-language-available-p 'json))
+    (treesit-install-language-grammar 'json))
+(add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
 
 (use-package helm
   :disabled
@@ -420,15 +444,13 @@
    ("<tab>" .   helm-execute-persistent-action))
   )
 
-(use-package markdown-mode
-  :ensure t)
+(add-to-list 'treesit-language-source-alist (cons 'markdown '("https://github.com/ikatyang/tree-sitter-markdown")))
+(if (not (treesit-language-available-p 'markdown))
+    (treesit-install-language-grammar 'markdown))
 
-(use-package grip-mode
-  :ensure t
-  :hook ((markdown-mode org-mode) . grip-mode)
-  :config (setq grip-update-after-change 'nil))
-
-(use-package yaml-mode)
+(add-to-list 'treesit-language-source-alist (cons 'yaml '("https://github.com/ikatyang/tree-sitter-yaml")))
+(if (not (treesit-language-available-p 'yaml))
+    (treesit-install-language-grammar 'yaml))
 
 (use-package pcap-mode
   :ensure t
