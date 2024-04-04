@@ -321,7 +321,9 @@
     (treesit-install-language-grammar 'elisp))
 
 (use-package protobuf-ts-mode
-  :ensure t)
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist (cons "\\.proto$" 'protobuf-ts-mode)))
 
 (use-package cobol-mode
   :mode (("\\.cob\\'" . cobol-mode)

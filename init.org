@@ -883,7 +883,9 @@
 
 #+BEGIN_SRC emacs-lisp
   (use-package protobuf-ts-mode
-    :ensure t)
+    :ensure t
+    :init
+    (add-to-list 'auto-mode-alist (cons "\\.proto$" 'protobuf-ts-mode)))
 #+END_SRC
 
 ** COBOL
