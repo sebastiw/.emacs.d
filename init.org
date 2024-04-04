@@ -877,6 +877,15 @@
       (treesit-install-language-grammar 'elisp))
 #+END_SRC
 
+** Protobuf
+
+   Install tree-sitter mode for Protobuf files
+
+#+BEGIN_SRC emacs-lisp
+  (use-package protobuf-ts-mode
+    :ensure t)
+#+END_SRC
+
 ** COBOL
 
    COmmon Business Oriented Language
@@ -1019,6 +1028,18 @@
 #+END_SRC
 
 * Misc major modes
+
+** Tree-sitter
+
+   https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
+
+   If treesitter is available for Emacs, add the directory to the .so
+   files built by https://github.com/casouri/tree-sitter-module/
+
+#+BEGIN_SRC emacs-lisp
+  (when (featurep 'treesit)
+    (add-to-list 'treesit-extra-load-path "~/src/sources/tree-sitter-module/dist"))
+#+END_SRC
 
 ** Helm
 

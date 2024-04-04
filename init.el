@@ -320,6 +320,9 @@
 (if (not (treesit-language-available-p 'elisp))
     (treesit-install-language-grammar 'elisp))
 
+(use-package protobuf-ts-mode
+  :ensure t)
+
 (use-package cobol-mode
   :mode (("\\.cob\\'" . cobol-mode)
          ("\\.cbl\\'" . cobol-mode)
@@ -408,6 +411,9 @@
 (if (not (treesit-language-available-p 'json))
     (treesit-install-language-grammar 'json))
 (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
+
+(when (featurep 'treesit)
+  (add-to-list 'treesit-extra-load-path "~/src/sources/tree-sitter-module/dist"))
 
 (use-package helm
   :disabled
