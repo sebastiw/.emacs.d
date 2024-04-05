@@ -459,6 +459,7 @@
 (add-to-list 'treesit-language-source-alist (cons 'yaml '("https://github.com/ikatyang/tree-sitter-yaml")))
 (if (not (treesit-language-available-p 'yaml))
     (treesit-install-language-grammar 'yaml))
+(add-to-list 'auto-mode-alist (cons "\\.yaml" 'yaml-ts-mode))
 
 (use-package pcap-mode
   :ensure t
