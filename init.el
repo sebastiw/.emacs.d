@@ -310,6 +310,8 @@
     (treesit-install-language-grammar 'bash))
 (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
 
+(setq lisp-indent-offset 2)
+
 (use-package elisp-slime-nav
   :init
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))

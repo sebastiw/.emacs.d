@@ -862,6 +862,10 @@
    The second best programming language there is! :)
 
 #+BEGIN_SRC emacs-lisp
+  (setq lisp-indent-offset 2)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
   (use-package elisp-slime-nav
     :init
     (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
