@@ -276,7 +276,7 @@
 (use-package erlang
   :init (require 'erlang-start)
   :config
-  (setq erlang-root-dir "~/.kerl/builds/25.0.4/release_25.0.4/")
+  (setq erlang-root-dir "/usr/local/lib/erlang/26.2.1/")
   (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
   :ensure t)
 
@@ -284,8 +284,8 @@
   ;; :load-path "~/git/edts/"
   :init
   (setq edts-inhibit-package-check t)
-  (add-hook 'erlang-mode-hook '(lambda () (require 'edts-start)))
-  (add-to-list 'load-path "~/git/edts/elisp/f/")
+  (add-hook 'erlang-mode-hook #'(lambda () (require 'edts-start)))
+  ;; (add-to-list 'load-path "~/git/edts/elisp/f/")
   :config
   (setq edts-man-root erlang-root-dir)
   (setq edts-log-level 'debug)
@@ -414,7 +414,7 @@
 (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
 
 (when (featurep 'treesit)
-  (add-to-list 'treesit-extra-load-path "~/src/sources/tree-sitter-module/dist"))
+  (add-to-list 'treesit-extra-load-path "~/sources/tree-sitter-module/dist"))
 
 (use-package helm
   :disabled
