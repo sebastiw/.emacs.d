@@ -322,8 +322,7 @@
 
 (use-package protobuf-ts-mode
   :ensure t
-  :init
-  (add-to-list 'auto-mode-alist (cons "\\.proto$" 'protobuf-ts-mode)))
+  :mode "\\.proto\\'")
 
 (use-package cobol-mode
   :mode (("\\.cob\\'" . cobol-mode)
@@ -339,8 +338,7 @@
   (setq js-indent-level 2))
 
 (use-package typescript-mode
-  :init
-  (add-to-list 'auto-mode-alist (cons "\\.tsx$" 'typescript-mode))
+  :mode "\\.tsx\\'"
   :config
   (setq typescript-indent-level 2))
 
@@ -349,8 +347,7 @@
   )
 
 (use-package clojure-mode
-  :init
-  (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode))
+  :mode "\\.clj\\'"
   :disabled
   )
 (use-package clojure-mode-extra-font-locking

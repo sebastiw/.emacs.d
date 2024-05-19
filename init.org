@@ -884,8 +884,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package protobuf-ts-mode
     :ensure t
-    :init
-    (add-to-list 'auto-mode-alist (cons "\\.proto$" 'protobuf-ts-mode)))
+    :mode "\\.proto\\'")
 #+END_SRC
 
 ** COBOL
@@ -917,8 +916,7 @@
 
 #+BEGIN_SRC emacs-lisp
   (use-package typescript-mode
-    :init
-    (add-to-list 'auto-mode-alist (cons "\\.tsx$" 'typescript-mode))
+    :mode "\\.tsx\\'"
     :config
     (setq typescript-indent-level 2))
 #+END_SRC
@@ -937,8 +935,7 @@
 
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
-    :init
-    (add-to-list 'auto-mode-alist (cons "\\.clj$" 'clojure-mode))
+    :mode "\\.clj\\'"
     :disabled
     )
   (use-package clojure-mode-extra-font-locking
