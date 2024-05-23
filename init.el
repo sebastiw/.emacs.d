@@ -10,8 +10,8 @@
 ;;  NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(let ((minver 24)
-      (recver 25))
+(let ((minver 29)
+      (recver 30))
   (if (< emacs-major-version minver)
       (error "Your Emacs is too old -- this config requires v%s or higher"
              minver)
@@ -62,7 +62,7 @@
       '(
         ("gnu"       . "https://elpa.gnu.org/packages/")
         ("melpa"     . "https://melpa.org/packages/")
-        ("marmalade" . "https://marmalade-repo.org/packages/")
+        ; ("marmalade" . "https://marmalade-repo.org/packages/")
         ("elpy"      . "https://jorgenschaefer.github.io/packages/")
         ))
 
@@ -286,24 +286,15 @@
   (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
   :ensure t)
 
-(use-package edts
-  ;; :load-path "~/git/edts/"
-  :init
-  (setq edts-inhibit-package-check t)
-  (add-hook 'erlang-mode-hook #'(lambda () (require 'edts-start)))
-  ;; (add-to-list 'load-path "~/git/edts/elisp/f/")
-  :config
-  (setq edts-man-root erlang-root-dir)
-  (setq edts-log-level 'debug)
-  :after erlang
-  :ensure t)
-
 (add-to-list 'treesit-language-source-alist (cons 'erlang '("https://github.com/WhatsApp/tree-sitter-erlang")))
-(if (not (treesit-language-available-p 'erlang))
-    (treesit-install-language-grammar 'erlang))
-; (add-to-list 'major-mode-remap-alist '(erlang-mode . erlang-ts-mode))
+(unless (treesit-language-available-p 'erlang)
+  (treesit-install-language-grammar 'erlang))
+
+(use-package trerl-mode
+  :load-path "~/git/trerl")
 
 (use-package alchemist
+  :disabled
   :init
   (require 'alchemist)
   :ensure t)
@@ -312,8 +303,8 @@
   :ensure t)
 
 (add-to-list 'treesit-language-source-alist (cons 'bash '("https://github.com/tree-sitter/tree-sitter-bash")))
-(if (not (treesit-language-available-p 'bash))
-    (treesit-install-language-grammar 'bash))
+(unless (treesit-language-available-p 'bash)
+  (treesit-install-language-grammar 'bash))
 (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
 
 (setq lisp-indent-offset 2)
@@ -325,8 +316,12 @@
   :ensure t)
 
 (add-to-list 'treesit-language-source-alist (cons 'elisp '("https://github.com/Wilfred/tree-sitter-elisp")))
-(if (not (treesit-language-available-p 'elisp))
-    (treesit-install-language-grammar 'elisp))
+(unless (treesit-language-available-p 'elisp)
+  (treesit-install-language-grammar 'elisp))
+
+(add-to-list 'treesit-language-source-alist (cons 'proto '("https://github.com/mitchellh/tree-sitter-proto")))
+(unless (treesit-language-available-p 'proto)
+  (treesit-install-language-grammar 'proto))
 
 (use-package protobuf-ts-mode
   :ensure t
@@ -346,6 +341,7 @@
   (setq js-indent-level 2))
 
 (use-package typescript-mode
+  :disabled
   :mode "\\.tsx\\'"
   :config
   (setq typescript-indent-level 2))
@@ -354,23 +350,6 @@
   :disabled
   )
 
-(use-package clojure-mode
-  :mode "\\.clj\\'"
-  :disabled
-  )
-(use-package clojure-mode-extra-font-locking
-  :after 'clojure-mode
-  )
-(use-package cider
-  :after 'clojure-mode
-  :config
-  ;; Do not try to start it if it is already started.
-  (condition-case nil
-      (cider-ping)
-    (error
-     (require 'cider)
-     (cider-jack-in))))
-
 (use-package jedi
   :ensure t)
 
@@ -378,32 +357,9 @@
   :ensure t)
 
 (add-to-list 'treesit-language-source-alist (cons 'dockerfile '("https://github.com/camdencheek/tree-sitter-dockerfile")))
-(if (not (treesit-language-available-p 'dockerfile))
-    (treesit-install-language-grammar 'dockerfile))
+(unless (treesit-language-available-p 'dockerfile)
+  (treesit-install-language-grammar 'dockerfile))
 (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
-
-(use-package dart-mode
-  :ensure t
-  :hook (dart-mode . flutter-test-mode))
-
-(use-package flutter
-  :after dart-mode
-  :ensure t
-  :bind (:map dart-mode-map
-              ("C-M-x" . #'flutter-run-or-hot-reload)))
-
-(use-package lsp-mode
-  :ensure t)
-
-(use-package lsp-dart
-  :ensure t
-  :hook (dart-mode . lsp))
-
-;; Optional packages
-(use-package lsp-ui
-  :ensure t)
-(use-package company
-  :ensure t)
 
 (use-package web-mode
   :ensure t
@@ -415,12 +371,9 @@
          ("\\.jsp" . web-mode)))
 
 (add-to-list 'treesit-language-source-alist (cons 'json '("https://github.com/tree-sitter/tree-sitter-json")))
-(if (not (treesit-language-available-p 'json))
-    (treesit-install-language-grammar 'json))
+(unless (treesit-language-available-p 'json)
+  (treesit-install-language-grammar 'json))
 (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
-
-(when (featurep 'treesit)
-  (add-to-list 'treesit-extra-load-path "~/sources/tree-sitter-module/dist"))
 
 (use-package helm
   :disabled
@@ -458,12 +411,12 @@
   )
 
 (add-to-list 'treesit-language-source-alist (cons 'markdown '("https://github.com/ikatyang/tree-sitter-markdown")))
-(if (not (treesit-language-available-p 'markdown))
-    (treesit-install-language-grammar 'markdown))
+(unless (treesit-language-available-p 'markdown)
+  (treesit-install-language-grammar 'markdown))
 
 (add-to-list 'treesit-language-source-alist (cons 'yaml '("https://github.com/ikatyang/tree-sitter-yaml")))
-(if (not (treesit-language-available-p 'yaml))
-    (treesit-install-language-grammar 'yaml))
+(unless (treesit-language-available-p 'yaml)
+  (treesit-install-language-grammar 'yaml))
 (add-to-list 'auto-mode-alist (cons "\\.yaml" 'yaml-ts-mode))
 
 (use-package pcap-mode

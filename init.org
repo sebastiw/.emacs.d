@@ -38,8 +38,8 @@
   This init-file assumes *Emacs 25* but will probably work with Emacs 24.
 
 #+BEGIN_SRC emacs-lisp
-  (let ((minver 24)
-        (recver 25))
+  (let ((minver 29)
+        (recver 30))
     (if (< emacs-major-version minver)
         (error "Your Emacs is too old -- this config requires v%s or higher"
                minver)
@@ -159,7 +159,7 @@
         '(
           ("gnu"       . "https://elpa.gnu.org/packages/")
           ("melpa"     . "https://melpa.org/packages/")
-          ("marmalade" . "https://marmalade-repo.org/packages/")
+          ; ("marmalade" . "https://marmalade-repo.org/packages/")
           ("elpy"      . "https://jorgenschaefer.github.io/packages/")
           ))
 
@@ -752,7 +752,7 @@
 
   Start EDTS when Erlang starts.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package edts
     ;; :load-path "~/git/edts/"
     :init
@@ -770,83 +770,20 @@
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'treesit-language-source-alist (cons 'erlang '("https://github.com/WhatsApp/tree-sitter-erlang")))
-  (if (not (treesit-language-available-p 'erlang))
-      (treesit-install-language-grammar 'erlang))
-  ; (add-to-list 'major-mode-remap-alist '(erlang-mode . erlang-ts-mode))
+  (unless (treesit-language-available-p 'erlang)
+    (treesit-install-language-grammar 'erlang))
 #+END_SRC
 
-
-  Try out LSP-mode
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package lsp-erlang
-    :load-path "~/git/lsp-erlang"
-    :after erlang)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package yasnippet
-    :ensure t)
-
-  (use-package lsp-mode
-    :ensure t
-    :config
-    (setq lsp-erlang-server-path "~/sources/_build/default/bin/")
-    (add-hook 'erlang-mode-hook #'lsp)
-    )
-
-  (use-package lsp-ui
-    :ensure t
-    :config
-    (setq lsp-ui-sideline-enable nil)
-    (setq lsp-ui-doc-enable t)
-    )
-
-  (use-package company-lsp
-    :ensure t
-    :config
-    (push 'company-lsp company-backends)
-    )
-
-  (use-package helm-lsp
-    :disabled
-    :ensure t
-    )
-
-  (use-package lsp-origami
-    :disabled
-    :ensure t
-    :config
-    (add-hook 'origami-mode-hook #'lsp-origami-mode)
-    (add-hook 'erlang-mode-hook #'origami-mode)
-    )
-#+END_SRC
-
- Distel
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package distel
-    :load-path "/usr/local/lib/erlang/lib/distel/elisp"
-    :after erlang)
-#+END_SRC
-
- Erlang refactoring tool Wrangler.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package wrangler
-    :init
-    (defconst erlang-xemacs-p (string-match "Lucid\\|XEmacs" emacs-version)
-      "Non-nil when running under XEmacs or Lucid Emacs.")
-    (setq erlang-emacs-major-version emacs-major-version)
-    (defalias 'erl-cookie 'derl-cookie)
-    :load-path "/usr/local/lib/erlang/lib/wrangler-1.2.0/elisp"
-    :after distel)
+#+BEGIN_SRC emacs-lisp
+  (use-package trerl-mode
+    :load-path "~/git/trerl")
 #+END_SRC
 
 ** Elixir
 
 #+BEGIN_SRC emacs-lisp
   (use-package alchemist
+    :disabled
     :init
     (require 'alchemist)
     :ensure t)
@@ -865,8 +802,8 @@
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'treesit-language-source-alist (cons 'bash '("https://github.com/tree-sitter/tree-sitter-bash")))
-  (if (not (treesit-language-available-p 'bash))
-      (treesit-install-language-grammar 'bash))
+  (unless (treesit-language-available-p 'bash)
+    (treesit-install-language-grammar 'bash))
   (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
 #+END_SRC
 
@@ -890,11 +827,19 @@
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'treesit-language-source-alist (cons 'elisp '("https://github.com/Wilfred/tree-sitter-elisp")))
-  (if (not (treesit-language-available-p 'elisp))
-      (treesit-install-language-grammar 'elisp))
+  (unless (treesit-language-available-p 'elisp)
+    (treesit-install-language-grammar 'elisp))
 #+END_SRC
 
 ** Protobuf
+
+   Tree-sitter support for Protobuf  files
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'treesit-language-source-alist (cons 'proto '("https://github.com/mitchellh/tree-sitter-proto")))
+  (unless (treesit-language-available-p 'proto)
+    (treesit-install-language-grammar 'proto))
+#+END_SRC
 
    Install tree-sitter mode for Protobuf files
 
@@ -933,6 +878,7 @@
 
 #+BEGIN_SRC emacs-lisp
   (use-package typescript-mode
+    :disabled
     :mode "\\.tsx\\'"
     :config
     (setq typescript-indent-level 2))
@@ -944,29 +890,6 @@
   (use-package scala-mode
     :disabled
     )
-#+END_SRC
-
-** Clojure
-
-   Time for some Lisp!
-
-#+BEGIN_SRC emacs-lisp
-  (use-package clojure-mode
-    :mode "\\.clj\\'"
-    :disabled
-    )
-  (use-package clojure-mode-extra-font-locking
-    :after 'clojure-mode
-    )
-  (use-package cider
-    :after 'clojure-mode
-    :config
-    ;; Do not try to start it if it is already started.
-    (condition-case nil
-        (cider-ping)
-      (error
-       (require 'cider)
-       (cider-jack-in))))
 #+END_SRC
 
 ** Python
@@ -987,14 +910,14 @@
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'treesit-language-source-alist (cons 'dockerfile '("https://github.com/camdencheek/tree-sitter-dockerfile")))
-  (if (not (treesit-language-available-p 'dockerfile))
-      (treesit-install-language-grammar 'dockerfile))
+  (unless (treesit-language-available-p 'dockerfile)
+    (treesit-install-language-grammar 'dockerfile))
   (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
 #+END_SRC
 
 ** Dart/Flutter
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package dart-mode
     :ensure t
     :hook (dart-mode . flutter-test-mode))
@@ -1038,24 +961,12 @@
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'treesit-language-source-alist (cons 'json '("https://github.com/tree-sitter/tree-sitter-json")))
-  (if (not (treesit-language-available-p 'json))
-      (treesit-install-language-grammar 'json))
+  (unless (treesit-language-available-p 'json)
+    (treesit-install-language-grammar 'json))
   (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
 #+END_SRC
 
 * Misc major modes
-
-** Tree-sitter
-
-   https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
-
-   If treesitter is available for Emacs, add the directory to the .so
-   files built by https://github.com/casouri/tree-sitter-module/
-
-#+BEGIN_SRC emacs-lisp
-  (when (featurep 'treesit)
-    (add-to-list 'treesit-extra-load-path "~/sources/tree-sitter-module/dist"))
-#+END_SRC
 
 ** Helm
 
@@ -1123,8 +1034,8 @@ For Github-flavoured markdown previews:
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'treesit-language-source-alist (cons 'markdown '("https://github.com/ikatyang/tree-sitter-markdown")))
-  (if (not (treesit-language-available-p 'markdown))
-      (treesit-install-language-grammar 'markdown))
+  (unless (treesit-language-available-p 'markdown)
+    (treesit-install-language-grammar 'markdown))
 #+END_SRC
 
 ** Yaml
@@ -1139,8 +1050,8 @@ For Github-flavoured markdown previews:
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'treesit-language-source-alist (cons 'yaml '("https://github.com/ikatyang/tree-sitter-yaml")))
-  (if (not (treesit-language-available-p 'yaml))
-      (treesit-install-language-grammar 'yaml))
+  (unless (treesit-language-available-p 'yaml)
+    (treesit-install-language-grammar 'yaml))
   (add-to-list 'auto-mode-alist (cons "\\.yaml" 'yaml-ts-mode))
 #+END_SRC
 
