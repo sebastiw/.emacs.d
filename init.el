@@ -285,7 +285,7 @@
 (use-package erlang
   :init (require 'erlang-start)
   :config
-  (setq erlang-root-dir "/usr/local/lib/erlang/26.2.1/")
+  (setq erlang-root-dir "~/.kerl/builds/26.2.5/otp_src_26.2.5/")
   (add-to-list 'exec-path (concat erlang-root-dir "/bin"))
   :ensure t)
 
