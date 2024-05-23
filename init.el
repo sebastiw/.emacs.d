@@ -203,6 +203,9 @@
    ("C-<tab>" . other-window))
   :ensure t)
 
+(use-package forge
+  :after magit)
+
 (use-package org
   :config
   (org-babel-do-load-languages

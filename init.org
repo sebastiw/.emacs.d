@@ -532,6 +532,14 @@
     :ensure t)
 #+END_SRC
 
+  Review PRs within magit by using forge.
+  https://magit.vc/manual/forge/
+
+#+BEGIN_SRC emacs-lisp
+  (use-package forge
+    :after magit)
+#+END_SRC
+
 * Org
 
   Org-mode is a mode for keeping notes, maintaining ToDo lists, and
