@@ -94,6 +94,12 @@
 
 (toggle-dark)
 
+(defun tangle-init-org-on-save ()
+  (interactive)
+  (when (string-suffix-p ".emacs.d/init.org" (buffer-file-name))
+    (org-babel-tangle-file (buffer-file-name))))
+(add-hook 'after-save-hook 'tangle-init-org-on-save)
+
 (setq-default bidi-paragraph-direction 'left-to-right)
 
 (setq initial-scratch-message nil)

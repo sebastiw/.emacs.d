@@ -215,6 +215,19 @@
   (toggle-dark)
 #+END_SRC
 
+** Tangle on save
+
+   The init.org needs to be converted to init.el to be read by emacs.
+   Add a hook to do that on save.
+
+#+BEGIN_SRC emacs-lisp
+  (defun tangle-init-org-on-save ()
+    (interactive)
+    (when (string-suffix-p ".emacs.d/init.org" (buffer-file-name))
+      (org-babel-tangle-file (buffer-file-name))))
+  (add-hook 'after-save-hook 'tangle-init-org-on-save)
+#+END_SRC
+
 ** Bi-directional text
 
    Bidi should never be turned off, the emacs display system is, apparently,
